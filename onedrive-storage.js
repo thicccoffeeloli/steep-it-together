@@ -47,9 +47,12 @@
     // ===== Sign-in =====
 
     const msalApp = new msal.PublicClientApplication(MSAL_CONFIG);
+    // MSAL Browser v3+ requires this explicit async init before any other
+    // method on the instance is safe to call - awaited at the top of
+    // trySilentSignIn() below, the earliest point anything here actually
+    // touches msalApp.
+    const msalInitPromise = msalApp.initialize();
     let activeAccount = null;
-    let resolveSignedIn; // filled in below - lets getAccessToken() await the overlay
-    const signedInPromise = new Promise(function(resolve) { resolveSignedIn = resolve; });
 
     function buildOverlay() {
         const overlay = document.createElement('div');
@@ -65,17 +68,13 @@
         return overlay;
     }
 
-    function removeOverlay() {
-        const overlay = document.getElementById('onedrive-signin-overlay');
-        if (overlay) overlay.remove();
-    }
-
     function setStatus(message) {
         const status = document.getElementById('onedrive-signin-status');
         if (status) status.textContent = message;
     }
 
     async function trySilentSignIn() {
+        await msalInitPromise;
         const cached = msalApp.getAllAccounts();
         if (cached.length === 0) return false;
         msalApp.setActiveAccount(cached[0]);
@@ -101,11 +100,23 @@
         });
     }
 
-    async function ensureSignedIn() {
-        if (activeAccount) return;
-        const hadCached = await trySilentSignIn();
-        if (!hadCached) await interactiveSignIn();
-        resolveSignedIn();
+    // script.js fires off several fetch() calls in a row on page load
+    // (/combos, /ingredients, /pairings, ...) - each one needs to wait for
+    // sign-in via getAccessToken() below, but they all start at nearly the
+    // same instant. Without memoizing the in-flight attempt here, every one
+    // of them would independently call interactiveSignIn() and stack up
+    // that many duplicate overlays. Caching the promise itself (not just a
+    // flag) means every concurrent caller shares the exact same attempt -
+    // one overlay, one click needed, everyone unblocks together.
+    let ensureSignedInPromise = null;
+    function ensureSignedIn() {
+        if (activeAccount) return Promise.resolve();
+        if (!ensureSignedInPromise) {
+            ensureSignedInPromise = trySilentSignIn().then(function(hadCached) {
+                return hadCached ? undefined : interactiveSignIn();
+            });
+        }
+        return ensureSignedInPromise;
     }
 
     async function getAccessToken() {
@@ -123,12 +134,20 @@
 
     ensureSignedIn(); // kicks off immediately on page load - see getAccessToken() for how callers wait on it
 
+    // Captured now, before fetch gets overridden below, so every Graph call
+    // this file makes goes straight to the network - relying on "a
+    // graph.microsoft.com URL just won't match any of the special-cased
+    // routes further down anyway" would also technically work, but this is
+    // more obviously correct (and one call cheaper) than routing every
+    // single Graph request through that whole dispatch chain first.
+    const realFetch = window.fetch.bind(window);
+
     // ===== Graph API helpers =====
 
     async function graphRequest(pathAndQuery, options) {
         const token = await getAccessToken();
         const headers = Object.assign({ Authorization: 'Bearer ' + token }, (options && options.headers) || {});
-        return fetch(GRAPH_ROOT + pathAndQuery, Object.assign({}, options, { headers: headers }));
+        return realFetch(GRAPH_ROOT + pathAndQuery, Object.assign({}, options, { headers: headers }));
     }
 
     async function graphGetJson(filename, defaultValue) {
@@ -174,7 +193,12 @@
         if (existing.status === 404) return false;
         const dest = await graphRequest(':/Images/' + encodeURIComponent(newFilename));
         if (dest.ok) return false; // already something there - don't clobber it, same rule as server.js
-        const bytes = await existing.arrayBuffer();
+        // The existence check above hits the metadata path (no :/content),
+        // which returns a JSON description of the file, not its actual
+        // bytes - need a separate request to the :/content path to get
+        // something actually copyable.
+        const content = await graphRequest(':/Images/' + encodeURIComponent(oldFilename) + ':/content');
+        const bytes = await content.arrayBuffer();
         const put = await graphRequest(':/Images/' + encodeURIComponent(newFilename) + ':/content', {
             method: 'PUT',
             headers: { 'Content-Type': 'image/png' },
@@ -195,8 +219,6 @@
     }
 
     // ===== fetch() interception =====
-
-    const realFetch = window.fetch.bind(window);
 
     window.fetch = async function(input, init) {
         const url = typeof input === 'string' ? input : input.url;
@@ -292,24 +314,36 @@
     // itself is completely unmodified; a plain <script> file's top-level
     // functions are just properties of window, so this can be redefined
     // from here same as overriding fetch above.
-    const originalUsePlaceholderOnError = window.usePlaceholderOnError;
-    window.usePlaceholderOnError = function(img) {
-        img.addEventListener('error', function() {
-            if (img.dataset.triedOnedrive) {
-                if (img.dataset.usedPlaceholder) { img.remove(); return; }
-                img.dataset.usedPlaceholder = 'true';
-                img.src = 'Images/placeholder.png';
-                return;
-            }
-            img.dataset.triedOnedrive = 'true';
-            const filename = img.src.split('/').pop().split('?')[0];
-            graphRequest(':/Images/' + encodeURIComponent(filename) + ':/content')
-                .then(function(res) { return res.ok ? res.blob() : Promise.reject(); })
-                .then(function(blob) { img.src = URL.createObjectURL(blob); })
-                .catch(function() {
+    //
+    // Deferred via setTimeout - this file's own <script> tag runs *before*
+    // script.js's (it has to, so the fetch override above is already in
+    // place for script.js's very first fetch() calls), but that means
+    // script.js's own top-level "function usePlaceholderOnError(img)"
+    // declaration hasn't been hoisted onto window yet at this point in
+    // *this* file's execution - it would silently overwrite an
+    // un-deferred assignment here the instant script.js's <script> tag
+    // ran. Scheduling this for "as soon as the current script queue is
+    // idle" instead guarantees it runs after script.js has finished
+    // declaring its own version, so this one applies last and sticks.
+    setTimeout(function() {
+        window.usePlaceholderOnError = function(img) {
+            img.addEventListener('error', function() {
+                if (img.dataset.triedOnedrive) {
+                    if (img.dataset.usedPlaceholder) { img.remove(); return; }
                     img.dataset.usedPlaceholder = 'true';
                     img.src = 'Images/placeholder.png';
-                });
-        });
-    };
+                    return;
+                }
+                img.dataset.triedOnedrive = 'true';
+                const filename = img.src.split('/').pop().split('?')[0];
+                graphRequest(':/Images/' + encodeURIComponent(filename) + ':/content')
+                    .then(function(res) { return res.ok ? res.blob() : Promise.reject(); })
+                    .then(function(blob) { img.src = URL.createObjectURL(blob); })
+                    .catch(function() {
+                        img.dataset.usedPlaceholder = 'true';
+                        img.src = 'Images/placeholder.png';
+                    });
+            });
+        };
+    }, 0);
 })();
