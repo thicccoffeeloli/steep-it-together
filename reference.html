@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Witch's Brew — Reference</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <h1 id="reference-page-title">📝 Notepad</h1>
+    <p class="back-link">
+        <a href="index.html">← Back to brewing</a> ·
+        <a href="log.html">📖 View brew log</a>
+    </p>
+
+    <!-- Three panels below, each rendered by its own existing script
+         (notes.js, two calls to reference-list.js's buildReferenceListPage)
+         exactly as before - this page just adds a tab bar on top that
+         shows/hides whichever one is selected, deep-linkable via #hash so
+         old links can jump straight to the right tab (see selectReferenceTab). -->
+    <div class="tab-bar">
+        <button id="tab-notes" class="tab-btn" data-tab="notes">📝 Notepad</button>
+        <button id="tab-hard-to-get" class="tab-btn" data-tab="hard-to-get">🔍 Hard to get</button>
+        <button id="tab-avoid-flask" class="tab-btn" data-tab="avoid-flask">⚠️ Avoid with flask</button>
+        <button id="tab-data" class="tab-btn" data-tab="data">📤 Data</button>
+    </div>
+
+    <div id="panel-notes" class="reference-panel">
+        <div class="notes-page">
+            <p class="note-callout">🍊 <strong>Citrus note:</strong> when using citrus, zest only — the outermost
+                coloured layer with all the fragrant oils. Avoid rind and pith which turn bitter over a long steep.
+            </p>
+            <div id="notes-container"></div>
+        </div>
+    </div>
+
+    <div id="panel-hard-to-get" class="reference-panel" hidden>
+        <div class="notes-page">
+            <p class="note-callout">Ingredients that are harder to track down. Kept off the main ingredients list and
+                brew matrix for now — worth revisiting once they're actually in hand.</p>
+            <div id="hard-to-get-list"></div>
+        </div>
+    </div>
+
+    <div id="panel-avoid-flask" class="reference-panel" hidden>
+        <div class="notes-page">
+            <p class="note-callout">These teas suffer significantly from continuous steeping and are best enjoyed
+                with precise steep times using a removable infuser basket instead. Kept off the main ingredients
+                list and brew matrix for now.</p>
+            <div id="avoid-flask-list"></div>
+        </div>
+    </div>
+
+    <div id="panel-data" class="reference-panel" hidden>
+        <div class="notes-page">
+            <p class="note-callout">Move your data between devices - e.g. logging on your phone, then bringing
+                it into your laptop app. Export downloads everything below as one file; Import replaces
+                everything with whatever file you pick, so back up with Export first if you're not sure.</p>
+            <p class="note-desc"><strong>Included:</strong> ingredients, brew log, potential pairings, colors,
+                and all three reference lists.<br><strong>Not included:</strong> uploaded pictures (ingredient
+                icons/drink photos) - those stay on whichever device they were uploaded from.</p>
+            <button id="export-data-btn">⬇️ Export all data</button>
+            <div class="data-import-row">
+                <input type="file" id="import-data-input" accept="application/json">
+                <button id="import-data-btn">⬆️ Import</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@3.28.1/lib/msal-browser.min.js"></script>
+    <script src="msal-config.js"></script>
+    <script src="onedrive-storage.js"></script>
+    <script src="tooltip.js"></script>
+    <script src="notes.js"></script>
+    <script src="reference-list.js"></script>
+    <script>
+        buildReferenceListPage({
+            endpoint: '/hard-to-get',
+            container: 'hard-to-get-list',
+            fields: [
+                { key: 'name', label: '' },
+                { key: 'description', label: '', multiline: true },
+                { key: 'pairs', label: 'Pairs well with' }
+            ]
+        });
+        buildReferenceListPage({
+            endpoint: '/avoid-flask',
+            container: 'avoid-flask-list',
+            fields: [
+                { key: 'name', label: '' },
+                { key: 'description', label: '', multiline: true }
+            ]
+        });
+
+        const REFERENCE_TAB_TITLES = {
+            'notes': '📝 Notepad',
+            'hard-to-get': '🔍 Hard to get',
+            'avoid-flask': '⚠️ Avoid with flask',
+            'data': '📤 Data'
+        };
+
+        function selectReferenceTab(tab) {
+            Object.keys(REFERENCE_TAB_TITLES).forEach(function(key) {
+                document.getElementById('panel-' + key).hidden = key !== tab;
+                document.getElementById('tab-' + key).classList.toggle('active', key === tab);
+            });
+            document.getElementById('reference-page-title').textContent = REFERENCE_TAB_TITLES[tab];
+            document.title = 'Witch\'s Brew — ' + REFERENCE_TAB_TITLES[tab].replace(/^\S+\s/, '');
+            history.replaceState(null, '', '#' + tab);
+        }
+
+        document.querySelectorAll('.tab-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() { selectReferenceTab(btn.dataset.tab); });
+        });
+
+        const initialTab = REFERENCE_TAB_TITLES[window.location.hash.slice(1)] ? window.location.hash.slice(1) : 'notes';
+        selectReferenceTab(initialTab);
+
+        // Unlike the local version, this can't just navigate straight to
+        // /export - there's no real server here for the browser to
+        // download a response from, so onedrive-storage.js can only
+        // intercept an actual fetch() call, not a page navigation. Same
+        // end result (a downloaded file), just triggered via a temporary
+        // blob link instead of the browser's native download prompt.
+        document.getElementById('export-data-btn').addEventListener('click', function() {
+            fetch('/export').then(function(r) { return r.blob(); }).then(function(blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'steep-it-together-export.json';
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+        });
+
+        document.getElementById('import-data-btn').addEventListener('click', function() {
+            const file = document.getElementById('import-data-input').files[0];
+            if (!file) {
+                alert('Choose an exported file first.');
+                return;
+            }
+            if (!confirm('This replaces ALL current data with the contents of this file. Continue?')) return;
+
+            const reader = new FileReader();
+            reader.onload = function() {
+                let bundle;
+                try {
+                    bundle = JSON.parse(reader.result);
+                } catch (e) {
+                    alert('That file isn\'t valid JSON.');
+                    return;
+                }
+                fetch('/import', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(bundle)
+                }).then(function(r) { return r.json(); }).then(function(result) {
+                    if (result.success) {
+                        alert('Imported! Reloading...');
+                        window.location.reload();
+                    } else {
+                        alert('Import failed: ' + (result.error || 'unknown error'));
+                    }
+                });
+            };
+            reader.readAsText(file);
+        });
+    </script>
+</body>
+
+</html>

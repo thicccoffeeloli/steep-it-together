@@ -1,0 +1,2404 @@
+/* ===== Theme variables =====
+   Defining the palette once here means every rule below just references a
+   name (var(--accent), etc.) instead of repeating hex codes everywhere.
+   Change a color in one place and it updates the whole site - same idea as
+   setting a handful of constants at the top of an R script instead of
+   hardcoding a value in every function that uses it. */
+:root {
+    --bg: #f6f1e6;           /* warm parchment page background */
+    --card-bg: #fffaf1;      /* slightly lighter cream for cards */
+    --ink: #2e2a24;          /* near-black warm charcoal for text */
+    --ink-soft: #6b6155;     /* muted brown-grey for secondary text */
+    --border: #ddcfb4;       /* soft warm border, replaces harsh black */
+    --accent: #5b2a86;       /* deep plum - the "witchy" color */
+    --accent-dark: #3d1c5c;  /* darker plum for headings/hover */
+    --accent-soft: #ece1f7;  /* pale plum for pill backgrounds */
+    --gold: #d9a441;         /* warm gold for the active Hot/Cold tag */
+    --cauldron: #241a30;     /* near-black plum for the cauldron */
+    --shadow: 0 2px 8px rgba(61, 28, 92, 0.12);
+
+    /* Notebook/journal dress-up (see .notebook-page, .washi-tape below) -
+       kept as its own small palette since it's decorative, not structural. */
+    --paper-line: rgba(91, 42, 134, 0.08);  /* faint ruled line, tinted plum rather than flat grey */
+    --margin-rule: #dfa2ab;                 /* soft dusty rose - the classic notebook margin line, softened to fit the palette */
+    --tape-gold: rgba(217, 164, 65, 0.65);
+    --tape-rose: rgba(223, 162, 171, 0.7);
+    --tape-plum: rgba(91, 42, 134, 0.4);
+    --hand-font: 'Palatino Linotype', 'Book Antiqua', Palatino, serif; /* was a separate script font - unified with the rest of the site per request; still its own token if you want it back to something distinct later */
+}
+
+* {
+    box-sizing: border-box;
+}
+
+/* ===== Sticky-note tooltip (tooltip.js) - loaded on every page, replaces
+   the native browser tooltip everywhere a title/data-tooltip attribute is
+   used, since the native one is small and easily hidden behind a large
+   system cursor. ===== */
+
+#sticky-tooltip {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    max-width: 260px;
+    padding: 10px 14px;
+    background: #fff3c4;
+    border: 1px solid #e0c069;
+    border-radius: 4px 12px 4px 12px; /* slightly uneven corners, like a hand-torn note */
+    box-shadow: 3px 4px 10px rgba(61, 28, 92, 0.28);
+    color: #4a3a12;
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+    font-size: 14px;
+    line-height: 1.4;
+    pointer-events: none; /* never blocks the hover/click it's describing */
+    white-space: pre-line;
+}
+
+/* A small folded-corner triangle, like a real sticky note peeling up. */
+#sticky-tooltip::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 0 11px 11px;
+    border-color: transparent transparent rgba(74, 58, 18, 0.25) transparent;
+}
+
+body {
+    /* A faint dot-grid, like bullet-journal paper - subtle enough to read
+       as texture rather than pattern, ties every page to the same "journal"
+       feel without competing with anything drawn on top of it. */
+    background-color: var(--bg);
+    background-image: radial-gradient(var(--paper-line) 0.7px, transparent 0.7px);
+    background-size: 15px 15px;
+    color: var(--ink);
+    /* Same serif as every heading (main section h2, h1, etc.) - was Segoe
+       UI/sans-serif before, which read as a mismatch against the headings
+       sitting right next to it. Everything without its own more specific
+       font-family override inherits this now. */
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+    margin: 0;
+    padding: 32px 24px;
+}
+
+/* Only the main app page (index.html - the only page with a <main>) gets
+   pinned to exactly one viewport tall with the page itself never scrolling.
+   Scoped to this class rather than plain `body` so log.html/reference.html/
+   etc, which share this stylesheet but have their own, often genuinely
+   longer content, aren't forced into the same "one screen" constraint. */
+body.home-page {
+    height: 100vh;
+    padding: 16px 24px; /* less than the shared body padding - this page needs every pixel of vertical room it can get */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Title top-left, subpage links top-right, sharing one compact row instead
+   of the title's own full-width centered line plus a second line below it -
+   between this and the smaller title/link sizes below, this reclaims most
+   of the vertical space the header used to take up. */
+body.home-page .home-header {
+    flex-shrink: 0;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    column-gap: 20px;
+    row-gap: 2px;
+    margin-bottom: 12px;
+}
+
+body.home-page .home-header h1 {
+    text-align: left;
+    margin: 0;
+    font-size: 22px;
+}
+
+body.home-page .home-header .back-link {
+    margin: 0;
+    text-align: right;
+    white-space: nowrap;
+}
+
+h1 {
+    position: relative;
+    text-align: center;
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+    color: var(--accent-dark);
+    letter-spacing: 1px;
+    margin-bottom: 28px;
+}
+
+/* A strip of washi tape pinning every page's title down, like the cover of
+   a journal - skipped on the compact home-page header (index.html), which
+   sits in a tight flex row with the back-link with no room for it. */
+body:not(.home-page) h1::before {
+    content: '';
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    width: 84px;
+    height: 28px;
+    transform: translateX(-50%);
+    background: repeating-linear-gradient(45deg,
+        var(--tape-gold), var(--tape-gold) 7px,
+        rgba(255, 255, 255, 0.4) 7px, rgba(255, 255, 255, 0.4) 14px);
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
+    opacity: 0.9;
+}
+
+/* ===== Notebook/journal dress-up =====
+   A small set of reusable decorative pieces (ruled paper, washi tape, a
+   handwritten accent font, a page-turn entrance) rather than one-off styling
+   per page - see individual usages below for where each gets applied. */
+
+/* Faint ruled lines + a dusty-rose margin rule, like a page torn from a
+   lined notebook. Deliberately subtle (low-opacity, tinted plum rather than
+   flat grey) so it reads as paper texture, not visual noise. */
+.paper-ruled {
+    position: relative;
+    background-color: var(--card-bg);
+    background-image:
+        linear-gradient(to right, transparent 37px, var(--margin-rule) 37px, var(--margin-rule) 39px, transparent 39px),
+        repeating-linear-gradient(to bottom, transparent, transparent 26px, var(--paper-line) 26px, var(--paper-line) 27px);
+    padding-left: 50px;
+}
+
+/* A strip of tape "pinning" an element to the page - top-center by default,
+   with --gold/--rose/--plum color and --left/--right position modifiers so
+   it can vary a little from one card to the next rather than looking
+   copy-pasted. Needs the element to have room above it (margin-top) and
+   position:relative to anchor against. */
+.washi-tape {
+    position: relative;
+}
+
+.washi-tape::before {
+    content: '';
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    width: 74px;
+    height: 26px;
+    transform: translateX(-50%);
+    background: repeating-linear-gradient(45deg,
+        var(--tape-gold), var(--tape-gold) 6px,
+        rgba(255, 255, 255, 0.4) 6px, rgba(255, 255, 255, 0.4) 12px);
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
+    opacity: 0.9;
+    pointer-events: none;
+}
+
+.washi-tape--rose::before {
+    background: repeating-linear-gradient(45deg,
+        var(--tape-rose), var(--tape-rose) 6px,
+        rgba(255, 255, 255, 0.4) 6px, rgba(255, 255, 255, 0.4) 12px);
+}
+
+.washi-tape--plum::before {
+    background: repeating-linear-gradient(45deg,
+        var(--tape-plum), var(--tape-plum) 6px,
+        rgba(255, 255, 255, 0.35) 6px, rgba(255, 255, 255, 0.35) 12px);
+}
+
+.washi-tape--left::before {
+    left: 18%;
+}
+
+.washi-tape--right::before {
+    left: 82%;
+}
+
+/* Reserved for small stamp-like accents (a rating badge, a divider tab) -
+   never body text, it's a display flourish, not something to read pages of. */
+.hand-label {
+    font-family: var(--hand-font);
+}
+
+/* A rubber-stamp look for a rating/status badge - dashed "ink stamp" border
+   plus a slight rotation, instead of a flat solid pill. */
+.rubber-stamp {
+    border: 2px dashed currentColor;
+    border-radius: 50%;
+}
+
+/* Plays once whenever combo-detail re-renders (a fresh entry, or flipping
+   Previous/Next) - a little settle-into-place flourish standing in for an
+   actual page turn, since navigation there is a real page load and can't
+   cross-fade the old page into the new one. Restarted via a classList
+   remove/reflow/add in JS (see triggerPageTurn). */
+@keyframes page-turn-in {
+    0% {
+        opacity: 0;
+        transform: rotateY(8deg) translateX(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: rotateY(0) translateX(0);
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .page-turn-in {
+        animation: page-turn-in 0.35s ease;
+        transform-origin: left center;
+    }
+}
+
+main {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    /* Gives the single row a definite height (all of main's available
+       space, but able to shrink to 0) - without this, the row would just
+       auto-size to content and max-height:100% on the cards below would
+       have nothing definite to resolve against, making it a no-op. */
+    grid-template-rows: minmax(0, 1fr);
+    /* Without this, grid stretches every column to match the tallest one -
+       so a long Ingredients list would drag Cauldron/Drink open to match it
+       too. Each column instead just takes its own natural height, letting
+       #ingredients-panel's own scrollbar (below) contain the long list. */
+    align-items: start;
+    gap: 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+    /* Fills whatever vertical space is left under the heading/back-link
+       (computed by flexbox, not guessed at) - min-height:0 is what actually
+       lets it shrink to that instead of overflowing past it, which is what
+       was pushing the whole page taller than one screen. */
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+}
+
+/* Stack the three columns on narrow screens instead of squeezing them */
+@media (max-width: 800px) {
+    main {
+        grid-template-columns: 1fr;
+    }
+}
+
+main section {
+    padding: 24px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    /* Caps every column at the row's full height (see main's
+       grid-template-rows above) so unusually long content (a long
+       Ingredients list, a big potential-pairings list, a manually-resized
+       textarea) scrolls inside that one card instead of growing the whole
+       page past one screen. Under normal/short content nothing ever hits
+       this cap, so no scrollbar shows up unless it's actually needed.
+       min-height:0 overrides grid items' default min-height:auto, which
+       would otherwise refuse to shrink below the content's natural size
+       regardless of max-height, defeating the whole thing. */
+    max-height: 100%;
+    min-height: 0;
+    overflow-y: auto;
+    /* Same fix as #cauldron's own scrollbar-gutter, one level up: without
+       this, "🌿 Potential pairings" growing as ingredients are added could
+       push *this* section's own content past its cap and trigger a
+       scrollbar here - which narrows the whole grid column (and therefore
+       #cauldron's width:100% basis) exactly the same way #cauldron's own
+       scrollbar did, just one layer further out. */
+    scrollbar-gutter: stable;
+}
+
+/* A hand-drawn squiggle instead of a ruler-straight line - the bullet-
+   journal doodle-underline signature, reused wherever a section heading
+   needs one (see .notes-page h2 further down). */
+main section h2 {
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+    color: var(--accent-dark);
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='10'%3E%3Cpath d='M0 5 Q6 0 12 5 T24 5' stroke='%233d1c5c' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: repeat-x;
+    background-position: 0 100%;
+    background-size: 24px 10px;
+}
+
+/* ===== Buttons =====
+   One base look for every button, so we're not repeating padding/border/
+   radius on each id. Individual buttons then only override what's different
+   (e.g. Brew/Save get the solid "primary" look). */
+button {
+    font: inherit;
+    cursor: pointer;
+    padding: 8px 16px;
+    border-radius: 999px;
+    border: 1.5px solid var(--accent);
+    background: var(--card-bg);
+    color: var(--accent-dark);
+    transition: background 0.15s ease, transform 0.1s ease;
+}
+
+button:hover {
+    background: var(--accent-soft);
+}
+
+button:active {
+    transform: scale(0.97);
+}
+
+/* Primary actions: Brew and Save get a solid, higher-emphasis look */
+#brew-btn,
+#save-btn,
+#save-edits-btn {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+    font-weight: 600;
+}
+
+#brew-btn:hover,
+#save-btn:hover,
+#save-edits-btn:hover {
+    background: var(--accent-dark);
+}
+
+.edit-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    background: var(--accent-soft);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+
+.edit-actions-label {
+    margin-right: auto;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent-dark);
+}
+
+#toggle-all-btn,
+#alpha-toggle-btn,
+#display-mode-btn,
+#refresh-colors-btn {
+    display: inline-block;
+    font-size: 12px;
+    padding: 4px 12px;
+    margin-bottom: 12px;
+}
+
+#toggle-all-btn {
+    margin-right: 8px;
+}
+
+#display-mode-btn,
+#refresh-colors-btn {
+    margin-left: 8px;
+}
+
+/* Cancel keeps the plain outline look, but in a muted red to read as "discard" */
+#cancel-edits-btn,
+#delete-entry-btn {
+    color: #a33;
+    border-color: #a33;
+}
+
+#cancel-edits-btn:hover,
+#delete-entry-btn:hover {
+    background: #f7e6e6;
+}
+
+/* Now sit above the pot (see index.html) rather than after everything else
+   below it, so they need their own bottom spacing to separate from it. */
+#clear-btn,
+#brew-btn {
+    margin-bottom: 12px;
+}
+
+#clear-btn {
+    margin-right: 8px;
+}
+
+#random-brew-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    color: var(--ink-soft);
+}
+
+#random-brew-controls label {
+    font-weight: 600;
+}
+
+#random-count {
+    width: 44px;
+    padding: 4px 6px;
+    font: inherit;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    text-align: center;
+}
+
+#random-brew-btn {
+    padding: 4px 12px;
+    font-size: 13px;
+}
+
+li {
+    list-style: none;
+    padding: 6px 10px;
+    margin: 4px 0;
+    background: var(--accent-soft);
+    display: inline-block;
+}
+
+/* Right-click menu (sections & ingredients) - one reused element, shown/
+   hidden and repositioned by showContextMenu()/hideContextMenu() in
+   script.js. position:fixed to match clientX/clientY (viewport-relative),
+   so it lands correctly regardless of any scrolling, including inside
+   #ingredients-panel's own internal scroll. */
+#context-menu {
+    position: fixed;
+    display: none;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 170px;
+    padding: 4px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    z-index: 100;
+}
+
+#context-menu button {
+    justify-content: flex-start;
+    text-align: left;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    background: none;
+    color: var(--ink);
+    font-size: 13px;
+}
+
+#context-menu button:hover {
+    background: var(--accent-soft);
+}
+
+/* ===== Ingredients panel ===== */
+
+/* Section name pill, e.g. "Coffee" / "Herbal" */
+.ingredient-section h3 {
+    display: inline-block;
+    padding: 4px 14px;
+    margin-bottom: 8px;
+    border: 1.5px solid var(--accent);
+    border-radius: 999px; /* fully round ends regardless of content width */
+    background: var(--accent-soft);
+    color: var(--accent-dark);
+    font-size: 15px;
+}
+
+.ingredient-section h3.section-toggle {
+    cursor: pointer;
+    user-select: none;
+}
+
+.section-arrow {
+    display: inline-block;
+    width: 10px;
+    margin-right: 6px;
+    font-size: 10px;
+}
+
+.section-name-input {
+    font: inherit;
+    color: inherit;
+    background: transparent;
+    border: none;
+    border-bottom: 1px dashed var(--accent-dark);
+    width: 130px;
+    padding: 0 2px;
+}
+
+.section-name-input:focus {
+    outline: none;
+    border-bottom-style: solid;
+}
+
+.ingredient-name-input {
+    font: inherit;
+    color: inherit;
+    background: transparent;
+    border: none;
+    border-bottom: 1px dashed var(--accent);
+    width: 190px;
+    padding: 0;
+}
+
+.ingredient-name-input:focus {
+    outline: none;
+    border-bottom-style: solid;
+}
+
+/* Ingredients as round chips instead of plain list items.
+   True circles don't work well once names get long, so this uses a "pill"
+   shape (rounded ends) rather than a perfect circle - room for custom icons later. */
+.ingredient {
+    position: relative; /* anchors the .selected-badge checkmark to this chip */
+    border-radius: 999px;
+    padding: 8px 16px;
+    background: var(--card-bg);
+    border: 1.5px solid var(--border);
+    cursor: grab;
+    transition: box-shadow 0.15s ease, transform 0.1s ease;
+}
+
+.ingredient:hover {
+    box-shadow: var(--shadow);
+    transform: translateY(-1px);
+}
+
+/* Icon mode: a rounded-square picture with its name underneath, meant to
+   be dropped into the pot like a cooking game. Same shape/size whether or
+   not an image has been added yet - .icon-shape provides the consistent
+   box, .ingredient-icon just happens to fill it when present, so a chip
+   without a picture doesn't fall back to a differently-shaped text pill. */
+.ingredient.icon-mode-chip {
+    width: 84px;
+    height: auto;
+    padding: 4px;
+    background: none;
+    border: none;
+    box-shadow: none;
+    border-radius: 14px;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: grab;
+}
+
+.icon-shape {
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+    border: 1.5px solid var(--border);
+    background: var(--card-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.tried-chip .icon-shape {
+    background: #dff3df;
+}
+
+.untried-chip .icon-shape {
+    background: #fdf6d8;
+}
+
+.ingredient-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    -webkit-user-drag: none;
+    user-select: none;
+}
+
+.icon-label {
+    font-size: 12px;
+    line-height: 1.25;
+    text-align: center;
+    color: var(--ink);
+    max-width: 84px;
+    word-wrap: break-word;
+}
+
+.add-ingredient-form,
+.add-section-form {
+    margin-top: 8px;
+}
+
+.add-ingredient-form input,
+.add-section-form input,
+.add-section-form select {
+    padding: 6px 10px;
+    margin-right: 4px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font: inherit;
+}
+
+.remove-ingredient {
+    cursor: pointer;
+    color: #a33;
+    font-weight: bold;
+    margin-left: 4px;
+}
+
+/* Drag insertion indicators - shown on whatever's currently being dragged
+   over, cleared and reapplied as the drag moves so only one shows at a
+   time. Box-shadow rather than border/outline so they don't shift layout.
+   Ingredients use the same top-edge bar style as sections, rather than a
+   separate side bar - both mean the same thing: "will insert before this". */
+.drag-target-section,
+.drag-target-ingredient {
+    box-shadow: 0 -3px 0 var(--accent);
+}
+
+/* Dropping into a section's own empty space (rather than on a specific
+   ingredient) appends to the end of that section instead - a bottom-edge
+   bar, inset so it reads as "inside this section" rather than "before it". */
+.drag-target-ingredient-end {
+    box-shadow: inset 0 -3px 0 var(--accent);
+}
+
+/* Briefly flashes a just-added section/ingredient so it's easy to spot
+   regardless of where it landed. */
+@keyframes just-added-flash {
+    0% { box-shadow: 0 0 0 4px var(--gold); }
+    100% { box-shadow: 0 0 0 4px transparent; }
+}
+
+.just-added {
+    animation: just-added-flash 1.5s ease;
+}
+
+/* Tried vs untried, shown as a background tint - .selected below wins over
+   both when the chip is also currently in the cauldron. */
+.ingredient.tried-chip {
+    background: #dff3df;
+}
+
+.ingredient.untried-chip {
+    background: #fdf6d8;
+}
+
+.ingredient.selected {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+}
+
+/* The little checkmark that overlaps the corner of a chip currently in the cauldron */
+.selected-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent);
+    color: white;
+    border-radius: 50%;
+    font-size: 11px;
+    line-height: 1;
+}
+
+/* ===== Cauldron ===== */
+
+#cauldron {
+    position: relative;
+    /* The artwork is a square (800x800) canvas - matching that exactly
+       means background-size just fills the box edge-to-edge with no
+       letterboxing, so the padding percentages below (measured directly
+       off the image's actual white "belly" area) land where intended
+       instead of being thrown off by empty margins on the sides. */
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto 12px;
+    background-color: var(--card-bg);
+    cursor: pointer;
+    color: #f0e9f7;
+    /* Pushes ingredient chips into pot-in.png's actual liquid area -
+       eyeballed against the marked-up screenshot showing where the "hitbox"
+       should sit, tighter than the liquid's own wavy/rounded edges so
+       chips never poke past it at the curved corners. Since the element is
+       a perfect square, top/bottom percentages (which CSS bases on width,
+       not height) work out correctly here too. Estimated from a screenshot,
+       not pixel-measured - nudge if it's off. */
+    padding: 36% 19% 18%;
+    /* Keeps ingredients from spilling out past the pot's visual bounds if
+       there are enough of them to overflow - scrolls inside the pot
+       instead of escaping it. */
+    overflow-y: auto;
+    overflow-x: hidden;
+    /* Without this, a classic (non-overlay) scrollbar only reserves its
+       own width once content actually overflows - so #cauldron::before
+       (the pot artwork, sized via inset:0 against this same box) visibly
+       narrowed/shrank the moment enough ingredients were added to trigger
+       one. Reserving the gutter permanently means that width never
+       changes, scrollbar or not. */
+    scrollbar-gutter: stable;
+}
+
+/* The pot artwork lives on its own ::before layer, not #cauldron's own
+   background - that's what lets applyBrewColor's hue-rotate (--pot-hue,
+   script.js) recolor *only* the pot/water and never bleed onto the
+   ingredient <li> children sitting in front of it, which was the bug (a
+   pink rose icon getting rotated to green right along with the water,
+   since filter on a parent applies to everything painted inside it). */
+#cauldron::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('Images/pot-out.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    filter: hue-rotate(var(--pot-hue, 0deg)) saturate(var(--pot-saturate, 1)) brightness(var(--pot-brightness, 1));
+    pointer-events: none;
+}
+
+#cauldron.cauldron-open::before,
+#cauldron:hover::before {
+    background-image: url('Images/pot-in.png');
+}
+
+#cauldron li {
+    position: relative; /* anchors .cauldron-remove to the chip's corner */
+    padding-right: 26px; /* room so the corner badge doesn't overlap the name */
+    border-radius: 999px; /* same pill shape as .ingredient chips in the panel */
+    background: #4a3763;
+    color: #f0e9f7;
+}
+
+/* Icon-mode chips in the cauldron: just the picture, no label/pill
+   background - once it's actually in the pot it should read as the main
+   event, not the same shelf-item look it had in the panel. Flows in rows
+   like a normal grid (same idea as the ingredient panel's own chips) rather
+   than being freely positioned - overrides the plain text-pill rule above,
+   which would otherwise win (it's a more specific selector). */
+#cauldron li.icon-mode-chip {
+    display: inline-block;
+    padding: 0;
+    margin: 3px;
+    background: none;
+    border-radius: 14px;
+}
+
+#cauldron .icon-shape {
+    width: 68px;
+    height: 68px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* Remove badge, styled to match .selected-badge's corner checkmark */
+.cauldron-remove {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent);
+    color: white;
+    border-radius: 50%;
+    font-size: 12px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.cauldron-remove:hover {
+    background: #a33;
+}
+
+/* Purely decorative bubble-rise animation, played over the cauldron
+   whenever Brew is clicked (see showCauldronBubbles() in script.js).
+   Absolutely positioned to match #cauldron's own box exactly (same
+   centering/width/aspect-ratio) so bubbles appear to rise inside the pot
+   rather than floating over the whole wrapper. */
+.cauldron-wrapper {
+    position: relative;
+}
+
+.cauldron-bubbles {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 420px;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.bubble {
+    position: absolute;
+    /* Raised from the pot's base up into the belly/liquid area (which,
+       matching #cauldron's own padding, roughly spans 25%-68% from the
+       bottom of this box) - bubbles rising from down at the feet of the
+       pot didn't read as coming from the liquid at all. */
+    bottom: 30%;
+    background: rgba(255, 255, 255, 0.55); /* fallback/stovetop - see the temp-specific colors below */
+    border-radius: 50%;
+    animation-name: bubble-rise;
+    animation-timing-function: ease-in;
+    animation-fill-mode: forwards;
+}
+
+/* Color matches whichever method was selected when Brew was clicked (see
+   showCauldronBubbles() setting this class in script.js). */
+.cauldron-bubbles-hot .bubble {
+    background: rgba(230, 126, 34, 0.6); /* warm orange */
+}
+
+.cauldron-bubbles-cold .bubble {
+    background: rgba(159, 211, 216, 0.75); /* ice blue - matches drink-cold.svg's liquid color */
+}
+
+.cauldron-bubbles-stovetop .bubble {
+    background: rgba(255, 255, 255, 0.65); /* white */
+}
+
+@keyframes bubble-rise {
+    0% {
+        transform: translateY(0) scale(0.6);
+        opacity: 0;
+    }
+    15% {
+        opacity: 0.9;
+    }
+    100% {
+        transform: translateY(-120px) scale(1);
+        opacity: 0;
+    }
+}
+
+/* ===== Output card - the "page out of a notebook" the Drink card is meant
+   to look like: faint ruled lines behind it. ===== */
+
+/* No washi tape here - #temp-tabs right below already reads as a set of
+   notebook index tabs pinning the top of this card, and stacking the two
+   decorative systems in the same spot fought rather than complemented. */
+.output-card {
+    position: relative;
+    background-image: repeating-linear-gradient(to bottom, transparent, transparent 26px, var(--paper-line) 26px, var(--paper-line) 27px);
+}
+
+/* ===== Hot / Cold / Stovetop output tabs =====
+   Styled like little notebook index tabs poking up above the page, since
+   picking one now means "flip to this method's entry" rather than "commit
+   to this method before brewing" - flat bottom edge so they visually sit
+   flush against the card's own top edge. */
+
+#temp-tabs {
+    display: flex;
+    gap: 4px;
+    margin: -24px -24px 16px;
+    padding: 0 16px;
+}
+
+.temp-btn {
+    padding: 6px 12px;
+    font-size: 13px;
+    border-radius: 8px 8px 0 0;
+    border-bottom: none;
+}
+
+/* Highlights whichever of Hot/Cold/Stovetop is currently selected */
+.temp-btn.active {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #3d2a05;
+    font-weight: 600;
+}
+
+/* Tactile choice overlaid top-right of the pot (see .cauldron-wrapper's own
+   position:relative), picked before brewing - small circles, just the
+   emoji, so they're reachable without scrolling down while adding
+   ingredients. Stays in sync with the notebook tabs (see selectTemp() in
+   script.js) via the same .active highlight. */
+#cauldron-temp-select {
+    position: absolute;
+    top: 4%;
+    right: 6%;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 2; /* above the cauldron artwork/ingredient icons */
+}
+
+.cauldron-temp-btn {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 15px;
+    line-height: 1;
+    background: var(--card-bg);
+    box-shadow: var(--shadow);
+}
+
+.cauldron-temp-btn.active {
+    background: var(--gold);
+    border-color: var(--gold);
+}
+
+/* Underlined, heading-style field instead of a boxed input - reads like a
+   title written at the top of a notebook page. */
+.drink-name-input {
+    display: block;
+    width: 100%;
+    margin-bottom: 4px;
+    border: none;
+    border-bottom: 2px solid var(--border);
+    background: transparent;
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+    font-size: 20px;
+    color: var(--accent-dark);
+    padding: 4px 2px;
+}
+
+.drink-name-input:focus {
+    outline: none;
+    border-bottom-color: var(--accent);
+}
+
+.output-media-row {
+    display: flex;
+    align-items: stretch;
+    gap: 14px;
+    margin: 16px 0;
+}
+
+/* A polaroid, not a plain framed box - thick white border, extra-deep on
+   the bottom for the "caption strip". */
+.output-picture {
+    position: relative;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #fffdf8;
+    border: 7px solid #fffdf8;
+    border-bottom-width: 22px;
+    border-radius: 2px;
+    box-shadow: 0 4px 10px rgba(61, 28, 92, 0.22);
+}
+
+.output-picture img {
+    width: 110px;
+    height: 110px;
+}
+
+/* Updates live as the rating slider moves - see updateRatingIndicator().
+   Styled like a rubber ink stamp (dashed circle, handwritten figure)
+   rather than a flat pill. */
+.drink-rating-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent);
+    color: white;
+    font-family: var(--hand-font);
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+    border-radius: 50%;
+    border: 2px dashed rgba(255, 255, 255, 0.6);
+    box-shadow: var(--shadow);
+}
+
+.drink-star-btn,
+.drink-image-upload-btn,
+.drink-image-remove-btn {
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 13px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.drink-star-btn {
+    top: 6px;
+    right: 6px;
+    background: var(--card-bg);
+    border: 1.5px solid var(--accent);
+    color: var(--accent);
+}
+
+/* Manually toggled now (see updateStarButton) rather than derived from the
+   rating - filled gold once on. */
+.drink-star-btn.active {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #3d2a05;
+}
+
+.drink-image-upload-btn {
+    bottom: 6px;
+    right: 6px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--border);
+}
+
+.drink-image-upload-btn:hover {
+    background: white;
+}
+
+.drink-image-remove-btn {
+    bottom: 6px;
+    right: 38px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--border);
+}
+
+.drink-image-remove-btn:hover {
+    background: white;
+}
+
+/* ===== Output card ===== */
+
+#potential-pairings h3 {
+    margin: 0 0 8px;
+    font-size: 14px;
+    color: var(--ink-soft);
+}
+
+.pairing-suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+/* Background/border/text color set per-chip via the --chip-color/
+   --chip-text-color custom properties (see categoryColorHex +
+   categoryPillTextColor in script.js) - one color per ingredient's
+   category. Falls back to the plain plum look if JS never sets them. */
+.pairing-chip {
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: var(--chip-color, var(--accent-soft));
+    border: 1.5px solid var(--chip-color, var(--accent));
+    color: var(--chip-text-color, var(--accent-dark));
+    font-size: 13px;
+    cursor: pointer;
+    transition: filter 0.15s ease;
+}
+
+.pairing-chip:hover {
+    filter: brightness(0.85);
+}
+
+.pairing-remove {
+    margin-left: 3px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.pairing-remove:hover {
+    color: #ffb3b3;
+}
+
+.pairing-add-form {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.pairing-add-form input {
+    padding: 5px 8px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font: inherit;
+    font-size: 13px;
+    width: 160px;
+}
+
+.output-field {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 14px;
+}
+
+.output-field label {
+    font-weight: 600;
+    color: var(--ink-soft);
+    margin-bottom: 4px;
+    font-size: 14px;
+}
+
+.output-field input,
+.output-field textarea {
+    padding: 8px 10px;
+    font-size: 14px;
+    font-family: inherit;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--ink);
+}
+
+.output-field input:focus,
+.output-field textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.output-field textarea {
+    /* Grows with content instead of scrolling a fixed-height box - Chrome-
+       only (this app's target browser), no JS auto-resize needed. */
+    field-sizing: content;
+    min-height: 80px;
+    max-height: 340px;
+    overflow-y: auto; /* only kicks in past max-height, for a truly long entry */
+    resize: vertical;
+}
+
+/* The real <input> (see .rating-slider-native below) is invisible and
+   just supplies the value/interaction - everything visible here (track,
+   dots, thumb) is a plain div, positioned in script.js's
+   layoutRatingSlider() using one shared formula. Same formula for the
+   thumb and every dot means they're guaranteed to coincide for the same
+   value - no more relying on a *native* thumb's own undocumented sizing.
+   Vertical now - sits beside the drink picture (see .output-media-row)
+   instead of as its own horizontal row underneath everything, with the
+   rating shown live on the picture's own corner badge instead of text
+   underneath the slider. align-self:stretch (the flex row's default) makes
+   it match the picture's height, which is what layoutRatingSlider()'s
+   pixel math is actually measuring against. */
+.rating-slider-wrap {
+    position: relative;
+    width: 22px;
+    flex-shrink: 0;
+}
+
+.rating-slider-native {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 2;
+    /* Doesn't affect the (invisible) native rendering visually, but keeps
+       the drag gesture's up/down direction sane on browsers that still
+       look at it, matching the visual track below (max at the top). */
+    writing-mode: vertical-lr;
+    direction: rtl;
+}
+
+.rating-track {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 4px;
+    margin-left: -2px;
+    background: var(--border);
+    border-radius: 2px;
+    z-index: 0;
+}
+
+.rating-ticks-overlay {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    height: 100%;
+    width: 0;
+    z-index: 0;
+}
+
+.rating-ticks-overlay span {
+    position: absolute;
+    left: 0;
+    width: 4px;
+    height: 4px;
+    margin-top: -2px;
+    margin-left: -2px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0.45;
+}
+
+.rating-thumb {
+    position: absolute;
+    left: 50%;
+    width: 18px;
+    height: 18px;
+    margin-top: -9px;
+    margin-left: -9px;
+    border-radius: 50%;
+    background: var(--accent);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.rating-scale-emoji {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.rating-scale-emoji-top {
+    top: -20px;
+}
+
+.rating-scale-emoji-bottom {
+    bottom: -18px;
+    font-size: 10px;
+    color: var(--ink-soft);
+}
+
+/* ===== Brew log page (log.html) ===== */
+
+.back-link {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.back-link a {
+    color: var(--accent-dark);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.sort-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    max-width: 1100px;
+    margin: 0 auto 16px;
+    font-size: 14px;
+    color: var(--ink-soft);
+}
+
+.sort-toggle-btn {
+    padding: 6px 14px;
+    font-size: 13px;
+}
+
+.sort-toggle-btn.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+    font-weight: 600;
+}
+
+/* ===== Combo detail nav (combo-detail.html - journal-style Previous/Next,
+   see renderComboNav in combo-detail.js) ===== */
+
+#combo-nav {
+    text-align: center; /* centers .combo-nav-divider, an inline-block sibling of the flex row below */
+}
+
+/* The colored index tab showing what section you're on (category color in
+   Category order, or a neutral tab with just the starting letter in
+   Alphabetical order) - background/border/text color set inline per-entry
+   (see dividerFor + readableTextColor in combo-detail.js) when it's a real
+   category; otherwise falls back to the plain plum look below. */
+.combo-nav-divider {
+    display: inline-block;
+    margin: 0 0 8px;
+    padding: 4px 18px;
+    border: 1.5px solid var(--accent-dark);
+    border-radius: 8px 8px 0 0;
+    background: var(--accent-dark);
+    color: white;
+    font-size: 15px;
+    box-shadow: 0 -1px 4px rgba(61, 28, 92, 0.15);
+}
+
+.combo-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.combo-nav-btn {
+    padding: 8px 16px;
+    font-size: 14px;
+}
+
+.combo-nav-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+/* A little folded-corner triangle on the leading edge - Previous folds up
+   from its right corner (as if turning back a page), Next from its left
+   (turning one forward), reinforcing which way each button flips. */
+.combo-nav-btn--prev,
+.combo-nav-btn--next {
+    position: relative;
+}
+
+.combo-nav-btn--prev::after,
+.combo-nav-btn--next::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    opacity: 0.6;
+}
+
+.combo-nav-btn--prev::after {
+    right: 2px;
+    border-width: 0 9px 9px 0;
+    border-color: transparent var(--bg) transparent transparent;
+}
+
+.combo-nav-btn--next::after {
+    left: 2px;
+    border-width: 9px 9px 0 0;
+    border-color: var(--bg) transparent transparent transparent;
+}
+
+.combo-nav-btn--prev:disabled::after,
+.combo-nav-btn--next:disabled::after {
+    display: none;
+}
+
+.combo-nav-order {
+    display: flex;
+    gap: 6px;
+}
+
+.combo-nav-position {
+    max-width: 800px;
+    margin: 6px auto 0;
+    text-align: center;
+    font-size: 12px;
+    color: var(--ink-soft);
+}
+
+/* ===== Matrix area (log.html - category overview / detail / full,
+   see renderMatrixArea in log.js) ===== */
+
+#matrix-area {
+    max-width: 1100px;
+    margin: 0 auto 24px;
+}
+
+#matrix-area h2 {
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+    color: var(--accent-dark);
+    margin: 12px 0;
+    padding-bottom: 8px;
+    font-size: 18px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='10'%3E%3Cpath d='M0 5 Q6 0 12 5 T24 5' stroke='%233d1c5c' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: repeat-x;
+    background-position: 0 100%;
+    background-size: 24px 10px;
+}
+
+#matrix-wrapper {
+    /* Wide tables scroll inside their own box instead of stretching the page */
+    overflow-x: auto;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: var(--shadow);
+}
+
+.brew-matrix {
+    border-collapse: collapse;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.brew-matrix th,
+.brew-matrix td {
+    border: 1px solid var(--border);
+    padding: 6px 10px;
+    text-align: center;
+}
+
+.brew-matrix th {
+    background: var(--accent-soft);
+    color: var(--accent-dark);
+}
+
+/* Below the diagonal - a mirror of a cell shown elsewhere in the grid (see
+   blankMatrixCell in log.js), so it's left visually blank rather than
+   repeating the same pairing twice. Border removed too, so it actually
+   reads as empty space instead of just an empty-looking box. */
+.matrix-cell-skip {
+    border-color: transparent;
+    background: transparent;
+}
+
+/* Category x category overview - background/text color/shadow all set
+   inline per-cell (see percentTriedRgb + readableTextStyle in log.js): blue
+   (0% tried) through orange (100%), with the text flipping between dark ink
+   and shadowed white depending on which reads better against that exact
+   shade rather than assuming one text color works across the whole range. */
+.category-cell {
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.category-cell:hover {
+    outline: 2px solid var(--accent-dark);
+    outline-offset: -2px;
+}
+
+.category-cell-empty {
+    color: var(--ink-soft);
+}
+
+/* Detail matrix + full matrix - background/text color/shadow set inline
+   per-cell (ratingRgb + readableTextStyle in log.js), red (0) through
+   green (10). */
+.pair-cell {
+    cursor: pointer;
+}
+
+.pair-cell-tried {
+    font-weight: 600;
+}
+
+.pair-cell-tried:hover {
+    outline: 2px solid var(--accent-dark);
+    outline-offset: -2px;
+}
+
+.pair-cell-untried {
+    background: var(--bg);
+    color: var(--ink-soft);
+}
+
+.pair-cell-untried:hover {
+    background: var(--accent-soft);
+}
+
+#show-full-matrix-btn {
+    margin-top: 4px;
+}
+
+.column-filter {
+    max-width: 1100px;
+    margin: 0 auto 12px;
+    font-size: 13px;
+}
+
+.column-filter summary {
+    cursor: pointer;
+    color: var(--accent-dark);
+    font-weight: 600;
+}
+
+.column-filter-order {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.column-filter-list {
+    margin-top: 10px;
+    padding: 12px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+/* Alphabetical mode - one flat, wrapping grid of checkboxes. */
+.column-filter-list-flat {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 4px 12px;
+}
+
+/* Category mode - a stack of groups, each with its own heading checkbox
+   (selects/deselects everything in that category at once - see
+   buildColumnFilterGroup in log.js) and its own wrapping grid underneath. */
+.column-filter-list-grouped {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.column-filter-group {
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+}
+
+.column-filter-group:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.column-filter-group-heading {
+    font-weight: 600;
+    color: var(--accent-dark);
+    margin-bottom: 4px;
+}
+
+.column-filter-group-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 4px 12px;
+    padding-left: 22px;
+}
+
+.column-filter-list label,
+.column-filter-group-heading {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+#multi-ingredient-list,
+#rating-list {
+    max-width: 1100px;
+    margin: 24px auto 0;
+}
+
+#multi-ingredient-list h2 {
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+    color: var(--accent-dark);
+    margin: 0 0 10px;
+    padding-bottom: 8px;
+    font-size: 18px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='10'%3E%3Cpath d='M0 5 Q6 0 12 5 T24 5' stroke='%233d1c5c' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: repeat-x;
+    background-position: 0 100%;
+    background-size: 24px 10px;
+}
+
+.combo-viz-toggle {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+/* ===== Combo cards (log.html - default view for 3+ ingredient combos,
+   see renderComboCards in log.js) ===== */
+
+.combo-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+}
+
+.combo-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-left-width: 5px;
+    border-left-style: solid;
+    border-radius: 10px;
+    padding: 12px 14px;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+}
+
+.combo-card:hover {
+    outline: 2px solid var(--accent-dark);
+    outline-offset: -2px;
+}
+
+.combo-card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.combo-card-head h3 {
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+    font-size: 15px;
+    margin: 0;
+    color: var(--accent-dark);
+    line-height: 1.3;
+}
+
+.combo-card-rating {
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.combo-card-rating-idea {
+    background: #b0b0b0;
+    color: var(--ink);
+}
+
+.combo-card-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+/* Background/text color set inline per-chip (ingredientColorHex +
+   readableTextStyle in log.js) - one color per ingredient's category. */
+.ingredient-chip {
+    font-size: 12px;
+    padding: 3px 11px;
+    border-radius: 999px;
+    font-weight: 500;
+}
+
+/* Each combo's shape - fill color set inline (ratingRgb in log.js), no
+   stroke - used by the Pairing outcomes graph (log.html), see
+   drawComboShapes. */
+.combo-shape {
+    fill-opacity: 0.28;
+    cursor: pointer;
+}
+
+.combo-shape:hover {
+    fill-opacity: 0.45;
+}
+
+/* Scaled around its own center (not the SVG origin) so shrinking/growing a
+   node via the zoom controls (makeSvgZoomable in log.js) never shifts it
+   off its actual data/layout position - only how big it's drawn changes,
+   never where. */
+.graph-node {
+    transform-box: fill-box;
+    transform-origin: center;
+    transform: scale(var(--marker-scale, 1));
+}
+
+.graph-node circle {
+    stroke: var(--card-bg);
+    stroke-width: 2.5;
+}
+
+/* Icon mode's decorative inner border sits right on the clipped picture's
+   edge, separating it from the outer ring behind it - no fill, or it'd
+   cover the icon underneath with a solid square. */
+.graph-node-icon-border {
+    fill: none;
+    stroke: var(--card-bg);
+    stroke-width: 2.5;
+}
+
+/* Icon mode's outer ring - fill/stroke set inline per-node in
+   buildGraphNodeSvg: fill always stays the ingredient's category color;
+   stroke turns rating-colored once it's been brewed on its own and rated,
+   otherwise stays this dashed grey (same "not brewed" language as the
+   pairing edges) - just the shared stroke weight for either case. */
+.graph-node-icon-ring {
+    stroke-width: 3;
+}
+
+/* Draggable (see wireNodeDragging in log.js) - grab/grabbing affordance on
+   the outer position wrapper, not .graph-node itself, since that's what
+   the pointer listeners are actually attached to. */
+.graph-node-anchor {
+    cursor: grab;
+}
+
+.graph-node-anchor.graph-node-dragging {
+    cursor: grabbing;
+}
+
+.graph-node text {
+    font-size: 11px;
+    font-weight: 600;
+    fill: var(--ink);
+    paint-order: stroke;
+    stroke: var(--card-bg);
+    stroke-width: 3px;
+    stroke-linejoin: round;
+}
+
+.category-legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px 16px;
+    margin-top: 12px;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+}
+
+.category-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.category-legend-swatch {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+/* Same look as .brew-matrix (border-collapse, header styling) but a plain
+   row-per-combo list rather than a grid - each row is clickable, same as a
+   tried matrix cell. */
+#rating-list {
+    overflow-x: auto;
+}
+
+.rating-table-search-input {
+    display: block;
+    width: 100%;
+    max-width: 320px;
+    margin-bottom: 12px;
+    padding: 6px 10px;
+    border: none;
+    border-bottom: 2px solid var(--border);
+    background: transparent;
+    font: inherit;
+    font-size: 14px;
+    color: var(--ink);
+}
+
+.rating-table-search-input:focus {
+    outline: none;
+    border-bottom-color: var(--accent);
+}
+
+.rating-table-filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.rating-table-filter-group {
+    display: flex;
+    gap: 4px;
+}
+
+.rating-table-filter-select {
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font: inherit;
+    font-size: 13px;
+    background: var(--card-bg);
+    color: var(--ink);
+}
+
+.rating-table {
+    border-collapse: collapse;
+    font-size: 13px;
+    width: 100%;
+}
+
+.rating-table th,
+.rating-table td {
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.rating-table th {
+    background: var(--accent-soft);
+    color: var(--accent-dark);
+}
+
+.rating-table tr:not(:first-child) {
+    cursor: pointer;
+}
+
+.rating-table tr:not(:first-child):hover {
+    background: var(--accent-soft);
+}
+
+.rating-table-sortable {
+    cursor: pointer;
+    user-select: none;
+}
+
+.rating-table-sortable:hover {
+    background: var(--accent-dark);
+    color: white;
+}
+
+.rating-table-sort-arrow {
+    font-size: 10px;
+}
+
+/* ===== Graphs tab (log.html - preference scatter / potential-pairings
+   network, see renderGraphsArea in log.js) ===== */
+
+#graphs-area {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.graphs-empty {
+    padding: 48px 20px;
+    text-align: center;
+    background: var(--card-bg);
+    border: 1.5px dashed var(--border);
+    border-radius: 14px;
+    color: var(--ink-soft);
+    font-size: 15px;
+}
+
+#graphs-svg-wrapper {
+    position: relative; /* anchors .graph-zoom-controls */
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px;
+    box-shadow: var(--shadow);
+    overflow-x: auto;
+}
+
+.graphs-svg {
+    width: 100%;
+    height: auto;
+    max-width: 720px;
+    display: block;
+    margin: 0 auto;
+    overflow: visible;
+}
+
+/* Scroll-to-shrink + explicit +/-/reset controls (makeSvgZoomable in
+   log.js) resize the markers themselves via --marker-scale (see
+   .graph-node below) - the words/icons in a busy graph can end up close
+   enough to overlap, this is the way to shrink them back apart. */
+.graph-zoom-controls {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.graph-zoom-btn {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border-radius: 6px;
+    font-size: 15px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Top-left, mirroring .graph-zoom-controls' top-right placement, so the two
+   control groups never overlap. */
+.graph-fullscreen-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border-radius: 6px;
+    font-size: 15px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Fullscreen mode (toggled via the Fullscreen API in makeSvgZoomable) -
+   .graphs-svg's own max-width:720px would otherwise leave most of the
+   screen empty, so both get overridden here to actually use the space. */
+#graphs-svg-wrapper:fullscreen {
+    width: 100vw;
+    height: 100vh;
+    max-width: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0;
+}
+
+#graphs-svg-wrapper:fullscreen .graphs-svg {
+    width: auto;
+    height: auto;
+    max-width: 95vw;
+    max-height: 90vh;
+}
+
+.graph-gridline {
+    stroke: var(--border);
+    stroke-width: 1;
+}
+
+.graph-axis-line {
+    fill: none;
+    stroke: var(--ink-soft);
+    stroke-width: 1.5;
+}
+
+.graph-axis-label {
+    font-size: 11px;
+    fill: var(--ink-soft);
+}
+
+.graph-axis-title {
+    font-size: 12px;
+    fill: var(--ink-soft);
+    font-weight: 600;
+}
+
+/* Green (0) to red (10) set inline per-line (ratingRgb in log.js), grey and
+   dashed for a pairing that's only ever been suggested, never brewed. */
+.pairing-edge {
+    stroke-width: 3;
+    cursor: pointer;
+}
+
+.pairing-edge:hover {
+    stroke-width: 5;
+}
+
+/* Hovering a node fades everything *not* directly connected to it (see
+   wireGraphHoverHighlight in log.js) - shared by both network graphs.
+   .graph-node-anchor is the outer position wrapper .graph-dimmed actually
+   gets toggled on; included here so its opacity fades too, not just the
+   inner .graph-node's own scale transitions. */
+.graph-node-anchor,
+.graph-node,
+.combo-shape,
+.pairing-edge {
+    transition: opacity 0.15s ease, transform 0.1s ease;
+}
+
+.graph-dimmed {
+    opacity: 0.15;
+}
+
+/* ===== Tab bar - reused by reference.html (Notepad/Hard to get/Avoid with
+   flask, see selectReferenceTab) and log.html (Combo summary/Rating
+   table/Graphs, see selectLogTab in log.js) ===== */
+
+.tab-bar {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    align-items: flex-end; /* keeps tabs flush-bottom even if one wraps to its own line */
+    gap: 6px;
+    margin-bottom: 24px;
+}
+
+/* Shaped like a notebook/binder index tab (flat bottom, rounded top)
+   instead of the default pill button - reused by both log.html and
+   reference.html's tab bars. */
+.tab-btn {
+    border-radius: 8px 8px 0 0;
+    padding: 8px 16px 7px;
+}
+
+.tab-btn.active {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #3d2a05;
+    font-weight: 600;
+}
+
+.notes-page {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* ===== Book tab (log.html - see renderBookArea in log.js) ===== */
+
+/* Matches .notes-page's own max-width/centering below - without this, the
+   search box (a direct child, not wrapped in .notes-page like the table of
+   contents/sections are) sat flush against the left edge of the full page
+   width while everything below it was centered to a much narrower column,
+   which is what made it look so oddly out of place. */
+#book-area {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.book-toc {
+    margin-bottom: 8px;
+    padding: 16px 20px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+}
+
+.book-toc h2 {
+    margin-top: 0;
+}
+
+.book-toc ul {
+    columns: 2;
+    column-gap: 24px;
+    margin: 0;
+    padding-left: 20px;
+}
+
+.book-toc li {
+    display: list-item;
+    list-style: disc;
+    background: none;
+    padding: 0;
+    margin: 0 0 6px;
+    break-inside: avoid;
+}
+
+.book-toc a {
+    color: var(--accent-dark);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.book-toc a:hover {
+    text-decoration: underline;
+}
+
+.book-section {
+    margin-bottom: 8px;
+}
+
+.book-entry {
+    cursor: pointer;
+}
+
+.book-entry:hover {
+    outline: 2px solid var(--accent-dark);
+    outline-offset: -2px;
+}
+
+.note-callout {
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    background: var(--accent-soft);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--ink-soft);
+    font-size: 14px;
+}
+
+.notes-page h2 {
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+    color: var(--accent-dark);
+    margin-top: 36px;
+    padding-bottom: 8px;
+    border-bottom: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='10'%3E%3Cpath d='M0 5 Q6 0 12 5 T24 5' stroke='%233d1c5c' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: repeat-x;
+    background-position: 0 100%;
+    background-size: 24px 10px;
+}
+
+/* Shaped like an index tab (flat bottom, rounded top) rather than a plain
+   pill, matching .combo-nav-divider - background/border/text color set
+   inline per-section by category (see notes.js). */
+/* h3.note-section-title, not just .note-section-title - needs to at least
+   tie .ingredient-section h3's specificity (this h3 sits inside a div with
+   that class, in notes.js) so this rule's tab-shaped border-radius/etc.
+   actually wins instead of silently losing to that generic pill fallback. */
+h3.note-section-title {
+    display: inline-block;
+    padding: 5px 16px;
+    margin: 24px 0 0;
+    border: 1.5px solid var(--accent);
+    border-radius: 8px 8px 0 0;
+    background: var(--accent-soft);
+    color: var(--accent-dark);
+    font-family: var(--hand-font);
+    font-size: 16px;
+    box-shadow: 0 -1px 3px rgba(61, 28, 92, 0.12);
+}
+
+/* Ruled lines + a margin rule (see .paper-ruled) - not applied as the
+   shared .paper-ruled class since the padding needs to be tuned
+   specifically for this card's own layout (the ✏️/x icons float top-right
+   regardless). */
+.note-item {
+    position: relative;
+    padding: 14px 18px 14px 46px;
+    margin-bottom: 14px;
+    background-color: var(--card-bg);
+    background-image:
+        linear-gradient(to right, transparent 33px, var(--margin-rule) 33px, var(--margin-rule) 35px, transparent 35px),
+        repeating-linear-gradient(to bottom, transparent, transparent 24px, var(--paper-line) 24px, var(--paper-line) 25px);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+}
+
+/* A real strip of tape on every card's corner (not just the h1/temp-tabs'
+   subtler nod to the idea) - alternating side/color by position so a whole
+   list doesn't look copy-pasted. */
+.note-item::before {
+    content: '';
+    position: absolute;
+    top: -11px;
+    left: 22px;
+    width: 58px;
+    height: 24px;
+    background: repeating-linear-gradient(45deg,
+        var(--tape-gold), var(--tape-gold) 6px,
+        rgba(255, 255, 255, 0.4) 6px, rgba(255, 255, 255, 0.4) 12px);
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
+    opacity: 0.9;
+    pointer-events: none;
+}
+
+.note-item:nth-child(even)::before {
+    left: auto;
+    right: 22px;
+    background: repeating-linear-gradient(45deg,
+        var(--tape-rose), var(--tape-rose) 6px,
+        rgba(255, 255, 255, 0.4) 6px, rgba(255, 255, 255, 0.4) 12px);
+}
+
+.note-item:nth-child(3n)::before {
+    background: repeating-linear-gradient(45deg,
+        var(--tape-plum), var(--tape-plum) 6px,
+        rgba(255, 255, 255, 0.35) 6px, rgba(255, 255, 255, 0.35) 12px);
+}
+
+.note-item h4 {
+    margin: 0 0 6px;
+    color: var(--accent-dark);
+}
+
+.note-desc,
+.note-pairs {
+    margin: 0 0 8px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.note-notes {
+    margin: 0;
+    padding-left: 22px;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* A little pencil mark instead of a plain disc bullet - the bullet-journal
+   "note" glyph rather than a generic list. */
+.note-notes li {
+    position: relative;
+    display: list-item;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    background: none;
+}
+
+.note-notes li::before {
+    content: '✎';
+    position: absolute;
+    left: -22px;
+    color: var(--accent);
+}
+
+/* ===== Editable reference lists (notes.js / reference-list.js) ===== */
+
+.reference-controls {
+    margin-bottom: 12px;
+}
+
+.reference-remove {
+    float: right;
+    font-size: 16px;
+}
+
+.reference-edit-field {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+.reference-edit-field label {
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-bottom: 2px;
+}
+
+.reference-edit-field input,
+.reference-edit-field textarea {
+    padding: 6px 8px;
+    font-size: 13px;
+    font-family: inherit;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--ink);
+}
+
+.reference-edit-field textarea {
+    field-sizing: content;
+    min-height: 60px;
+    max-height: 320px;
+    overflow-y: auto;
+    resize: vertical;
+}
+
+.reference-add-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    background: var(--card-bg);
+    border: 1.5px dashed var(--border);
+    border-radius: 10px;
+}
+
+.reference-add-form input,
+.reference-add-form textarea {
+    padding: 6px 8px;
+    font-size: 13px;
+    font-family: inherit;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+}
+
+/* ===== Data export/import (reference.html's Data tab) ===== */
+
+#export-data-btn {
+    margin: 4px 0 16px;
+}
+
+.data-import-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.data-import-row input[type="file"] {
+    font-size: 13px;
+    max-width: 220px;
+}
+
+/* ===== Toast (save confirmation) ===== */
+
+#toast {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    background: var(--accent-dark);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: var(--shadow);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    z-index: 1000;
+}
+
+#toast.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* ===== OneDrive sign-in overlay (cloud-sync-version only - see
+   onedrive-storage.js) ===== */
+
+#onedrive-signin-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    padding: 20px;
+}
+
+.onedrive-signin-card {
+    max-width: 380px;
+    width: 100%;
+    text-align: center;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    padding: 32px 28px;
+}
+
+.onedrive-signin-card h1 {
+    margin: 0 0 12px;
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+    font-size: 24px;
+    color: var(--accent);
+}
+
+.onedrive-signin-card p {
+    margin: 0 0 20px;
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+#onedrive-signin-btn {
+    padding: 10px 24px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#onedrive-signin-btn:hover {
+    filter: brightness(1.1);
+}
+
+.onedrive-signin-note {
+    margin-top: 14px !important;
+    font-size: 13px !important;
+    color: var(--ink-soft, #6b6155);
+    min-height: 1.2em;
+}

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Steep It Together</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="home-page">
+    <header class="home-header">
+        <h1>Steep It Together!</h1>
+        <p class="back-link">
+            <a href="log.html">📖 View brew log</a> ·
+            <a href="reference.html#notes">📝 Notepad</a>
+        </p>
+    </header>
+    <main>
+
+        <section id="ingredients-panel">
+            <h2>Ingredients</h2>
+        </section>
+
+        <section>
+            <h2>Cauldron</h2>
+            <button id="clear-btn">Clear</button>
+            <button id="brew-btn">Brew</button>
+            <!-- Empties the cauldron, drops in a random pick of ingredients,
+                 and brews immediately - see randomBrewBtn in script.js. -->
+            <div id="random-brew-controls">
+                <label for="random-count">🎲 Random brew:</label>
+                <input type="number" id="random-count" min="1" max="8" value="3">
+                <button id="random-brew-btn">Go</button>
+            </div>
+            <div class="cauldron-wrapper">
+                <div id="cauldron"></div>
+                <!-- Purely decorative - filled with rising bubble spans by
+                     script.js whenever Brew is clicked. -->
+                <div id="cauldron-bubbles" class="cauldron-bubbles" aria-hidden="true"></div>
+                <!-- Tactile pre-brew choice, overlaid top-right of the pot
+                     so it's reachable without scrolling away while adding
+                     ingredients. Picking one selects the same method as the
+                     notebook tabs in the Drink card (they stay in sync, see
+                     selectTemp() in script.js). -->
+                <div id="cauldron-temp-select">
+                    <button id="cauldron-hot-btn" class="cauldron-temp-btn" data-temp="hot" title="Hot Steep">🔥</button>
+                    <button id="cauldron-cold-btn" class="cauldron-temp-btn" data-temp="cold" title="Cold Brew">❄️</button>
+                    <button id="cauldron-stove-btn" class="cauldron-temp-btn" data-temp="stovetop"
+                        title="Stovetop">🍳</button>
+                </div>
+            </div>
+            <div id="potential-pairings"></div>
+        </section>
+
+        <section class="output-card">
+            <!-- Notebook-style tabs for the three brew methods - each keeps
+                 its own name/description/notes/rating/star. Picking one
+                 selects which saved entry (if any) is shown/edited below;
+                 Save writes to whichever is currently selected. Brewing
+                 itself doesn't care which is picked - it just matches
+                 whatever's in the cauldron across all three. -->
+            <div id="temp-tabs">
+                <button id="hot-tab" class="temp-btn" data-temp="hot">🔥 Hot</button>
+                <button id="cold-tab" class="temp-btn" data-temp="cold">❄️ Cold</button>
+                <button id="stovetop-tab" class="temp-btn" data-temp="stovetop">🍳 Stove</button>
+            </div>
+
+            <input type="text" id="drink-name" placeholder="Drink name" class="drink-name-input">
+
+            <div class="output-media-row">
+                <div class="output-picture">
+                    <img id="drink-image" src="drink-hot.svg" alt="">
+                    <!-- Updates live as the slider moves (see
+                         updateRatingIndicator in script.js). -->
+                    <div class="drink-rating-badge" id="drink-rating-badge">N/A</div>
+                    <!-- Manual on/off toggle - no longer derived from the
+                         rating automatically (see updateStarButton). -->
+                    <button id="drink-star-btn" class="drink-star-btn" title="Toggle favorite">☆</button>
+                    <!-- Custom picture per exact cauldron contents + method
+                         (see drinkImageFilename in script.js) - falls back
+                         to the placeholder illustration until one's
+                         uploaded. -->
+                    <button id="drink-image-upload-btn" class="drink-image-upload-btn"
+                        title="Upload a picture for this drink">📷</button>
+                    <!-- Only shown once a custom picture actually exists for
+                         the current cauldron contents + method (see
+                         updateDrinkImage in script.js). -->
+                    <button id="drink-image-remove-btn" class="drink-image-remove-btn" style="display:none"
+                        title="Remove this drink's picture">🗑️</button>
+                </div>
+
+                <!-- Same real-invisible-input-plus-decorative-divs setup as
+                     before (see layoutRatingSlider in script.js) - just
+                     laid out vertically now, alongside the picture instead
+                     of as its own horizontal row underneath everything.
+                     Range starts at 0 rather than 1 - 0 *is* the explicit
+                     "N/A / not rated yet" state (for a potential-pairing
+                     idea you haven't actually brewed), not just an implicit
+                     default. -->
+                <div class="rating-slider-wrap">
+                    <input type="range" id="drink-rating" min="0" max="10" step="1" value="0"
+                        class="rating-slider-native">
+                    <span class="rating-scale-emoji rating-scale-emoji-top">😊</span>
+                    <div class="rating-track" aria-hidden="true"></div>
+                    <div class="rating-ticks-overlay" aria-hidden="true">
+                        <span></span><span></span><span></span><span></span><span></span>
+                        <span></span><span></span><span></span><span></span><span></span><span></span>
+                    </div>
+                    <div class="rating-thumb" id="rating-thumb" aria-hidden="true"></div>
+                    <span class="rating-scale-emoji rating-scale-emoji-bottom">N/A</span>
+                </div>
+            </div>
+
+            <div class="output-field">
+                <label for="drink-description">Description</label>
+                <textarea id="drink-description"></textarea>
+            </div>
+            <div class="output-field">
+                <label for="drink-notes">Notes</label>
+                <textarea id="drink-notes"></textarea>
+            </div>
+
+            <button id="save-btn">Save</button>
+            <!-- Only shown once there's actually a saved entry for the
+                 current tab to delete (see showOutputForCurrentTab). -->
+            <button id="delete-entry-btn" style="display:none">Delete entry</button>
+        </section>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@3.28.1/lib/msal-browser.min.js"></script>
+    <script src="msal-config.js"></script>
+    <script src="onedrive-storage.js"></script>
+    <script src="tooltip.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>

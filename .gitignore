@@ -1,0 +1,3 @@
+# Nothing here yet, but keeps room for local-only test/debug files later
+# without them accidentally getting committed.
+*.local.*

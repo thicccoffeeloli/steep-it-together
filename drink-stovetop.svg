@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
+    <!-- steam -->
+    <path d="M70,44 C58,36 58,26 70,18 C82,10 82,0 70,-8" fill="none" stroke="#5b2a86" stroke-width="3"
+        stroke-linecap="round" opacity="0.35" transform="translate(0,14)" />
+
+    <!-- pot body -->
+    <path d="M40,66 h80 l-6,44 a10,10 0 0 1 -10,9 L56,119 a10,10 0 0 1 -10,-9 Z" fill="#fffaf1"
+        stroke="#5b2a86" stroke-width="3" />
+    <!-- liquid -->
+    <path d="M44,74 h72 v4 a36,8 0 0 1 -72,0 Z" fill="#d9a441" />
+    <!-- lid handle -->
+    <rect x="72" y="56" width="16" height="8" rx="3" fill="#5b2a86" />
+    <!-- pot handles -->
+    <path d="M40,76 h-10 a5,5 0 0 0 0,10 h8" fill="none" stroke="#5b2a86" stroke-width="4" stroke-linecap="round" />
+    <path d="M120,76 h10 a5,5 0 0 1 0,10 h-8" fill="none" stroke="#5b2a86" stroke-width="4" stroke-linecap="round" />
+
+    <!-- stovetop -->
+    <rect x="30" y="128" width="100" height="10" rx="3" fill="#ece1f7" stroke="#5b2a86" stroke-width="2" />
+
+    <!-- flames -->
+    <path d="M62,128 C58,120 62,114 66,110 C64,118 70,120 70,126 C70,130 66,132 62,128 Z" fill="#e67a2e" />
+    <path d="M86,128 C82,120 86,114 90,110 C88,118 94,120 94,126 C94,130 90,132 86,128 Z" fill="#e67a2e" />
+</svg>

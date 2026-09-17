@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Witch's Brew — Combo Notes</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <h1>Combo Notes</h1>
+    <p class="back-link">
+        <a href="log.html">← Back to brew log</a> ·
+        <!-- href filled in by combo-detail.js once it knows which
+             ingredients this page is for (see brewThisLink). -->
+        <a href="index.html" id="brew-this-link">🏠 Brew this</a>
+    </p>
+
+    <!-- Journal-style prev/next between logged combos, plus the ordering
+         toggle that controls it - see buildComboNav in combo-detail.js. -->
+    <div id="combo-nav"></div>
+
+    <!-- Shows whatever was saved via the Brew/Save flow on the main page
+         for the ingredient combination in the URL's ?ingredient= params -
+         each entry can be edited or deleted right here. -->
+    <div class="notes-page">
+        <div id="combo-detail"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@3.28.1/lib/msal-browser.min.js"></script>
+    <script src="msal-config.js"></script>
+    <script src="onedrive-storage.js"></script>
+    <script src="tooltip.js"></script>
+    <script src="combo-detail.js"></script>
+</body>
+
+</html>

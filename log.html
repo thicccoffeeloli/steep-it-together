@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Witch's Brew — Log</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <h1>Brew Log</h1>
+    <p class="back-link">
+        <a href="index.html">← Back to brewing</a> ·
+        <a href="reference.html#notes">📝 Notepad</a>
+    </p>
+
+    <!-- Three tabs, all rendered up front on load and just shown/hidden by
+         selectLogTab in log.js (same pattern as reference.html's tab bar,
+         deep-linkable via #hash) - nothing here re-fetches on tab switch. -->
+    <div class="tab-bar">
+        <button id="log-tab-summary" class="tab-btn" data-tab="summary">🧪 Combo summary</button>
+        <button id="log-tab-ratings" class="tab-btn" data-tab="ratings">⭐ Rating table</button>
+        <button id="log-tab-graphs" class="tab-btn" data-tab="graphs">📊 Graphs</button>
+        <button id="log-tab-book" class="tab-btn" data-tab="book">📖 Book</button>
+    </div>
+
+    <div id="log-panel-summary">
+        <!-- One of three views (category matrix / detail matrix for a
+             category pair / full ingredient matrix) - entirely rebuilt by
+             renderMatrixArea() in log.js depending on matrixView, rather
+             than three separate always-present containers. -->
+        <div id="matrix-area"></div>
+
+        <div class="sort-controls" id="combo-sort-controls">
+            <span>Combo list sort:</span>
+            <button id="sort-name-btn" class="sort-toggle-btn">Name</button>
+            <button id="sort-rating-btn" class="sort-toggle-btn">Rating</button>
+        </div>
+
+        <!-- Combos with 3+ ingredients - cards (default) or a network
+             graph, toggled from inside renderComboViz() in log.js. -->
+        <div id="multi-ingredient-list"></div>
+    </div>
+
+    <div id="log-panel-ratings" hidden>
+        <!-- Every logged combo, sortable by clicking any column heading
+             (see setRatingTableSort in log.js) - a quicker way to pick out
+             favorites than reading the matrix. -->
+        <div id="rating-list"></div>
+    </div>
+
+    <div id="log-panel-graphs" hidden>
+        <!-- Preference scatter / potential-pairings network, toggled from
+             inside renderGraphsArea() in log.js. -->
+        <div id="graphs-area"></div>
+    </div>
+
+    <div id="log-panel-book" hidden>
+        <!-- Every logged combo, grouped by category with a table of
+             contents up top - see renderBookArea() in log.js. -->
+        <div id="book-area"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@3.28.1/lib/msal-browser.min.js"></script>
+    <script src="msal-config.js"></script>
+    <script src="onedrive-storage.js"></script>
+    <script src="tooltip.js"></script>
+    <script src="log.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
+    <!-- steam -->
+    <path d="M62,46 C50,38 50,28 62,20 C74,12 74,2 62,-6" fill="none" stroke="#5b2a86" stroke-width="3"
+        stroke-linecap="round" opacity="0.35" transform="translate(0,14)" />
+    <path d="M92,46 C80,38 80,28 92,20 C104,12 104,2 92,-6" fill="none" stroke="#5b2a86" stroke-width="3"
+        stroke-linecap="round" opacity="0.35" transform="translate(0,14)" />
+
+    <!-- mug body -->
+    <rect x="38" y="64" width="76" height="66" rx="10" fill="#fffaf1" stroke="#5b2a86" stroke-width="3" />
+    <!-- liquid -->
+    <path d="M42,72 h68 v10 a34,10 0 0 1 -68,0 Z" fill="#d9a441" />
+    <!-- handle -->
+    <path d="M114,80 C138,80 138,116 114,116" fill="none" stroke="#5b2a86" stroke-width="6"
+        stroke-linecap="round" />
+
+    <!-- saucer -->
+    <ellipse cx="76" cy="136" rx="46" ry="8" fill="#ece1f7" stroke="#5b2a86" stroke-width="2" />
+</svg>
