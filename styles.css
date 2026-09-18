@@ -1858,6 +1858,95 @@ li {
     color: var(--ink);
 }
 
+/* ===== Graphs tab filter (log.js - buildGraphsFilterUI) ===== */
+
+.graphs-filter {
+    max-width: 640px;
+    margin: 0 auto 16px;
+}
+
+.graphs-filter-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.graphs-filter-ingredients {
+    position: relative;
+}
+
+.graphs-filter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+.graphs-filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 4px 4px 10px;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent-dark);
+    font-size: 13px;
+}
+
+.graphs-filter-chip button {
+    border: none;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    padding: 2px 6px;
+    font-size: 12px;
+    line-height: 1;
+}
+
+.graphs-filter-search-wrap {
+    position: relative;
+}
+
+.graphs-filter-search-wrap .rating-table-search-input {
+    max-width: none;
+    margin-bottom: 0;
+}
+
+/* Floats over whatever's below rather than pushing it down, so opening/
+   closing the suggestion list doesn't jitter the rest of the page. */
+.graphs-filter-suggestions {
+    position: absolute;
+    z-index: 10;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 4px;
+    max-height: 220px;
+    overflow-y: auto;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+}
+
+.graphs-filter-suggestion {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 0;
+    background: none;
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.graphs-filter-suggestion:hover {
+    background: var(--accent-soft);
+}
+
 .rating-table {
     border-collapse: collapse;
     font-size: 13px;

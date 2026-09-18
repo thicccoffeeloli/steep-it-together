@@ -29,13 +29,26 @@ let sortMode = 'name';
 // Which of the two Graphs tab views is showing - see renderGraphsArea().
 let graphsView = 'preference'; // 'preference' | 'pairings'
 
-// Shared by both graph views - 'all' or a category name. Narrows the
-// preference scatter to just that category's ingredients, and the pairing
-// network to that category's own sub-graph (a node stays only if its own
-// category matches; an edge/combo shape stays only if *every* ingredient
-// it touches does too, since drawing a line to an ingredient that's no
-// longer shown as a node wouldn't make sense).
-let graphsFilterCategory = 'all';
+// Shared by both graph views - an ingredient passes the filter if either
+// set is empty (no filter at all), its own category is checked, or it's
+// individually checked - see ingredientPassesGraphsFilter. Narrows the
+// preference scatter to just the matching ingredients, and the pairing
+// network to their own sub-graph (an edge/combo shape stays only if
+// *every* ingredient it touches also passes, since drawing a line to an
+// ingredient that's no longer shown as a node wouldn't make sense).
+const graphsFilterCategories = new Set();
+const graphsFilterIngredients = new Set();
+
+function ingredientPassesGraphsFilter(name) {
+    if (graphsFilterCategories.size === 0 && graphsFilterIngredients.size === 0) return true;
+    if (graphsFilterIngredients.has(name)) return true;
+    const cat = categoryOfIngredient(name);
+    return !!cat && graphsFilterCategories.has(cat);
+}
+
+function graphsFilterActive() {
+    return graphsFilterCategories.size > 0 || graphsFilterIngredients.size > 0;
+}
 
 // 'word' (colored circle + name) or 'icon' (the ingredient's own picture,
 // no text) - shared by both network graphs (3+ combo network, Pairing
@@ -1798,9 +1811,7 @@ function hashJitter(str, magnitude) {
 
 function getPreferenceScatterData() {
     return getAllIngredientNames()
-        .filter(function(name) {
-            return graphsFilterCategory === 'all' || categoryOfIngredient(name) === graphsFilterCategory;
-        })
+        .filter(ingredientPassesGraphsFilter)
         .map(function(name) {
             const stats = getIngredientStats(name);
             return {
@@ -1820,8 +1831,8 @@ function renderPreferenceScatter() {
     if (data.length === 0) {
         const empty = document.createElement('p');
         empty.className = 'graphs-empty';
-        empty.textContent = graphsFilterCategory !== 'all'
-            ? 'Nothing rated yet in this category.'
+        empty.textContent = graphsFilterActive()
+            ? 'Nothing rated yet that matches this filter.'
             : 'Nothing rated yet - brew and rate a few things to see your preferences here.';
         container.appendChild(empty);
         return;
@@ -2003,10 +2014,8 @@ function renderPairingNetwork() {
         });
     });
 
-    if (graphsFilterCategory !== 'all') {
-        const allowed = new Set(names.filter(function(name) {
-            return categoryOfIngredient(name) === graphsFilterCategory;
-        }));
+    if (graphsFilterActive()) {
+        const allowed = new Set(names.filter(ingredientPassesGraphsFilter));
         names = names.filter(function(name) { return allowed.has(name); });
         edges = edges.filter(function(e) { return allowed.has(e[0]) && allowed.has(e[1]); });
         multiCombos = multiCombos.filter(function(combo) {
@@ -2017,8 +2026,8 @@ function renderPairingNetwork() {
     if (names.length === 0) {
         const empty = document.createElement('p');
         empty.className = 'graphs-empty';
-        empty.textContent = graphsFilterCategory !== 'all'
-            ? 'No potential pairings in this category yet.'
+        empty.textContent = graphsFilterActive()
+            ? 'Nothing matches this filter yet.'
             : 'No potential pairings recorded yet - add some from the cauldron\'s suggestions first.';
         container.appendChild(empty);
         return;
@@ -2144,35 +2153,116 @@ function renderPairingNetwork() {
     container.appendChild(buildCategoryLegend(names));
 }
 
+// Multi-select filter, shared by both graph views below (stays put and
+// keeps its selections when switching between them) - any number of
+// categories (toggle chips, there's usually only a handful) and/or any
+// number of individual ingredients (search-to-add, since there can be many)
+// can be checked at once; see ingredientPassesGraphsFilter for how the two
+// combine. Typing in the search box only updates its own suggestion list,
+// never calls onChange - so it never loses focus mid-keystroke the way a
+// full renderGraphsArea() rebuild on every character would cause. Only
+// actually adding/removing a chip triggers the rebuild, and by then focus
+// has already moved to whatever was clicked anyway.
+function buildGraphsFilterUI(onChange) {
+    const wrap = document.createElement('div');
+    wrap.className = 'graphs-filter';
+
+    const categoriesRow = document.createElement('div');
+    categoriesRow.className = 'graphs-filter-categories';
+    getCategories().forEach(function(cat) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'sort-toggle-btn';
+        btn.textContent = cat;
+        btn.classList.toggle('active', graphsFilterCategories.has(cat));
+        btn.addEventListener('click', function() {
+            if (graphsFilterCategories.has(cat)) graphsFilterCategories.delete(cat);
+            else graphsFilterCategories.add(cat);
+            onChange();
+        });
+        categoriesRow.appendChild(btn);
+    });
+    wrap.appendChild(categoriesRow);
+
+    const ingredientsWrap = document.createElement('div');
+    ingredientsWrap.className = 'graphs-filter-ingredients';
+
+    const chipsRow = document.createElement('div');
+    chipsRow.className = 'graphs-filter-chips';
+    graphsFilterIngredients.forEach(function(name) {
+        const chip = document.createElement('span');
+        chip.className = 'graphs-filter-chip';
+        chip.textContent = name + ' ';
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.textContent = '✕';
+        removeBtn.title = 'Remove from filter';
+        removeBtn.addEventListener('click', function() {
+            graphsFilterIngredients.delete(name);
+            onChange();
+        });
+        chip.appendChild(removeBtn);
+        chipsRow.appendChild(chip);
+    });
+    ingredientsWrap.appendChild(chipsRow);
+
+    const searchWrap = document.createElement('div');
+    searchWrap.className = 'graphs-filter-search-wrap';
+    const searchInput = document.createElement('input');
+    searchInput.type = 'text';
+    searchInput.className = 'rating-table-search-input';
+    searchInput.placeholder = '🔍 Add an ingredient to the filter...';
+    const suggestions = document.createElement('div');
+    suggestions.className = 'graphs-filter-suggestions';
+    suggestions.hidden = true;
+
+    searchInput.addEventListener('input', function() {
+        const q = searchInput.value.trim().toLowerCase();
+        suggestions.innerHTML = '';
+        if (!q) { suggestions.hidden = true; return; }
+        const matches = getAllIngredientNames()
+            .filter(function(name) { return name.toLowerCase().includes(q) && !graphsFilterIngredients.has(name); })
+            .slice(0, 20); // capped so a broad query doesn't dump the whole ingredient list at once
+        suggestions.hidden = matches.length === 0;
+        matches.forEach(function(name) {
+            const item = document.createElement('button');
+            item.type = 'button';
+            item.className = 'graphs-filter-suggestion';
+            item.textContent = name;
+            item.addEventListener('click', function() {
+                graphsFilterIngredients.add(name);
+                onChange();
+            });
+            suggestions.appendChild(item);
+        });
+    });
+
+    searchWrap.appendChild(searchInput);
+    searchWrap.appendChild(suggestions);
+    ingredientsWrap.appendChild(searchWrap);
+    wrap.appendChild(ingredientsWrap);
+
+    if (graphsFilterActive()) {
+        const clearBtn = document.createElement('button');
+        clearBtn.type = 'button';
+        clearBtn.className = 'sort-toggle-btn';
+        clearBtn.textContent = '✕ Clear filter';
+        clearBtn.addEventListener('click', function() {
+            graphsFilterCategories.clear();
+            graphsFilterIngredients.clear();
+            onChange();
+        });
+        wrap.appendChild(clearBtn);
+    }
+
+    return wrap;
+}
+
 function renderGraphsArea() {
     const container = document.getElementById('graphs-area');
     container.innerHTML = '';
 
-    // Category filter - shared by both views below, so it stays put and
-    // keeps its selection when switching between them.
-    const filterRow = document.createElement('div');
-    filterRow.className = 'rating-table-filter-row';
-    const categorySelect = document.createElement('select');
-    categorySelect.className = 'rating-table-filter-select';
-    categorySelect.title = 'Category';
-    const allCategoriesOpt = document.createElement('option');
-    allCategoriesOpt.value = 'all';
-    allCategoriesOpt.textContent = 'All categories';
-    if (graphsFilterCategory === 'all') allCategoriesOpt.selected = true;
-    categorySelect.appendChild(allCategoriesOpt);
-    getCategories().forEach(function(cat) {
-        const opt = document.createElement('option');
-        opt.value = cat;
-        opt.textContent = cat;
-        if (cat === graphsFilterCategory) opt.selected = true;
-        categorySelect.appendChild(opt);
-    });
-    categorySelect.addEventListener('change', function() {
-        graphsFilterCategory = categorySelect.value;
-        renderGraphsArea();
-    });
-    filterRow.appendChild(categorySelect);
-    container.appendChild(filterRow);
+    container.appendChild(buildGraphsFilterUI(renderGraphsArea));
 
     const toggle = document.createElement('div');
     toggle.className = 'combo-viz-toggle';
