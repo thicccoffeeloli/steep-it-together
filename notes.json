@@ -1,0 +1,99 @@
+[
+  {
+    "group": "untried",
+    "section": "中国茶",
+    "items": [
+      {
+        "name": "普洱",
+        "description": "Earthy and robust, almost impossible to over-steep — gets better the longer it sits.",
+        "pairs": "Dried tangerine zest, dried ginger, dried orange zest.",
+        "notes": []
+      }
+    ]
+  },
+  {
+    "group": "untried",
+    "section": "Herbal",
+    "items": []
+  },
+  {
+    "group": "untried",
+    "section": "Grain & Savoury Teas",
+    "items": [
+      {
+        "name": "Roasted corn tea",
+        "description": "Nutty and slightly sweet, a Korean and Chinese staple.",
+        "pairs": "Cinnamon, dried ginger, barley tea as a blend.",
+        "notes": []
+      },
+      {
+        "name": "Soba (buckwheat) tea",
+        "description": "Toasty, nutty, and slightly savoury. Popular in Japan and Korea.",
+        "pairs": "Barley tea as a blend, dried ginger, citrus zest.",
+        "notes": []
+      }
+    ]
+  },
+  {
+    "group": "untried",
+    "section": "Spiced",
+    "items": [
+      {
+        "name": "Masala chai",
+        "description": "A full spiced black tea — robust black tea base steeped with whole spices. Bolder and richer than cinnamon bark alone. The definitive warming drink.",
+        "pairs": "Cinnamon stick, cardamom pods, star anise, cloves, dried orange zest, fresh ginger.",
+        "notes": [
+          "No milk in the flask if carrying it for a long time — add milk fresh to the cup instead."
+        ]
+      },
+      {
+        "name": "Turmeric & ginger (golden milk style)",
+        "description": "Warming and anti-inflammatory. Use ground turmeric and ginger directly in the flask with hot water or a milk alternative.",
+        "pairs": "Black pepper (enhances turmeric absorption), cinnamon, honey in the cup.",
+        "notes": []
+      }
+    ]
+  },
+  {
+    "group": "untried",
+    "section": "Alcohol",
+    "items": [
+      {
+        "name": "Hot alcoholic cider",
+        "description": "Warm spiced apple cider — sweeter and lighter than Glühwein, with a rich caramelised apple flavour that deepens beautifully in the flask.",
+        "pairs": "",
+        "notes": []
+      },
+      {
+        "name": "Mulled mead",
+        "description": "Honey wine warmed with spices — sweeter and more floral than Glühwein. Worth hunting down in Joburg.",
+        "pairs": "",
+        "notes": []
+      },
+      {
+        "name": "Irish coffee",
+        "description": "Strong hot brew coffee with Irish whiskey and brown sugar. No milk — it'll curdle in the flask. The whiskey and coffee deepen nicely together over time.",
+        "pairs": "",
+        "notes": []
+      },
+      {
+        "name": "Hot toddy",
+        "description": "Whiskey, hot water, honey, lemon peel and a cinnamon stick. Simple, satisfying, and a classic cold weather flask drink.",
+        "pairs": "",
+        "notes": []
+      },
+      {
+        "name": "Spiced dark rum",
+        "description": "Dark rum warmed with hot water, cinnamon, cloves and dried orange zest. Easy to make and very warming.",
+        "pairs": "",
+        "notes": []
+      },
+      {
+        "name": "Mulled port",
+        "description": "Port wine warmed with cinnamon, cloves, star anise and orange zest. Richer and sweeter than Glühwein, almost dessert-like. Best for a shorter flask session as it's quite intense.",
+        "pairs": "",
+        "notes": []
+      }
+    ]
+  }
+]
