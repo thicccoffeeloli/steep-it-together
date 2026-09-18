@@ -1,0 +1,833 @@
+[
+  {
+    "ingredients": [
+      "Medium Roast Coffee"
+    ],
+    "name": "Hot Medium Roast Coffee",
+    "description": "Mild and flavourful.",
+    "notes": "",
+    "temperature": "hot",
+    "rating": 6,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Dark Roast Coffee",
+      "Hazelnut Coffee",
+      "Cinnamon Stick"
+    ],
+    "name": "Shimmi's Preferred Hot Coffee",
+    "description": "Lots of depth from the dark roast, balanced well with the medium hazelnut coffee. Finished well with the sweeted and flavour of the cinnamon bark.",
+    "notes": "More hazelnut coffee, less dark roast. Only a hit of cinnamon or it will be overwhelming.",
+    "temperature": "hot",
+    "rating": 9,
+    "starred": true
+  },
+  {
+    "ingredients": [
+      "Hazelnut Coffee"
+    ],
+    "name": "Pure Hazelnut Flavoured Coffee",
+    "description": "Medium roast with the hazelnut flavouring is smooth and balanced.",
+    "notes": "",
+    "temperature": "hot",
+    "rating": 7,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Dark Roast Coffee",
+      "Hazelnut Coffee"
+    ],
+    "name": "Blended Hot Brew Coffee",
+    "description": "More complex than plain hazelnut coffee.",
+    "notes": "",
+    "temperature": "hot",
+    "rating": 8,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Dark Roast Coffee",
+      "Hazelnut Coffee"
+    ],
+    "name": "Blended Cold Brew Coffee",
+    "description": "Coarse grounds, cold water, 12–18 hours. Remarkably smooth and low-acid. Perfect summer drink.",
+    "notes": "Tried and amazing.\nTastes \"weaker\" than hot brew due to different compound extraction, not actual strength -> caffeine content is high.\nBest made in a glass jar in the fridge overnight.",
+    "temperature": "cold",
+    "rating": 9,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Dark Roast Coffee"
+    ],
+    "name": "Pure Dark Roast Coffee",
+    "description": "Strong and bold, a bit acidic.",
+    "notes": "Bit too strong for my liking. \nUsed Woolworth Kenyan Dark Roast. ",
+    "temperature": "hot",
+    "rating": 6,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Fresh Mint Leaves"
+    ],
+    "name": "Simple Hot Mint Tea",
+    "description": "Clean and delicate, slightly grassy.\nFresh mint leaves steeped in hot water.",
+    "notes": "The mintiness does not come through. Almost taste cooked. ",
+    "temperature": "hot",
+    "rating": 5,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Fresh Mint Leaves",
+      "Lemon Slice"
+    ],
+    "name": "Mint + Lemon Water",
+    "description": "Clean and refreshing. ",
+    "notes": "",
+    "temperature": "cold",
+    "rating": 7,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Peppermint Teabag"
+    ],
+    "name": "Hot Peppermint Tea",
+    "description": "Soothing and warming hot.",
+    "notes": "",
+    "temperature": "hot",
+    "rating": 8
+  },
+  {
+    "ingredients": [
+      "Peppermint Teabag",
+      "Citrus Slice"
+    ],
+    "name": "Hot Peppermint + Citrus Tea",
+    "description": "Soothing and warming hot.",
+    "notes": "Grapefruit slice adds a nice floral citrus brightness.",
+    "temperature": "hot",
+    "rating": 7
+  },
+  {
+    "ingredients": [
+      "Hibiscus Teabag"
+    ],
+    "name": "Hot Hibiscus Tea",
+    "description": "Tart and deep red, juice-like quality.",
+    "notes": "Quite nice, a bit tart — feels like a juice.\nGood to add honey as well.",
+    "temperature": "hot",
+    "rating": 8
+  },
+  {
+    "ingredients": [
+      "Hibiscus Teabag",
+      "Naartjie Peel",
+      "Citrus Zest"
+    ],
+    "name": "Hot Hibiscus + Citrus Tea",
+    "description": "Tart and deep red, juice-like quality.\nCitrus add more freshness to it.",
+    "notes": "Too much citrus made it a bit overwhelming. Use in moderation.\nGood to add honey as well.",
+    "temperature": "hot",
+    "rating": 6,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Hibiscus Teabag",
+      "Naartjie Peel"
+    ],
+    "name": "Hot Hibiscus + Naartjie Tea",
+    "description": "Tart and deep red, juice-like quality.\nCitrus add more freshness to it.",
+    "notes": "Dried naartjie great in moderation.\nGood to add honey as well.",
+    "temperature": "hot",
+    "rating": 8,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Rooibos Teabag"
+    ],
+    "name": "Plain rooibos tea.",
+    "description": "Classic rooibos tea.",
+    "notes": "Tried flavoured varieties (likely peach, cherry cranberry) — both unremarkable. Plain rooibos is the winner, flavoured versions not worth seeking out.",
+    "temperature": "hot",
+    "rating": 8
+  },
+  {
+    "ingredients": [
+      "Medium Roast Coffee"
+    ],
+    "name": "Ice Medium Roast Coffee",
+    "description": "Smooth and flavourful",
+    "notes": "",
+    "temperature": "cold",
+    "rating": 7,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Fresh Mint Leaves"
+    ],
+    "name": "Cold Mint Water",
+    "description": "More interesting to drink than plain water. ",
+    "notes": "",
+    "temperature": "cold",
+    "rating": 7,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Fresh Mint Leaves",
+      "Lemon Slice"
+    ],
+    "name": "Mint + Lemon Water",
+    "description": "Hot water classic. ",
+    "notes": "",
+    "temperature": "hot",
+    "rating": 6,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Rooibos Teabag",
+      "Citrus Zest"
+    ],
+    "name": "Citrus Rooibos Tea",
+    "description": "Extra citrus freshness that does well with the rooibos",
+    "notes": "",
+    "temperature": "hot",
+    "rating": 7,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Rooibos Teabag",
+      "Naartjie Peel"
+    ],
+    "name": "Naartjie Rooibos Tea",
+    "description": "Extra naartjie freshness that does well with the rooibos",
+    "notes": "",
+    "temperature": "hot",
+    "rating": 8,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Rooibos + Honeybush Blend"
+    ],
+    "name": "Rooibos Honeybush Blend",
+    "description": "Very high quality, adds extra flavour.",
+    "notes": "",
+    "temperature": "hot",
+    "rating": 9,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Rooibos Teabag",
+      "Chamomile"
+    ],
+    "name": "Rooibos Chamomile Blend",
+    "description": "Soothing and delicious. Good for sleeping",
+    "notes": "",
+    "temperature": "hot",
+    "rating": 8,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Rooibos Teabag",
+      "Ginger"
+    ],
+    "name": "Ginger rooibos tea",
+    "description": "Extra kick from ginger.",
+    "notes": "I personally don't enjoy it.",
+    "temperature": "hot",
+    "rating": 4,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Barley tea"
+    ],
+    "name": "Classic Korean Barley Tea",
+    "description": "Roasted and nutty.",
+    "notes": "",
+    "temperature": "hot",
+    "rating": 8,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Barley tea",
+      "Naartjie Peel"
+    ],
+    "name": "Toasted Naartjie Barley Tea",
+    "description": "Dried toasted naartjie peel adds a layer of fruitiness to it whilst upping the savouriness of the tea.",
+    "notes": "",
+    "temperature": "hot",
+    "rating": 9,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Barley tea",
+      "Citrus Zest"
+    ],
+    "name": "Citrus Barley Tea",
+    "description": "Pomelo zest adds a nice citrus kick and freshness which cuts well with the toasty flavour of the barley",
+    "notes": "",
+    "temperature": "hot",
+    "rating": 8,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Barley tea",
+      "Ginger",
+      "红枣"
+    ],
+    "name": "Shimmi's GI Remedy",
+    "description": "Soothing for the stomach and very delicious.",
+    "notes": "Steeping overnight brings out the flavours even more. ",
+    "temperature": "hot",
+    "rating": 9,
+    "starred": true
+  },
+  {
+    "ingredients": [
+      "Ginger"
+    ],
+    "name": "Hot Ginger Water",
+    "description": "Works on it own. Sharp, soothing and warming.\nGood for GI issues, nausea and stomach discomfort.",
+    "notes": "But better paired with other ingredients.",
+    "temperature": "hot",
+    "rating": 6,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Ginger",
+      "红枣"
+    ],
+    "name": "Ginger Jujube Water",
+    "description": "Jujube adds a bit of sweetness to the sharp ginger taste. Very delicious and soothes the stomach.",
+    "notes": "Add more ginger for more sharpness!\nSome people might find it strong.",
+    "temperature": "hot",
+    "rating": 8,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Ginger",
+      "Lemongrass"
+    ],
+    "name": "Hot Perfume Water",
+    "description": "Tastes like perfume.",
+    "notes": "Lemongrass too overpowering. However, could try with more moderation.",
+    "temperature": "hot",
+    "rating": 3,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "红枣"
+    ],
+    "name": "红枣水",
+    "description": "Sweet and mellow. Bit boring on its own. ",
+    "notes": "Better as a supporting ingredient.",
+    "temperature": "hot",
+    "rating": 5,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Cinnamon Stick"
+    ],
+    "name": "Hot Cinnamon Water",
+    "description": "Warming and slightly sweet. Woody and comforting. Surprisingly good!",
+    "notes": "Slight astringent notes left behind. \nTastes sweet due to cinnamaldehyde, not sugar. \nApparently helps with blood sugar or something?",
+    "temperature": "hot",
+    "rating": 9,
+    "starred": true
+  },
+  {
+    "ingredients": [
+      "Cinnamon Stick",
+      "Naartjie Peel"
+    ],
+    "name": "Cinnamon Naartjie Blend",
+    "description": "A pleasant warming drink with a slow reveal — the naartjie citrus comes forward first, bright and aromatic, before the cinnamon gradually kicks in with its characteristic sweetness and earthiness. The dried naartjie peel rounds everything out with a soft, warm citrus quality rather than a sharp acidic hit. Comforting and layered.",
+    "notes": "Naartjie dominates initially — citrus oils volatile and hit the palate first, cinnamon takes a while to come through.\nCinnamon still detectable underneath, adding sweetness and earthiness once it kicks in.\nPrevious attempt was a second steep so not a fair test — this is the proper version.\nFor next try: reduce naartjie peel slightly (2-3 small pieces) and steep cinnamon 5-10 minutes first before adding naartjie — goal is cinnamon forward with naartjie as a warm background hint rather than the star.",
+    "temperature": "hot",
+    "rating": 9,
+    "starred": true
+  },
+  {
+    "ingredients": [
+      "CBD Blend"
+    ],
+    "name": "Zimbabwean CBD Blend",
+    "description": "Ingredients:\nCBD flower, silver needle (白毫银针), star anise, cloves, black and white peppercorn, rose.\n\nA warming, aromatic wellness blend. Spiced like a gentler chai with floral softness from the rose and silver needle. The CBD adds a relaxing quality without being heavy.\n",
+    "notes": "Dad got this for me while he was in Zimbabwe. I don't know why he got this, but I don't think he read the label and just though it was a cool tea...\n\nGo easy on steep time initially as the cloves and peppercorn can become overwhelming.",
+    "temperature": "hot",
+    "rating": 7,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Red Wine",
+      "Cinnamon Stick",
+      "Orange Slice",
+      "Cloves"
+    ],
+    "name": "Glühwein",
+    "description": "Classic German mulled wine. Warm, spiced and deeply seasonal — perfect for a cold Joburg winter weekend. Spices continue developing in the flask over time.",
+    "notes": "Fortified with a few extra shots for good measure.",
+    "temperature": "stovetop",
+    "rating": 9,
+    "starred": false
+  },
+  {
+    "ingredients": [],
+    "name": "Hot Water",
+    "description": "Plain ol' hot water.",
+    "notes": "Don't drink it too fast!",
+    "temperature": "hot",
+    "rating": 5,
+    "starred": false
+  },
+  {
+    "ingredients": [],
+    "name": "Cold water",
+    "description": "Wow it's cold!",
+    "notes": "",
+    "temperature": "cold",
+    "rating": 5,
+    "starred": false
+  },
+  {
+    "ingredients": [],
+    "name": "Hot Water (stove)",
+    "description": "Now, why don't you own a kettle?",
+    "notes": "",
+    "temperature": "stovetop",
+    "rating": 5,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Dark Roast Coffee",
+      "Cardamom Pods"
+    ],
+    "name": "Cardamom Coffee",
+    "description": "Tastes good, but would be better with milk.",
+    "notes": "Quite nice but would work better as a milky coffee — cardamom latte style.",
+    "temperature": "hot",
+    "rating": 6,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Cloves",
+      "Hazelnut Coffee"
+    ],
+    "name": "Hazelnut cloves coffee",
+    "description": "Flavour profile: hazelnut brings sweet nutty warmth as the base, cloves add deep almost numbing spiced intensity on top. Rich and complex, the cloves give the hazelnut an unexpected edge. Not a gentle cup — more like a statement coffee.",
+    "notes": "Not my favourite",
+    "temperature": "hot",
+    "rating": 5,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Cinnamon Stick",
+      "Cardamom Pods"
+    ],
+    "name": "Cinnamon cardamom water",
+    "description": "Sweet and spiced",
+    "notes": "Nice but not too interesting — possibly didn't get the ratio right. 1 cinnamon stick to 2–3 cracked cardamom pods recommended. Cinnamon should dominate, cardamom as the accent. Worth retrying.",
+    "temperature": "hot",
+    "rating": 6,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Rooibos Teabag",
+      "Cinnamon Stick"
+    ],
+    "name": "Cinnamon Rooibos",
+    "description": "Enjoyed a lot. Tastes cosy and almost dessert-like — like a spiced biscuit or a chai-lite without the astringency. The rooibos softens the cinnamon so it's warming but not sharp. Sweet, warm and very easy to drink.",
+    "notes": "",
+    "temperature": "hot",
+    "rating": 8,
+    "starred": true
+  },
+  {
+    "ingredients": [
+      "Ginger",
+      "Cinnamon Stick"
+    ],
+    "name": "Pseudo \"Ginger Beer\"",
+    "description": "Tastes almost like a warm, light, natural ginger beer — spicy from the ginger, sweet and woody from the cinnamon, none of the artificiality of actual ginger beer. A really satisfying combo. ",
+    "notes": "",
+    "temperature": "hot",
+    "rating": 8,
+    "starred": true
+  },
+  {
+    "ingredients": [
+      "Rooibos + Honeybush Blend",
+      "红枣"
+    ],
+    "name": "Jujube Rooibos Honeybush Blend",
+    "description": "Unlogged — try it and repoThe natural mellow sweetness of jujube blends beautifully with the honeybush's floral sweetness. Soft, naturally sweet and comforting with a gentle fruity depth underneath.rt back",
+    "notes": "",
+    "temperature": "hot",
+    "rating": 9,
+    "starred": true
+  },
+  {
+    "ingredients": [
+      "Chamomile"
+    ],
+    "name": "Chamomile",
+    "description": "Lovely. Gentle and soothing with a natural apple-like sweetness. Very easy to drink.",
+    "notes": "",
+    "temperature": "hot",
+    "rating": 8,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Rose petals"
+    ],
+    "name": "Rose petal tea",
+    "description": "Quite nice. Light and floral but not overwhelming. Colour can range from yellow/golden to pale pink depending on rose variety and water pH — adding a squeeze of lemon shifts it towards pink. A subtle, elegant drink — more perfumed hot water than a punchy tea, in the best way.",
+    "notes": "",
+    "temperature": "hot",
+    "rating": 8,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Rose petals",
+      "Chamomile",
+      "Cinnamon Stick"
+    ],
+    "name": "Floral Cinnamon Blend",
+    "description": "Pretty good but ratios need tweaking. Too little cinnamon — woody notes came through without the sweetness. ",
+    "notes": "Chamomile and rose balance well together. Next try: increase cinnamon slightly to about half a stick to bring out the sweetness. Promising combo.",
+    "temperature": "hot",
+    "rating": 8,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Peppermint Teabag",
+      "Lemon Slice"
+    ],
+    "name": "Warm Mojito",
+    "description": "Very delicious. The cool, bright intensity of peppermint and the fresh citrus sharpness of lemon complement each other beautifully — each lifting the other without either overpowering. Clean, refreshing and zesty. A very natural pairing.",
+    "notes": "",
+    "temperature": "hot",
+    "rating": 9,
+    "starred": true
+  },
+  {
+    "ingredients": [
+      "Cinnamon Stick",
+      "Hibiscus Teabag",
+      "Naartjie Peel"
+    ],
+    "name": "Spiced Fruit Punch Tea ",
+    "description": "Deep tart ruby-red base from the hibiscus, warm spiced sweetness from the cinnamon softening the tartness, fragrant mandarin citrus brightness from the naartjie peel lifting the whole thing. Tastes like a warm spiced fruit punch — almost like a non-alcoholic mulled wine. Deeply aromatic and festive.",
+    "notes": "",
+    "temperature": "hot",
+    "rating": 9,
+    "starred": true
+  },
+  {
+    "ingredients": [
+      "Hibiscus Teabag",
+      "Ginger"
+    ],
+    "name": "Hibiscus Ginger Tea",
+    "description": "Two strong flavours fighting rather than complementing. Tastes quite herbal. Tart and sharp upfront from the hibiscus, ginger heat building underneath, no sweetness to bridge them. ",
+    "notes": "More functional wellness drink than enjoyable sip. Would need honey or jujube to mediate between the two.",
+    "temperature": "hot",
+    "rating": 4,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Ginger",
+      "Peppermint Teabag"
+    ],
+    "name": "Ginger peppermint tea",
+    "description": "Tastes strongly herbal, both too assertive and neither complementing the other. Similar issue to hibiscus + ginger.",
+    "notes": "Not an enjoyable drink — two strong flavours clashing.  Functional for GI issues but not a pairing worth drinking for pleasure. Avoid for casual brewing.",
+    "temperature": "hot",
+    "rating": 4,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "云南红茶"
+    ],
+    "name": "云南红茶",
+    "description": "A robust, full-bodied Yunnan black tea with natural honey and cocoa sweetness. One of the more forgiving black teas for longer steeping due to its bold character.",
+    "notes": "Amazing on a short steep — phenomenal. Unsure how it holds up on a longer steep, tannins may turn it astringent. Stick to shorter steeps for now and test longer steeps cautiously.",
+    "temperature": "hot",
+    "rating": 9,
+    "starred": true
+  },
+  {
+    "ingredients": [
+      "菊花"
+    ],
+    "name": "菊花茶",
+    "description": "Always had it at Chinese restaurants. Very light, delicate and naturally sweet — subtle rather than pronounced. Clean and refreshing with a gentle floral quality. Easy to drink, nothing assertive. Good on its own.",
+    "notes": "",
+    "temperature": "hot",
+    "rating": 7,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Naartjie Peel",
+      "红枣"
+    ],
+    "name": "陈皮红枣",
+    "description": "Really enjoyed. Light, refreshing and naturally sweet. Great period day combo — refreshing without being heavy.",
+    "notes": "",
+    "temperature": "hot",
+    "rating": 9,
+    "starred": true
+  },
+  {
+    "ingredients": [
+      "红枣",
+      "Barley tea"
+    ],
+    "name": "红枣大麦茶",
+    "description": "Note: Good but not amazing. Soothing and smooth but not too interesting on its own. Better as part of the three-way blend with ginger where the ginger adds the lift it needs.",
+    "notes": "",
+    "temperature": "hot",
+    "rating": 6,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Lemongrass"
+    ],
+    "name": "Lemongrass Water",
+    "description": "Nice — citrusy and kinda floral.",
+    "notes": "",
+    "temperature": "cold",
+    "rating": 8,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Rice"
+    ],
+    "name": "米汤",
+    "description": "Light, refreshing and surprisingly tasty.",
+    "notes": "",
+    "temperature": "stovetop",
+    "rating": 7,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Ronnefeldt Rooibos Cream Orange"
+    ],
+    "name": "Ronnefeldt Rooibos Cream Orange",
+    "description": "Ingredients: Rooibos, orange peel, vanilla\n",
+    "notes": "Mom's favourite. Full-bodied rooibos with creamy vanilla and ripe orange notes. Lovely.",
+    "temperature": "hot",
+    "rating": 7,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Ronnefeldt Green Angel"
+    ],
+    "name": "Ronnefeldt Green Angel",
+    "description": "Ingredients: Green tea, natural pear and peach flavouring",
+    "notes": "Mom's favourite. Gentle green tea with a slightly tangy note and sweet juicy pear and peach flavour. Lovely. One of Ronnefeldt's most popular teas.",
+    "temperature": "hot",
+    "rating": 7,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Apple Cider",
+      "Cinnamon Stick",
+      "Cloves",
+      "Orange Slice"
+    ],
+    "name": "Hot apple cider",
+    "description": "Delicious",
+    "notes": "",
+    "temperature": "stovetop",
+    "rating": 8,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Chamomile",
+      "Lemon Slice"
+    ],
+    "name": "Chamomile Lemon Tea",
+    "description": "Good. Like normal chamomile but with an extra citrus kick to it. Bright and refreshing without losing the gentle soothing quality of chamomile.",
+    "notes": "",
+    "temperature": "hot",
+    "rating": 8,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Hazelnut Coffee",
+      "Cinnamon Stick"
+    ],
+    "name": "Cinnamon Hazelnut Coffee",
+    "description": "Good as expected. Hazelnut's natural sweetness and cinnamon's warmth are a natural fit.",
+    "notes": "",
+    "temperature": "hot",
+    "rating": 8,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Peppermint Teabag",
+      "Naartjie Peel"
+    ],
+    "name": "Peppermint naartjie tea",
+    "description": "Peppermint too assertive early on, overpowering the naartjie. Steeping longer brings out the naartjie but weakens the peppermint. Both ingredients on opposite steep curves — never quite at full strength simultaneously. ",
+    "notes": "Nice but tricky to get right. Pleasant but not the bright peppermint + citrus combo expected. Fresh lemon slice works better with peppermint as it releases more immediately.",
+    "temperature": "hot",
+    "rating": 5,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Dark Roast Coffee",
+      "Cinnamon Stick"
+    ],
+    "name": "Cinnamon Dark Roast Coffee",
+    "description": "Good. Bold and earthy from the dark roast with warm sweetness from the cinnamon. A natural pairing.",
+    "notes": "",
+    "temperature": "hot",
+    "rating": 7,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Cinnamon Stick",
+      "Naartjie Peel",
+      "Dark Roast Coffee"
+    ],
+    "name": "Spiced naartjie dark roast coffee",
+    "description": "A bold and layered coffee drink. The dark roast provides the earthy, robust base while the dried naartjie peel adds a surprising creaminess and softness — rounding out the edges of the dark roast rather than adding sharp citrus. The cinnamon weaves in depth and spice underneath, adding warmth without overwhelming. Together it's a citrusy, spiced dark roast with more complexity than the sum of its parts.",
+    "notes": "Quite good overall. Added slightly too much cinnamon which tipped it too sweet — dial back the cinnamon next time.\nThe naartjie peel's role here is softening and rounding rather than dominating, which works really well with coffee.\nWorth retrying with less cinnamon to find the right balance.",
+    "temperature": "hot",
+    "rating": null,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Cardamom Pods"
+    ],
+    "name": "Pure cardamom tea",
+    "description": "Floral, aromatic and warming. Quite light initially but develops significantly with a long steep — the oils in the pods need time to fully release, especially if the seeds inside aren't fully exposed.",
+    "notes": "Used 6 small pods, cracked open.\nLight and pleasant at 15–20 minutes — quite floral and aromatic but subtle.\nStrengthens considerably after a full afternoon steep — stronger cardamom taste, quite nice and enjoyable.\nRecommend long steep for best results. Crack pods aggressively and expose the seeds for better extraction.\nMay lose potency if pods are old.",
+    "temperature": "hot",
+    "rating": 8,
+    "starred": true
+  },
+  {
+    "ingredients": [
+      "Peppermint Teabag"
+    ],
+    "name": "Cold Peppermint Tea",
+    "description": "Clean, light and refreshing — a more subtle version of hot peppermint tea. The menthol comes through gently without the intensity of a hot steep. Almost like a natural mint water.",
+    "notes": "Alright but quite light — not as punchy as hot peppermint.\nFlavour improves and develops nicely as it steeps throughout the day — gets progressively better rather than staying static.\nDrank throughout the day rather than overnight — flavour develops gradually as it steeps.\nRemove teabag after 8 hours to avoid bitterness.\nBest as a light refreshing drink rather than a flavour-forward one.",
+    "temperature": "cold",
+    "rating": 6,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Hibiscus Teabag"
+    ],
+    "name": "Cold Brew Hibiscus Tea",
+    "description": "Light and refreshing, tart and cranberry juice-like but quite mild compared to hot hibiscus. Colour extracts but flavour stays relatively subtle even after overnight steeping.",
+    "notes": "After 1 hour — very light, watered down cranberry juice character.\nAfter overnight steep — slightly stronger but not by much. Doesn't intensify dramatically with more time.\nTeabag likely less efficient for cold brew than loose hibiscus — bag material restricts passive cold water diffusion.\nWorth trying loose hibiscus petals cold brewed for comparison — may extract significantly better.",
+    "temperature": "cold",
+    "rating": 6,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Rose petals"
+    ],
+    "name": "Cold steeped rose petal tea",
+    "description": "Delicately floral and softly sweet — even more subtle and clean than the hot steep version. Almost like a floral water, very gentle and elegant. The cold extraction pulls the colour out into a striking purplish-pink, while preserving the delicate aromatic quality of the petals.",
+    "notes": "Floral and lovely.\nColour correction from hot steep entry: cold steep produces a purplish-pink colour, hot steep produces yellow. Cold water extracts the anthocyanin pigments more gently without heat degrading them.\nUse a generous amount of petals since cold extraction is less efficient than hot.\nSteep overnight for best results.",
+    "temperature": "cold",
+    "rating": 8,
+    "starred": true
+  },
+  {
+    "ingredients": [
+      "Hibiscus Teabag",
+      "Cinnamon Stick"
+    ],
+    "name": "盗版酸梅汤",
+    "description": "Short steep produces a sweeter, slightly spiced hibiscus tea — the cinnamon adds warmth and sweetness without dramatically changing the character. Overnight steep transforms it into something much more complex — vaguely reminiscent of 酸梅汤, the tartness of hibiscus and warm spiced depth of cinnamon merging into a layered, almost nostalgic drink.",
+    "notes": "Loose hibiscus tastes about the same as teabag — no meaningful difference.\nShort steep: sweeter hibiscus with a cinnamon hint.\nOvernight steep: the real version — deeper, more complex, 酸梅汤 vibes.\nSteeping all night and day can be very strong — dilute slightly with water for a more pleasant drink, especially when cooled.\nRecommend overnight steep, slightly diluted and cooled for best results.",
+    "temperature": "hot",
+    "rating": 7,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Citrus Zest"
+    ],
+    "name": "Cold brewed dried pomelo skin",
+    "description": "Bitter and citrusy — sharp and cleansing rather than comforting or sweet. A mood-based drink rather than an everyday one. Works well as a palate cleanser.",
+    "notes": "Used quite a few pieces — likely too many, contributed to the bitterness.\nBitterness comes from pith still attached to the skin, unlike naartjie zest which is pith-free.\nUse fewer pieces next time to reduce bitterness.\nWorth trying paired with 红枣 or honey to balance, or barley tea as a base which softened it well previously.\nBest when you want something sharp and cleansing rather than something sweet or comforting.",
+    "temperature": "cold",
+    "rating": 7,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Turmeric"
+    ],
+    "name": "Turmeric hot steep",
+    "description": "Warm, earthy and grounding. Gently bitter with a clean, pure turmeric flavour — slightly medicinal but in a comforting, wholesome way rather than unpleasant. Fairly soothing. Water turns a warm golden yellow.",
+    "notes": "Method: first steeped in hot water previously (flavour partially depleted), then sliced and re-steeped in hot water for a few hours.\nNext proper test: cold soak overnight first to rehydrate without losing flavour, then slice and hot steep for a fuller extraction.\nPairs well with ginger and cinnamon to balance the bitterness.",
+    "temperature": "hot",
+    "rating": null,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "茉莉花"
+    ],
+    "name": "茉莉花茶",
+    "description": "A delicately scented green or white tea base infused with fresh jasmine blossoms. Floral and fragrant with a naturally sweet, perfumed quality — the jasmine aroma is soft and lingering rather than sharp or overpowering. Light and clean on the palate, with a gentle warmth that makes it equally pleasant hot or cold brewed.",
+    "notes": "",
+    "temperature": "hot",
+    "rating": 7,
+    "starred": false
+  }
+]
