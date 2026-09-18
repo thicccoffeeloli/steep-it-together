@@ -1,56 +1,49 @@
 # Getting your synced version online
 
-Everything's built. Two short things are left, and both need *you* signed
-into your own accounts - I can't do these parts. Neither costs anything.
-
-Do them in this order: **Part 1 first**, then **Part 2** (Part 2 needs a
-piece of information Part 1 gives you).
+This version stores your tea data in a private GitHub repo instead of
+OneDrive - no card, no Microsoft sign-up, all free. Three things to do,
+all on GitHub (you already have an account).
 
 ---
 
-## Part 1 — Get your Client ID (a few minutes)
+## Part 1 — Make a private repo to hold your data
 
-This is a free "permission slip" that lets the app ask to sign in with your
-personal OneDrive. You make it once; it's yours, tied to your account, and
-nobody else can use it to access your data.
-
-1. Go to **https://portal.azure.com** and sign in with your **personal**
-   Microsoft account (the one you said has OneDrive already - not any work
-   account).
-2. In the search bar at the top of the page, type **App registrations**
-   and click the result.
-3. Click **+ New registration**.
-4. Fill in:
-   - **Name**: anything you like, e.g. `Steep It Together`
-   - **Supported account types**: choose the option that says
-     **"Personal Microsoft accounts only"** (it's the last of the four
-     choices).
-   - **Redirect URI**: leave this blank for now - you'll add it in Part 2,
-     once you know the exact web address.
-5. Click **Register**.
-6. You'll land on an "Overview" page. Find **Application (client) ID** -
-   it's a code that looks like `a1b2c3d4-...`. Copy it.
-7. Open `msal-config.js` (in this same folder) and paste it in, replacing
-   `PASTE-YOUR-CLIENT-ID-HERE` - keep the quote marks around it.
-8. Still on the Azure page, click **API permissions** in the left-hand
-   menu, then **+ Add a permission** → **Microsoft Graph** →
-   **Delegated permissions**. Type `Files.ReadWrite.AppFolder` into the
-   search box, tick it, then click **Add permissions** at the bottom.
-   (`User.Read` is usually already there by default - leave it.)
-
-That's Part 1 done. You now have a Client ID pasted into `msal-config.js`.
+1. Go to **https://github.com/new**.
+2. Repository name: anything, e.g. `steep-data`.
+3. Set it to **Private** (this one matters - your tea data shouldn't be
+   public, unlike the app's own code repo from before).
+4. Leave everything else as default, click **Create repository**.
 
 ---
 
-## Part 2 — Put the app online (free, via GitHub Pages)
+## Part 2 — Make a personal access token
 
-1. Go to **https://github.com/new** (sign into the GitHub account you
-   already have).
-2. Repository name: anything, e.g. `steep-it-together`. Leave it **Public**
-   (GitHub Pages' free tier requires this - it just means the *code* is
-   visible to anyone who looks, same as any open-source project; your
-   actual tea data is never in this code, it lives in your OneDrive, so
-   this doesn't expose anything personal).
+This is what lets the app read/write files in that repo on your behalf,
+without ever knowing your GitHub password.
+
+1. Go to **https://github.com/settings/personal-access-tokens/new**.
+2. **Token name**: anything, e.g. `Steep It Together`.
+3. **Expiration**: pick something long, e.g. 1 year (you'll just need to
+   make a new one and reconnect when it expires).
+4. **Repository access**: choose **Only select repositories**, then pick
+   the `steep-data` repo from Part 1. This means the token can *only*
+   touch that one repo, nothing else in your GitHub account.
+5. Scroll to **Permissions** → **Repository permissions** → find
+   **Contents** → set it to **Read and write**.
+6. Click **Generate token**.
+7. **Copy the token now** - GitHub only shows it once. Paste it somewhere
+   safe temporarily (a notes app) until you use it in Part 3.
+
+---
+
+## Part 3 — Put the app online (free, via GitHub Pages)
+
+1. Go to **https://github.com/new** again - this is for the app's *code*,
+   separate from the private data repo in Part 1.
+2. Repository name: anything, e.g. `steep-it-together`. Leave it
+   **Public** (GitHub Pages' free tier requires this - it's just the
+   code, same as any open-source project; your actual tea data lives in
+   the *other*, private repo from Part 1, so nothing personal is exposed).
 3. Click **Create repository**.
 4. Tell me you've done this, and I'll push everything in this
    `cloud-sync-version` folder up to it and turn on GitHub Pages for you.
@@ -58,18 +51,26 @@ That's Part 1 done. You now have a Client ID pasted into `msal-config.js`.
    `https://<your-username>.github.io/steep-it-together/` - that's the
    link you'll open on your phone and laptop from now on. Bookmark it on
    both.
-6. Last step: go back to **https://portal.azure.com** → **App
-   registrations** → your app → **Authentication** (left-hand menu) →
-   **+ Add a platform** → **Single-page application** → paste in that
-   exact web address → **Configure**.
-
-Once that's saved, open the link on your phone or laptop, click
-**Sign in with Microsoft**, and you're in. Do it on the other device too -
-both will show the exact same data from then on, always.
 
 ---
 
-## What to expect the first time
+## Part 4 — Connect each device
+
+Open that link (from Part 3) on your phone or laptop. The first time, it
+asks for three things:
+
+- **GitHub username**: your GitHub username.
+- **Repo name**: `steep-data` (the private one from Part 1, not the app's
+  own code repo).
+- **Personal access token**: the one you copied in Part 2.
+
+Do this once per device (phone, laptop) - each remembers it after that.
+Both devices now read/write the exact same files in your `steep-data`
+repo, so they stay in sync automatically.
+
+---
+
+## What to expect
 
 - Everything you can see and do stays exactly the same as the version
   you're used to.
@@ -80,7 +81,16 @@ both will show the exact same data from then on, always.
   of spots (the pairing graph, the drink photo) until a future update
   finishes that part. Nothing is lost either way - just a cosmetic gap for
   brand new uploads specifically.
+- A small "Saving.../Saved" indicator appears bottom-right whenever
+  something's being written to your repo.
+- If you ever edit the exact same thing on two devices at almost the same
+  moment, you'll see a banner saying the data changed elsewhere with a
+  Reload button - click it, then redo whatever you were doing. This is
+  rare in normal use.
 - To bring over your *existing* ingredients/brew log from the version
   you've been using locally: on that local version, go to **Notepad → Data
   tab → Export**, then on this new synced version go to the same **Data
   tab → Import** and pick the file you just downloaded.
+- Your token can be swapped out anytime from the same **Data tab →
+  Disconnect / change repo** button, if it expires or you want to switch
+  repos.

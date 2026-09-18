@@ -2341,10 +2341,10 @@ h3.note-section-title {
     transform: translateX(-50%) translateY(0);
 }
 
-/* ===== OneDrive sign-in overlay (cloud-sync-version only - see
-   onedrive-storage.js) ===== */
+/* ===== GitHub connect overlay (cloud-sync-version only - see
+   github-storage.js) ===== */
 
-#onedrive-signin-overlay {
+#github-config-overlay {
     position: fixed;
     inset: 0;
     z-index: 2000;
@@ -2355,7 +2355,7 @@ h3.note-section-title {
     padding: 20px;
 }
 
-.onedrive-signin-card {
+.github-config-card {
     max-width: 380px;
     width: 100%;
     text-align: center;
@@ -2366,21 +2366,42 @@ h3.note-section-title {
     padding: 32px 28px;
 }
 
-.onedrive-signin-card h1 {
+.github-config-card h1 {
     margin: 0 0 12px;
     font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
     font-size: 24px;
     color: var(--accent);
 }
 
-.onedrive-signin-card p {
+.github-config-card p {
     margin: 0 0 20px;
     color: var(--ink);
     font-size: 14px;
     line-height: 1.5;
 }
 
-#onedrive-signin-btn {
+.github-config-card label {
+    display: block;
+    text-align: left;
+    font-size: 13px;
+    color: var(--ink-soft, #6b6155);
+    margin-bottom: 12px;
+}
+
+.github-config-card label input {
+    display: block;
+    width: 100%;
+    margin-top: 4px;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font: inherit;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+#gh-connect-btn {
+    width: 100%;
     padding: 10px 24px;
     background: var(--accent);
     color: white;
@@ -2392,13 +2413,72 @@ h3.note-section-title {
     cursor: pointer;
 }
 
-#onedrive-signin-btn:hover {
+#gh-connect-btn:hover {
     filter: brightness(1.1);
 }
 
-.onedrive-signin-note {
+.github-config-note {
     margin-top: 14px !important;
     font-size: 13px !important;
     color: var(--ink-soft, #6b6155);
     min-height: 1.2em;
+}
+
+/* Small "Saving... / Saved / Save failed" indicator, bottom-right,
+   fading in/out on its own (see showSaveStatus in github-storage.js). */
+#gh-save-status {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    z-index: 1500;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    color: var(--ink-soft, #6b6155);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+}
+
+#gh-save-status.visible {
+    opacity: 1;
+}
+
+#gh-save-status.gh-save-status-error {
+    color: #b3261e;
+    border-color: #b3261e;
+}
+
+/* Sticks around until Reload is clicked (see showConflictBanner) - a
+   fading toast wouldn't be enough here, this needs an explicit action. */
+#gh-conflict-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 2500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 10px 16px;
+    background: #b3261e;
+    color: white;
+    font-size: 14px;
+    text-align: center;
+}
+
+#gh-conflict-banner button {
+    padding: 4px 12px;
+    border-radius: 6px;
+    border: none;
+    background: white;
+    color: #b3261e;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
 }

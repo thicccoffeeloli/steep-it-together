@@ -66,12 +66,13 @@
                 <input type="file" id="import-data-input" accept="application/json">
                 <button id="import-data-btn">⬆️ Import</button>
             </div>
+            <p class="note-callout" style="margin-top:20px">Connected to a GitHub repo for syncing across
+                devices (see github-storage.js). Only need this if you're switching to a different repo/token.</p>
+            <button id="gh-disconnect-btn">🔌 Disconnect / change repo</button>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@3.28.1/lib/msal-browser.min.js"></script>
-    <script src="msal-config.js"></script>
-    <script src="onedrive-storage.js"></script>
+    <script src="github-storage.js"></script>
     <script src="tooltip.js"></script>
     <script src="notes.js"></script>
     <script src="reference-list.js"></script>
@@ -120,7 +121,7 @@
 
         // Unlike the local version, this can't just navigate straight to
         // /export - there's no real server here for the browser to
-        // download a response from, so onedrive-storage.js can only
+        // download a response from, so github-storage.js can only
         // intercept an actual fetch() call, not a page navigation. Same
         // end result (a downloaded file), just triggered via a temporary
         // blob link instead of the browser's native download prompt.
@@ -166,6 +167,15 @@
                 });
             };
             reader.readAsText(file);
+        });
+
+        // disconnectGitHubStorage (github-storage.js) clears the saved
+        // owner/repo/token and reloads, which puts the connect screen
+        // straight back up - same effect as a sign-out.
+        document.getElementById('gh-disconnect-btn').addEventListener('click', function() {
+            if (confirm('Disconnect this device from its current GitHub repo? You\'ll need to reconnect (or connect to a different repo) to use the app again.')) {
+                window.disconnectGitHubStorage();
+            }
         });
     </script>
 </body>
