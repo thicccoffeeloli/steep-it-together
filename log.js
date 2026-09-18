@@ -29,6 +29,14 @@ let sortMode = 'name';
 // Which of the two Graphs tab views is showing - see renderGraphsArea().
 let graphsView = 'preference'; // 'preference' | 'pairings'
 
+// Shared by both graph views - 'all' or a category name. Narrows the
+// preference scatter to just that category's ingredients, and the pairing
+// network to that category's own sub-graph (a node stays only if its own
+// category matches; an edge/combo shape stays only if *every* ingredient
+// it touches does too, since drawing a line to an ingredient that's no
+// longer shown as a node wouldn't make sense).
+let graphsFilterCategory = 'all';
+
 // 'word' (colored circle + name) or 'icon' (the ingredient's own picture,
 // no text) - shared by both network graphs (3+ combo network, Pairing
 // outcomes), see buildGraphNodeSvg.
@@ -1790,6 +1798,9 @@ function hashJitter(str, magnitude) {
 
 function getPreferenceScatterData() {
     return getAllIngredientNames()
+        .filter(function(name) {
+            return graphsFilterCategory === 'all' || categoryOfIngredient(name) === graphsFilterCategory;
+        })
         .map(function(name) {
             const stats = getIngredientStats(name);
             return {
@@ -1809,7 +1820,9 @@ function renderPreferenceScatter() {
     if (data.length === 0) {
         const empty = document.createElement('p');
         empty.className = 'graphs-empty';
-        empty.textContent = 'Nothing rated yet - brew and rate a few things to see your preferences here.';
+        empty.textContent = graphsFilterCategory !== 'all'
+            ? 'Nothing rated yet in this category.'
+            : 'Nothing rated yet - brew and rate a few things to see your preferences here.';
         container.appendChild(empty);
         return;
     }
@@ -1968,16 +1981,16 @@ function pairingLayoutKey(names, edges, multiCombos) {
 
 function renderPairingNetwork() {
     const container = document.getElementById('graphs-area');
-    const edges = buildPairingEdges();
+    let edges = buildPairingEdges();
     // 3+ combos layer in as triangles (or bigger shapes) alongside the
     // pairwise edges - e.g. ginger+barley+jujube shows as a triangle because
     // all three were brewed together, *and* draws a barley-jujube edge even
     // if that exact pair was never separately suggested (see allPairEdges
     // below) - if the three tasted good together, that pair's a reasonable
     // potential pairing in its own right.
-    const multiCombos = combinations.filter(function(combo) { return combo.ingredients.length > 2; });
+    let multiCombos = combinations.filter(function(combo) { return combo.ingredients.length > 2; });
 
-    const names = [];
+    let names = [];
     const seenNames = new Set();
     edges.forEach(function(edge) {
         edge.forEach(function(name) {
@@ -1990,10 +2003,23 @@ function renderPairingNetwork() {
         });
     });
 
+    if (graphsFilterCategory !== 'all') {
+        const allowed = new Set(names.filter(function(name) {
+            return categoryOfIngredient(name) === graphsFilterCategory;
+        }));
+        names = names.filter(function(name) { return allowed.has(name); });
+        edges = edges.filter(function(e) { return allowed.has(e[0]) && allowed.has(e[1]); });
+        multiCombos = multiCombos.filter(function(combo) {
+            return combo.ingredients.every(function(n) { return allowed.has(n); });
+        });
+    }
+
     if (names.length === 0) {
         const empty = document.createElement('p');
         empty.className = 'graphs-empty';
-        empty.textContent = 'No potential pairings recorded yet - add some from the cauldron\'s suggestions first.';
+        empty.textContent = graphsFilterCategory !== 'all'
+            ? 'No potential pairings in this category yet.'
+            : 'No potential pairings recorded yet - add some from the cauldron\'s suggestions first.';
         container.appendChild(empty);
         return;
     }
@@ -2121,6 +2147,32 @@ function renderPairingNetwork() {
 function renderGraphsArea() {
     const container = document.getElementById('graphs-area');
     container.innerHTML = '';
+
+    // Category filter - shared by both views below, so it stays put and
+    // keeps its selection when switching between them.
+    const filterRow = document.createElement('div');
+    filterRow.className = 'rating-table-filter-row';
+    const categorySelect = document.createElement('select');
+    categorySelect.className = 'rating-table-filter-select';
+    categorySelect.title = 'Category';
+    const allCategoriesOpt = document.createElement('option');
+    allCategoriesOpt.value = 'all';
+    allCategoriesOpt.textContent = 'All categories';
+    if (graphsFilterCategory === 'all') allCategoriesOpt.selected = true;
+    categorySelect.appendChild(allCategoriesOpt);
+    getCategories().forEach(function(cat) {
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = cat;
+        if (cat === graphsFilterCategory) opt.selected = true;
+        categorySelect.appendChild(opt);
+    });
+    categorySelect.addEventListener('change', function() {
+        graphsFilterCategory = categorySelect.value;
+        renderGraphsArea();
+    });
+    filterRow.appendChild(categorySelect);
+    container.appendChild(filterRow);
 
     const toggle = document.createElement('div');
     toggle.className = 'combo-viz-toggle';
@@ -2292,26 +2344,62 @@ function renderBookArea() {
     });
 }
 
-// ===== Tab bar (Combo summary / Rating table / Graphs / Book) =====
-// All three panels are rendered up front by the Promise.all above -
+// ===== Tab bar (Combos [Combo summary/Graphs] / Ratings [Rating table/Book]) =====
+// Every panel and sub-panel is rendered up front by the Promise.all above -
 // switching tabs only shows/hides them, same pattern as reference.html's
-// selectReferenceTab, including deep-linking via #hash.
+// selectReferenceTab. Combo summary+Graphs and Rating table+Book used to
+// be four separate top-level tabs - now each pair shares one tab with its
+// own sub-tab bar underneath, mainly so the tab bar itself doesn't wrap
+// into a cramped two-line mess on a narrow phone screen.
 
-const LOG_TAB_KEYS = ['summary', 'ratings', 'graphs', 'book'];
+const LOG_TAB_KEYS = ['summary', 'ratings'];
+const SUB_TAB_KEYS = {
+    summary: ['summary', 'graphs'],
+    ratings: ['table', 'book']
+};
+
+// Every hash this page has ever linked to still works, even though
+// "graphs" and "book" aren't top-level tabs anymore - each just resolves
+// to the right tab+sub-tab combination instead.
+const HASH_MAP = {
+    summary: { tab: 'summary', subtab: 'summary' },
+    graphs: { tab: 'summary', subtab: 'graphs' },
+    ratings: { tab: 'ratings', subtab: 'table' },
+    book: { tab: 'ratings', subtab: 'book' }
+};
 
 function selectLogTab(tab) {
     LOG_TAB_KEYS.forEach(function(key) {
         document.getElementById('log-panel-' + key).hidden = key !== tab;
         document.getElementById('log-tab-' + key).classList.toggle('active', key === tab);
     });
-    history.replaceState(null, '', '#' + tab);
 }
 
-document.querySelectorAll('.tab-btn').forEach(function(btn) {
-    btn.addEventListener('click', function() { selectLogTab(btn.dataset.tab); });
+function selectSubTab(prefix, subtab) {
+    SUB_TAB_KEYS[prefix].forEach(function(key) {
+        document.getElementById(prefix + '-subpanel-' + key).hidden = key !== subtab;
+        document.getElementById(prefix + '-subtab-' + key).classList.toggle('active', key === subtab);
+    });
+}
+
+document.querySelectorAll('.tab-btn[data-tab]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        selectLogTab(btn.dataset.tab);
+        history.replaceState(null, '', '#' + btn.dataset.tab);
+    });
 });
 
-const initialLogTab = LOG_TAB_KEYS.indexOf(window.location.hash.slice(1)) !== -1
-    ? window.location.hash.slice(1)
-    : 'summary';
-selectLogTab(initialLogTab);
+document.querySelectorAll('.tab-btn[data-subtab]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        selectSubTab(btn.dataset.prefix, btn.dataset.subtab);
+        history.replaceState(null, '', '#' + btn.dataset.subtab);
+    });
+});
+
+const initialRoute = HASH_MAP[window.location.hash.slice(1)] || HASH_MAP.summary;
+selectLogTab(initialRoute.tab);
+// Both sub-tab bars get initialized (not just the active tab's) so
+// whichever tab you switch to next already shows a sensible default
+// instead of whatever state it happened to be left in.
+selectSubTab('summary', initialRoute.tab === 'summary' ? initialRoute.subtab : 'summary');
+selectSubTab('ratings', initialRoute.tab === 'ratings' ? initialRoute.subtab : 'table');

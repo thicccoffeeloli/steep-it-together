@@ -2060,6 +2060,19 @@ li {
     margin-bottom: 24px;
 }
 
+/* A tab bar nested inside a top-level tab's own panel (log.html - Combo
+   summary/Graphs, Rating table/Book) - smaller and tighter than the
+   top-level one so the hierarchy still reads clearly at a glance. */
+.sub-tab-bar {
+    margin-top: -8px;
+    margin-bottom: 20px;
+}
+
+.sub-tab-bar .tab-btn {
+    font-size: 13px;
+    padding: 6px 12px 5px;
+}
+
 /* Shaped like a notebook/binder index tab (flat bottom, rounded top)
    instead of the default pill button - reused by both log.html and
    reference.html's tab bars. */
