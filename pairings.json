@@ -1,0 +1,206 @@
+{
+  "Cardamom Pods": [
+    "Medium Roast Coffee",
+    "Dark Roast Coffee",
+    "Hazelnut Coffee",
+    "云南红茶"
+  ],
+  "Citrus Zest": [
+    "Medium Roast Coffee",
+    "Dark Roast Coffee",
+    "Hazelnut Coffee",
+    "Fresh Mint Leaves",
+    "Peppermint Teabag",
+    "Hibiscus Teabag",
+    "Rooibos Teabag",
+    "Barley tea",
+    "Ginger",
+    "普洱",
+    "菊花",
+    "云南红茶"
+  ],
+  "Naartjie Peel": [
+    "Medium Roast Coffee",
+    "Hibiscus Teabag",
+    "Rooibos Teabag",
+    "Barley tea",
+    "Cinnamon Stick",
+    "普洱"
+  ],
+  "Cinnamon Stick": [
+    "Dark Roast Coffee",
+    "Hazelnut Coffee",
+    "Hibiscus Teabag",
+    "Rooibos Teabag",
+    "Cloves",
+    "Dried Apple Peel",
+    "Naartjie Peel",
+    "Red Wine",
+    "云南红茶",
+    "Roasted Corn Tea",
+    "Soba Tea"
+  ],
+  "Lemon Slice": [
+    "Fresh Mint Leaves",
+    "Chamomile",
+    "Peppermint Teabag",
+    "Rooibos Teabag"
+  ],
+  "Chamomile": [
+    "Fresh Mint Leaves",
+    "Lemon Slice",
+    "Peppermint Teabag",
+    "Dried Apple Peel",
+    "Ginger"
+  ],
+  "Peppermint Teabag": [
+    "Chamomile",
+    "Citrus Zest",
+    "Lemon Slice",
+    "Citrus Slice"
+  ],
+  "Citrus Slice": [
+    "Peppermint Teabag"
+  ],
+  "Hibiscus Teabag": [
+    "Rosehip",
+    "Ginger",
+    "Cinnamon Stick",
+    "Naartjie Peel",
+    "Citrus Zest"
+  ],
+  "Rosehip": [
+    "Hibiscus Teabag"
+  ],
+  "Rooibos Teabag": [
+    "Naartjie Peel",
+    "Cinnamon Stick",
+    "Cloves",
+    "Dried Coconut Flakes",
+    "Citrus Zest",
+    "Lemon Slice"
+  ],
+  "Cloves": [
+    "Rooibos Teabag",
+    "Cinnamon Stick",
+    "Red Wine"
+  ],
+  "Dried Coconut Flakes": [
+    "Rooibos Teabag"
+  ],
+  "Dark Roast Coffee": [
+    "Hazelnut Coffee",
+    "Cardamom Pods",
+    "Cinnamon Stick",
+    "Citrus Zest",
+    "Vanilla Pod"
+  ],
+  "Hazelnut Coffee": [
+    "Dark Roast Coffee",
+    "Cardamom Pods",
+    "Cinnamon Stick",
+    "Citrus Zest",
+    "Vanilla Pod"
+  ],
+  "Fresh Mint Leaves": [
+    "Lemon Slice",
+    "Citrus Zest",
+    "Chamomile"
+  ],
+  "Medium Roast Coffee": [
+    "Cardamom Pods",
+    "Citrus Zest",
+    "Naartjie Peel",
+    "Vanilla Pod"
+  ],
+  "Ginger": [
+    "Hibiscus Teabag",
+    "Barley tea",
+    "Citrus Zest",
+    "红枣",
+    "Lemongrass",
+    "普洱",
+    "云南红茶",
+    "Chamomile",
+    "Roasted Corn Tea",
+    "Soba Tea"
+  ],
+  "Vanilla Pod": [
+    "Medium Roast Coffee",
+    "Dark Roast Coffee",
+    "Hazelnut Coffee"
+  ],
+  "Barley tea": [
+    "Citrus Zest",
+    "Naartjie Peel",
+    "Ginger",
+    "红枣",
+    "Dried Apple Peel",
+    "Roasted Corn Tea",
+    "Soba Tea"
+  ],
+  "红枣": [
+    "Barley tea",
+    "Ginger",
+    "枸杞",
+    "桂圆"
+  ],
+  "Dried Apple Peel": [
+    "Barley tea",
+    "Cinnamon Stick",
+    "Chamomile"
+  ],
+  "Lemongrass": [
+    "Ginger"
+  ],
+  "枸杞": [
+    "红枣",
+    "菊花"
+  ],
+  "桂圆": [
+    "红枣"
+  ],
+  "Orange Slice": [
+    "Red Wine"
+  ],
+  "普洱": [
+    "Ginger",
+    "Naartjie Peel",
+    "Citrus Zest"
+  ],
+  "菊花": [
+    "枸杞",
+    "Citrus Zest"
+  ],
+  "茉莉花": [
+    "Dried Lychee",
+    "Dried Rose Buds"
+  ],
+  "Dried Lychee": [
+    "茉莉花"
+  ],
+  "Dried Rose Buds": [
+    "茉莉花"
+  ],
+  "云南红茶": [
+    "Cinnamon Stick",
+    "Cardamom Pods",
+    "Citrus Zest",
+    "Ginger"
+  ],
+  "Roasted Corn Tea": [
+    "Barley tea",
+    "Ginger",
+    "Cinnamon Stick"
+  ],
+  "Soba Tea": [
+    "Barley tea",
+    "Ginger",
+    "Cinnamon Stick"
+  ],
+  "Red Wine": [
+    "Orange Slice",
+    "Cloves",
+    "Cinnamon Stick"
+  ]
+}
