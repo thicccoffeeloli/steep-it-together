@@ -1,0 +1,52 @@
+[
+  {
+    "name": "黑枸杞 (Black goji berry)",
+    "description": "Turns a striking purple-blue colour, mildly sweet and earthy. A wellness staple.",
+    "pairs": "菊花, dried lemon zest, goji berries."
+  },
+  {
+    "name": "桂花 (Osmanthus)",
+    "description": "Delicate apricot-like floral sweetness, very popular in Chinese tea culture.",
+    "pairs": "Light oolong, 菊花, honey in the cup."
+  },
+  {
+    "name": "Dried rose buds",
+    "description": "Subtle and elegant, gentle warmth. Different from rosehip — this is the flower, not the fruit.",
+    "pairs": "Dried lychee, light black tea base, honey in the cup."
+  },
+  {
+    "name": "Lavender",
+    "description": "Aromatic and calming, good for an evening flask.",
+    "pairs": "Robust black tea base, dried lemon zest."
+  },
+  {
+    "name": "Butterfly pea flower (蝶豆花)",
+    "description": "Vivid blue colour that shifts to purple with citrus. Mild and earthy on its own.",
+    "pairs": "Dried lemon zest or lemongrass, honey in the cup."
+  },
+  {
+    "name": "Lemon verbena",
+    "description": "Bright, lemony and refreshing. Less intense than lemongrass.",
+    "pairs": "Chamomile, dried apple peel, mint."
+  },
+  {
+    "name": "Rosehip",
+    "description": "The fruit of the rose plant — tart, fruity, vitamin C rich. Completely different from rosebud which is the flower. Very robust to long steeping.",
+    "pairs": "Hibiscus, dried orange zest, cinnamon."
+  },
+  {
+    "name": "Toasted rice",
+    "description": "Mild and grounding, genmaicha-adjacent without the green tea.",
+    "pairs": "菊花, dried ginger, a small amount of 绿茶 alongside."
+  },
+  {
+    "name": "Licorice root",
+    "description": "Naturally intensely sweet without any sugar, very robust to long steeping.",
+    "pairs": "Fennel seeds, dried ginger, peppermint."
+  },
+  {
+    "name": "Fennel seed",
+    "description": "Mildly sweet and anise-like, traditionally used as a digestive aid.",
+    "pairs": "Licorice root, dried ginger, dried lemon zest."
+  }
+]
