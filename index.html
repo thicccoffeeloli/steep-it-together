@@ -16,13 +16,24 @@
             <a href="reference.html#notes">📝 Notepad</a>
         </p>
     </header>
+    <!-- Only ever visible on narrow screens (see the media query in
+         styles.css) - on a normal desktop-width window all three sections
+         below already sit side by side and this never shows. Swipe main
+         itself directly, or tap a room to jump straight to it - see the
+         wiring at the bottom of this file. -->
+    <div class="tab-bar room-tab-bar">
+        <button id="room-tab-ingredients" class="tab-btn" data-room="ingredients-panel">🌿 Ingredients</button>
+        <button id="room-tab-cauldron" class="tab-btn" data-room="cauldron-room">🍯 Cauldron</button>
+        <button id="room-tab-drink" class="tab-btn" data-room="drink-room">🍵 Drink</button>
+    </div>
+
     <main>
 
         <section id="ingredients-panel">
             <h2>Ingredients</h2>
         </section>
 
-        <section>
+        <section id="cauldron-room">
             <h2>Cauldron</h2>
             <button id="clear-btn">Clear</button>
             <button id="brew-btn">Brew</button>
@@ -53,7 +64,7 @@
             <div id="potential-pairings"></div>
         </section>
 
-        <section class="output-card">
+        <section id="drink-room" class="output-card">
             <!-- Notebook-style tabs for the three brew methods - each keeps
                  its own name/description/notes/rating/star. Picking one
                  selects which saved entry (if any) is shown/edited below;
@@ -130,6 +141,46 @@
     <script src="github-storage.js"></script>
     <script src="tooltip.js"></script>
     <script src="script.js"></script>
+    <script>
+        // Room tab bar (mobile only - see .room-tab-bar in styles.css).
+        // Tapping a tab scrolls straight to that room; the scroll listener
+        // below keeps the tab highlighted in sync if you swipe between
+        // rooms directly instead. Harmless no-op on a normal desktop-width
+        // window - main isn't horizontally scrollable there at all, and
+        // the tab bar itself is CSS-hidden, so none of this is visible.
+        const ROOM_IDS = ['ingredients-panel', 'cauldron-room', 'drink-room'];
+        const mainEl = document.querySelector('main');
+
+        document.querySelectorAll('.room-tab-bar .tab-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                const el = document.getElementById(btn.dataset.room);
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+            });
+        });
+
+        function updateActiveRoomTab() {
+            if (!mainEl) return;
+            const mainRect = mainEl.getBoundingClientRect();
+            const centerX = mainRect.left + mainRect.width / 2;
+            let closestId = ROOM_IDS[0];
+            let closestDist = Infinity;
+            ROOM_IDS.forEach(function(id) {
+                const el = document.getElementById(id);
+                if (!el) return;
+                const rect = el.getBoundingClientRect();
+                const dist = Math.abs((rect.left + rect.width / 2) - centerX);
+                if (dist < closestDist) { closestDist = dist; closestId = id; }
+            });
+            document.querySelectorAll('.room-tab-bar .tab-btn').forEach(function(btn) {
+                btn.classList.toggle('active', btn.dataset.room === closestId);
+            });
+        }
+
+        if (mainEl) {
+            mainEl.addEventListener('scroll', updateActiveRoomTab, { passive: true });
+            updateActiveRoomTab();
+        }
+    </script>
 </body>
 
 </html>

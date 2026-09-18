@@ -274,10 +274,46 @@ main {
     width: 100%;
 }
 
-/* Stack the three columns on narrow screens instead of squeezing them */
+/* Room tab bar (Ingredients/Cauldron/Drink) - index.html only, and only
+   ever shown on narrow screens (see the media query below); on a normal
+   desktop-width screen all three stay side by side as always and this
+   never appears. Reuses the same notebook-tab look as log.html/
+   reference.html's own tab bars. */
+.room-tab-bar {
+    display: none;
+}
+
+/* Below 800px, the three columns used to just stack vertically - but they
+   were still sized for a single shared grid row (grid-template-rows:
+   minmax(0, 1fr) above describes ONE row's height, matching the desktop
+   side-by-side layout), so the first section alone claimed that entire
+   row's height and the other two were pushed down past the bottom of the
+   screen. Swiping/tapping between three separate full-width "rooms"
+   instead sidesteps that entirely - each section gets the full available
+   height on its own turn, none of them still needs to divide space with
+   the other two. */
 @media (max-width: 800px) {
+    .room-tab-bar {
+        display: flex;
+    }
+
     main {
-        grid-template-columns: 1fr;
+        display: flex;
+        grid-template-columns: none;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        gap: 0;
+    }
+
+    main section {
+        flex: 0 0 100%;
+        width: 100%;
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
+        max-height: none;
+        height: 100%;
     }
 }
 
