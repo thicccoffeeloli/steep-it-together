@@ -1,0 +1,100 @@
+[
+  {
+    "section": "Teabags",
+    "items": [
+      "Hibiscus Teabag",
+      "Peppermint Teabag",
+      "Chamomile",
+      "Rooibos Teabag",
+      "Rooibos + Honeybush Blend",
+      "Masala Chai"
+    ]
+  },
+  {
+    "section": "Citrus & Fruits",
+    "items": [
+      "Citrus Zest",
+      "Citrus Slice",
+      "Naartjie Peel",
+      "Orange Slice",
+      "Lemon Slice",
+      "Dried Coconut Flakes",
+      "Dried Apple Peel",
+      "Dried Lychee"
+    ]
+  },
+  {
+    "section": "Coffee",
+    "items": [
+      "Medium Roast Coffee",
+      "Dark Roast Coffee",
+      "Hazelnut Coffee"
+    ]
+  },
+  {
+    "section": "Herbal & Botanicals",
+    "items": [
+      "红枣",
+      "Fresh Mint Leaves",
+      "Ginger",
+      "Lemongrass",
+      "桂圆",
+      "枸杞",
+      "Rose petals"
+    ]
+  },
+  {
+    "section": "Spices",
+    "items": [
+      "Cinnamon Stick",
+      "Cloves",
+      "Cardamom Pods",
+      "Star Anise",
+      "Black Peppercorn",
+      "Turmeric"
+    ]
+  },
+  {
+    "section": "Grains",
+    "items": [
+      "Rice",
+      "Barley tea",
+      "Roasted Corn Tea",
+      "Soba Tea"
+    ]
+  },
+  {
+    "section": "Chinese Tea",
+    "items": [
+      "普洱",
+      "云南红茶",
+      "菊花",
+      "茉莉花"
+    ]
+  },
+  {
+    "section": "Alcohol",
+    "items": [
+      "Red Wine",
+      "Apple Cider",
+      "Whiskey",
+      "Rum"
+    ]
+  },
+  {
+    "section": "Special",
+    "items": [
+      "Ronnefeldt Green Angel",
+      "Ronnefeldt Rooibos Cream Orange",
+      "CBD Blend"
+    ]
+  },
+  {
+    "section": "Uncategorized",
+    "items": [
+      "Dried Rose Buds",
+      "Vanilla Pod",
+      "Rosehip"
+    ]
+  }
+]
