@@ -1,0 +1,22 @@
+[
+  {
+    "name": "龙井 / 碧螺春, 绿茶",
+    "description": "Delicate green teas turn bitter and astringent very quickly; even a few extra minutes ruins them."
+  },
+  {
+    "name": "白茶",
+    "description": "Subtle and fragile, continuous steeping destroys the delicate flavour profile."
+  },
+  {
+    "name": "高山乌龙 / 清香型乌龙",
+    "description": "The floral lightness gets overwhelmed; roasted 乌龙 is more forgiving but still not ideal."
+  },
+  {
+    "name": "Gyokuro",
+    "description": "One of the most delicate Japanese green teas, extremely sensitive to both temperature and steep time."
+  },
+  {
+    "name": "Darjeeling first flush",
+    "description": "Prized precisely for its delicate muscatel character, which disappears with over-steeping."
+  }
+]
