@@ -829,5 +829,39 @@
     "temperature": "hot",
     "rating": 7,
     "starred": false
+  },
+  {
+    "ingredients": [
+      "Naartjie Peel"
+    ],
+    "name": "Hot steeped naartjie peel",
+    "description": "Warm and fragrant citrus — softer and rounder than the cold version, with an upped creaminess from the heat. Less bright and citrusy than cold brew, but the sweetness is similar. Gentle and comforting rather than sharp.",
+    "notes": "",
+    "temperature": "hot",
+    "rating": 7,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Naartjie Peel"
+    ],
+    "name": "Cold brew naartjie peel",
+    "description": "Clean and light citrus — cold extraction pulls the fragrant oils gently without the warm cooked-orange quality you get hot. Refreshing and subtle.",
+    "notes": "Nice and clean. Drinking throughout the day rather than overnight — gets stronger as the day goes on, which works well. Use more peel than you think you need.",
+    "temperature": "cold",
+    "rating": 7,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Naartjie Peel",
+      "Chamomile"
+    ],
+    "name": "Naartjie chamomile tea ",
+    "description": "Gentle and comforting — chamomile's apple-like sweetness with soft citrus warmth from the naartjie. Naartjie comes forward first then softens into the chamomile base.",
+    "notes": "Quite nice, as expected. A natural pairing — both ingredients are round and gentle so they don't compete.",
+    "temperature": "hot",
+    "rating": 8,
+    "starred": false
   }
 ]
