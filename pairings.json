@@ -25,7 +25,9 @@
     "Rooibos Teabag",
     "Barley tea",
     "Cinnamon Stick",
-    "普洱"
+    "普洱",
+    "红枣",
+    "Chamomile"
   ],
   "Cinnamon Stick": [
     "Dark Roast Coffee",
@@ -38,7 +40,8 @@
     "Red Wine",
     "云南红茶",
     "Roasted Corn Tea",
-    "Soba Tea"
+    "Soba Tea",
+    "Ginger"
   ],
   "Lemon Slice": [
     "Fresh Mint Leaves",
@@ -51,7 +54,9 @@
     "Lemon Slice",
     "Peppermint Teabag",
     "Dried Apple Peel",
-    "Ginger"
+    "Ginger",
+    "Rooibos Teabag",
+    "Naartjie Peel"
   ],
   "Peppermint Teabag": [
     "Chamomile",
@@ -78,7 +83,8 @@
     "Cloves",
     "Dried Coconut Flakes",
     "Citrus Zest",
-    "Lemon Slice"
+    "Lemon Slice",
+    "Chamomile"
   ],
   "Cloves": [
     "Rooibos Teabag",
@@ -123,7 +129,8 @@
     "云南红茶",
     "Chamomile",
     "Roasted Corn Tea",
-    "Soba Tea"
+    "Soba Tea",
+    "Cinnamon Stick"
   ],
   "Vanilla Pod": [
     "Medium Roast Coffee",
@@ -143,7 +150,9 @@
     "Barley tea",
     "Ginger",
     "枸杞",
-    "桂圆"
+    "桂圆",
+    "Rooibos + Honeybush Blend",
+    "Naartjie Peel"
   ],
   "Dried Apple Peel": [
     "Barley tea",
@@ -202,5 +211,8 @@
     "Orange Slice",
     "Cloves",
     "Cinnamon Stick"
+  ],
+  "Rooibos + Honeybush Blend": [
+    "红枣"
   ]
 }
