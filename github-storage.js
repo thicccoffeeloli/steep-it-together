@@ -128,6 +128,26 @@
         return res.ok;
     }
 
+    // A one-click "friend login" link (?owner=x&repo=y&token=z) connects
+    // automatically - no typing or pasting a token required. Query params
+    // aren't part of the public repo/source anywhere; they only ever exist
+    // in a link shared privately (e.g. a text message), same trust level
+    // as sharing a Google Doc or Dropbox link. Stripped from the address
+    // bar immediately either way, so the token doesn't linger visibly
+    // there or end up copied along with the page URL afterward.
+    async function tryUrlAutoConnect() {
+        const params = new URLSearchParams(window.location.search);
+        const owner = params.get('owner');
+        const repo = params.get('repo');
+        const token = params.get('token');
+        if (!owner || !repo || !token) return false;
+        history.replaceState(null, '', window.location.pathname + window.location.hash);
+        const ok = await validateConfig(owner, repo, token).catch(function() { return false; });
+        if (!ok) return false;
+        saveConfigToStorage(owner, repo, token);
+        return true;
+    }
+
     async function interactiveConfigure() {
         const overlay = buildConfigOverlay();
         return new Promise(function(resolve) {
@@ -172,6 +192,10 @@
                     return;
                 }
                 if (saved) clearConfig(); // stale/broken - fall through to asking again
+                if (await tryUrlAutoConnect()) {
+                    activeConfig = getConfig();
+                    return;
+                }
                 await interactiveConfigure();
                 activeConfig = getConfig();
             })();
