@@ -863,17 +863,5 @@
     "temperature": "hot",
     "rating": 8,
     "starred": false
-  },
-  {
-    "ingredients": [
-      "Hibiscus Teabag",
-      "Lemon Slice"
-    ],
-    "name": "Acid Test",
-    "description": "Testing",
-    "notes": "",
-    "temperature": "hot",
-    "rating": 1,
-    "starred": false
   }
 ]
