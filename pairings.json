@@ -47,7 +47,8 @@
     "Fresh Mint Leaves",
     "Chamomile",
     "Peppermint Teabag",
-    "Rooibos Teabag"
+    "Rooibos Teabag",
+    "Hibiscus Teabag"
   ],
   "Chamomile": [
     "Fresh Mint Leaves",
@@ -72,7 +73,8 @@
     "Ginger",
     "Cinnamon Stick",
     "Naartjie Peel",
-    "Citrus Zest"
+    "Citrus Zest",
+    "Lemon Slice"
   ],
   "Rosehip": [
     "Hibiscus Teabag"
