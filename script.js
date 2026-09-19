@@ -401,16 +401,25 @@ let hasBrewed = false;
 
 // ===== Initial data load =====
 
+// See linkGoodBrewedPairings - it needs both of these, and they load from
+// two independent fetches below that can finish in either order.
+let combinationsLoaded = false;
+let pairingsLoaded = false;
+
 fetch('/combos')
     .then(function(response) {
         return response.json();
     })
     .then(function(data) {
         combinations = data;
+        combinationsLoaded = true;
         // Tried/untried tints depend on this data - re-render in case the
         // ingredients panel already drew itself (from the separate
         // /ingredients fetch) before this one came back.
         buildIngredientsPanel();
+        // A no-op unless /pairings has already loaded too - whichever of
+        // the two finishes second is the one that does the real catch-up.
+        if (linkGoodBrewedPairings()) renderPotentialPairings();
     });
 
 fetch('/ingredients')
@@ -427,6 +436,11 @@ fetch('/pairings')
     .then(function(response) { return response.json(); })
     .then(function(data) {
         pairings = data;
+        pairingsLoaded = true;
+        // Catches up on any good 2-ingredient combos logged before this
+        // auto-linking existed (see linkGoodBrewedPairings) - a no-op
+        // unless /combos has already loaded too.
+        linkGoodBrewedPairings();
         renderPotentialPairings();
     });
 
@@ -1418,11 +1432,19 @@ function showCauldronBubbles() {
     setTimeout(function() { container.innerHTML = ''; }, 2200);
 }
 
+// The rating at or above which a brewed 2-ingredient combo counts as a
+// genuinely good pairing - used both to keep it *visible* as a suggestion
+// (pairingSuggestionAllowed) and to *add* it as one automatically
+// (linkGoodBrewedPairings). One shared number so the two can never drift
+// apart: a pairing that's good enough to auto-add is by definition never
+// one the filter would then hide.
+const GOOD_PAIRING_RATING = 7;
+
 // A pairing stops being worth suggesting once reality disagrees with the
 // idea: if it's actually been brewed as its own 2-ingredient combo and
-// scored below 7, it's a known miss, not a "potential" pairing anymore.
-// Never brewed (still just an idea), or brewed but never rated, both still
-// count as open - only an actual low score hides it.
+// scored below GOOD_PAIRING_RATING, it's a known miss, not a "potential"
+// pairing anymore. Never brewed (still just an idea), or brewed but never
+// rated, both still count as open - only an actual low score hides it.
 function pairingSuggestionAllowed(a, b) {
     const tried = combinations.filter(function(combo) {
         return combo.ingredients.length === 2 &&
@@ -1434,7 +1456,45 @@ function pairingSuggestionAllowed(a, b) {
     const rated = tried.filter(function(combo) { return combo.rating; });
     if (rated.length === 0) return true;
     const avg = rated.reduce(function(sum, combo) { return sum + combo.rating; }, 0) / rated.length;
-    return avg >= 7;
+    return avg >= GOOD_PAIRING_RATING;
+}
+
+// Any 2-ingredient combo that's been brewed and rated GOOD_PAIRING_RATING or
+// higher becomes a recommended pairing for both of its ingredients - the
+// same two-way link addPairingSuggestion makes by hand. Only ever adds,
+// never removes: a pairing later re-rated below the threshold just gets
+// hidden by pairingSuggestionAllowed above (and reappears if re-rated
+// higher), so there's nothing to clean up here. Idempotent, and only
+// touches pairings.json when something's actually missing, so calling it
+// repeatedly (on every save, and once after the initial load) costs
+// nothing once everything's already linked. Returns whether it changed
+// anything, so callers know whether a re-render is needed.
+function linkGoodBrewedPairings(onlyCombo) {
+    // combinations/pairings both start out empty and fill in from two
+    // independent fetches (see "Initial data load") that can finish in
+    // either order - running this against a still-empty pairings map and
+    // then saving it would overwrite the real pairings.json with just the
+    // handful of links found here. Refuse until both have actually loaded.
+    if (!combinationsLoaded || !pairingsLoaded) return false;
+
+    const candidates = onlyCombo ? [onlyCombo] : combinations;
+    let changed = false;
+
+    candidates.forEach(function(combo) {
+        if (combo.ingredients.length !== 2) return;
+        if (!combo.rating || combo.rating < GOOD_PAIRING_RATING) return;
+        if (!comboIsTried(combo)) return;
+
+        const a = combo.ingredients[0];
+        const b = combo.ingredients[1];
+        if (!pairings[a]) pairings[a] = [];
+        if (!pairings[a].includes(b)) { pairings[a].push(b); changed = true; }
+        if (!pairings[b]) pairings[b] = [];
+        if (!pairings[b].includes(a)) { pairings[b].push(a); changed = true; }
+    });
+
+    if (changed) savePairings();
+    return changed;
 }
 
 // Shows what's known to pair well with whatever's currently in the
@@ -2499,6 +2559,9 @@ saveBtn.addEventListener('click', function() {
             currentMatches[outputTemp] = newCombo;
             document.getElementById('delete-entry-btn').style.display = 'inline-block';
             buildIngredientsPanel(); // tried/untried tint depends on combinations
+            // A good 2-ingredient brew becomes a recommended pairing for
+            // both ingredients (see linkGoodBrewedPairings).
+            if (linkGoodBrewedPairings(newCombo)) renderPotentialPairings();
             showToast('✓ Saved');
         }
     });
