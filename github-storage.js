@@ -34,7 +34,8 @@
         '/category-colors': { file: 'category-colors.json', default: {} },
         '/notes': { file: 'notes.json', default: [] },
         '/hard-to-get': { file: 'hard-to-get.json', default: [] },
-        '/avoid-flask': { file: 'avoid-flask.json', default: [] }
+        '/avoid-flask': { file: 'avoid-flask.json', default: [] },
+        '/custom-lists': { file: 'custom-lists.json', default: [] }
     };
 
     // EXPORT_FILES in server.js uses camelCase keys distinct from the
@@ -42,8 +43,14 @@
     const EXPORT_KEY_BY_ROUTE = {
         '/combos': 'combos', '/ingredients': 'ingredients', '/pairings': 'pairings',
         '/ingredient-colors': 'ingredientColors', '/category-colors': 'categoryColors',
-        '/notes': 'notes', '/hard-to-get': 'hardToGet', '/avoid-flask': 'avoidFlask'
+        '/notes': 'notes', '/hard-to-get': 'hardToGet', '/avoid-flask': 'avoidFlask',
+        '/custom-lists': 'customLists'
     };
+
+    // Same as OPTIONAL_EXPORT_KEYS in server.js - an import file made before
+    // user-created Notepad tabs existed won't have this key, which
+    // shouldn't make it unimportable (or wipe the tabs already saved).
+    const OPTIONAL_EXPORT_KEYS = ['customLists'];
 
     // Captured now, before fetch gets overridden below, so every GitHub API
     // call this file makes goes straight to the network.
@@ -477,13 +484,17 @@
 
         if (url === '/import' && method === 'POST') {
             const missing = Object.values(EXPORT_KEY_BY_ROUTE).filter(function(key) {
-                return !(key in body);
+                return !(key in body) && OPTIONAL_EXPORT_KEYS.indexOf(key) === -1;
             });
             if (missing.length > 0) {
                 return jsonResponse({ success: false, error: 'Missing data: ' + missing.join(', ') }, 400);
             }
             try {
                 for (const route in EXPORT_KEY_BY_ROUTE) {
+                    // An absent optional key means "this export predates it" -
+                    // leave whatever's already saved alone (and writeJsonFile
+                    // can't take undefined anyway).
+                    if (!(EXPORT_KEY_BY_ROUTE[route] in body)) continue;
                     await writeJsonFile(JSON_ROUTES[route].file, body[EXPORT_KEY_BY_ROUTE[route]]);
                 }
                 return jsonResponse({ success: true });

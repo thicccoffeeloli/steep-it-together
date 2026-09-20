@@ -14,12 +14,29 @@ function buildReferenceListPage(config) {
 
     const container = document.getElementById(config.container);
 
-    fetch(config.endpoint)
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-            items = data;
-            render();
+    // The two built-in lists each have a dedicated endpoint (config.endpoint)
+    // and are read/written whole. A user-created tab (see reference.html)
+    // has no endpoint of its own - all of those lists live together inside
+    // one shared file - so it passes config.load()/config.save(items)
+    // instead, and these two just defer to them when present.
+    function loadItems() {
+        if (config.load) return Promise.resolve(config.load());
+        return fetch(config.endpoint).then(function(r) { return r.json(); });
+    }
+
+    function saveItems(list) {
+        if (config.save) return Promise.resolve(config.save(list));
+        return fetch(config.endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(list)
         });
+    }
+
+    loadItems().then(function(data) {
+        items = data;
+        render();
+    });
 
     function render() {
         container.innerHTML = '';
@@ -47,11 +64,7 @@ function buildReferenceListPage(config) {
             saveBtn.id = 'save-edits-btn';
             saveBtn.textContent = 'Save';
             saveBtn.addEventListener('click', function() {
-                fetch(config.endpoint, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(items)
-                }).then(function() {
+                saveItems(items).then(function() {
                     backup = null;
                     mode = 'view';
                     render();

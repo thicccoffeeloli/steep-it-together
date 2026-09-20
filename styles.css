@@ -2177,6 +2177,29 @@ li {
     font-weight: 600;
 }
 
+/* The "＋" that makes a new Notepad tab (reference.html) - same binder-tab
+   shape as the real ones, but dashed and slimmer so it reads as "add
+   another" rather than as one more tab to open. */
+.tab-add-btn {
+    border-style: dashed;
+    padding-left: 12px;
+    padding-right: 12px;
+    font-weight: 600;
+}
+
+.tab-add-btn:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
+/* Rename/Delete for a tab you made yourself - sits above that tab's list. */
+.custom-tab-controls {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
 .notes-page {
     max-width: 800px;
     margin: 0 auto;

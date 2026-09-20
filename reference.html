@@ -25,6 +25,11 @@
         <button id="tab-hard-to-get" class="tab-btn" data-tab="hard-to-get">🔍 Hard to get</button>
         <button id="tab-avoid-flask" class="tab-btn" data-tab="avoid-flask">⚠️ Avoid with flask</button>
         <button id="tab-data" class="tab-btn" data-tab="data">📤 Data</button>
+        <!-- Makes a new list tab (see "User-created tabs" below). Starts
+             disabled and only turns on once the existing tabs have actually
+             loaded - adding one before then could save a list containing
+             just the new tab over the real, not-yet-loaded ones. -->
+        <button id="tab-add" class="tab-btn tab-add-btn" type="button" title="Add a new tab" disabled>＋</button>
     </div>
 
     <div id="panel-notes" class="reference-panel">
@@ -59,7 +64,7 @@
                 it into your laptop app. Export downloads everything below as one file; Import replaces
                 everything with whatever file you pick, so back up with Export first if you're not sure.</p>
             <p class="note-desc"><strong>Included:</strong> ingredients, brew log, potential pairings, colors,
-                and all three reference lists.<br><strong>Not included:</strong> uploaded pictures (ingredient
+                all the reference lists, and any tabs you've added.<br><strong>Not included:</strong> uploaded pictures (ingredient
                 icons/drink photos) - those stay on whichever device they were uploaded from.</p>
             <button id="export-data-btn">⬇️ Export all data</button>
             <div class="data-import-row">
@@ -108,16 +113,179 @@
                 document.getElementById('tab-' + key).classList.toggle('active', key === tab);
             });
             document.getElementById('reference-page-title').textContent = REFERENCE_TAB_TITLES[tab];
-            document.title = 'Witch\'s Brew — ' + REFERENCE_TAB_TITLES[tab].replace(/^\S+\s/, '');
+            // Strips a leading emoji/symbol (and the space after it) from the
+            // browser-tab title - only that, not "the first word", so a
+            // custom tab named "Ideas list" doesn't end up as just "list".
+            document.title = 'Witch\'s Brew — ' + REFERENCE_TAB_TITLES[tab].replace(/^[^\p{L}\p{N}\s]+\s+/u, '');
             history.replaceState(null, '', '#' + tab);
         }
 
-        document.querySelectorAll('.tab-btn').forEach(function(btn) {
+        // [data-tab] specifically - the "＋" button is also a .tab-btn (for
+        // the look) but isn't a tab, so it mustn't get this handler.
+        document.querySelectorAll('.tab-btn[data-tab]').forEach(function(btn) {
             btn.addEventListener('click', function() { selectReferenceTab(btn.dataset.tab); });
         });
 
-        const initialTab = REFERENCE_TAB_TITLES[window.location.hash.slice(1)] ? window.location.hash.slice(1) : 'notes';
+        // Remembered before selectReferenceTab below overwrites the hash - a
+        // custom tab (#custom-...) doesn't exist yet at this point, so this
+        // falls back to Notepad, and the hash would otherwise be lost before
+        // the custom tabs finish loading and could be restored.
+        const requestedTab = window.location.hash.slice(1);
+        const initialTab = REFERENCE_TAB_TITLES[requestedTab] ? requestedTab : 'notes';
         selectReferenceTab(initialTab);
+
+        // ===== User-created tabs =====
+        // Every tab you add lives in one shared array (customLists, saved
+        // whole to /custom-lists), each { id, title, items }. A tab's list
+        // (reference-list.js) works on its own private copy of its items and
+        // only writes them back into this array on Save - so Cancel in one
+        // tab can never leak unsaved edits into whatever gets saved from
+        // another.
+        let customLists = [];
+        const tabBarEl = document.querySelector('.tab-bar');
+        const addTabBtn = document.getElementById('tab-add');
+        const dataTabBtn = document.getElementById('tab-data');
+        const dataPanel = document.getElementById('panel-data');
+
+        function copyItems(items) { return JSON.parse(JSON.stringify(items)); }
+        function customTabKey(list) { return 'custom-' + list.id; }
+
+        function saveCustomLists() {
+            return fetch('/custom-lists', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(customLists)
+            });
+        }
+
+        function askForTabName(message, current) {
+            const answer = prompt(message, current || '');
+            if (answer === null) return null;
+            return answer.trim() || null;
+        }
+
+        function createCustomTab(list) {
+            const key = customTabKey(list);
+
+            const tabBtn = document.createElement('button');
+            tabBtn.id = 'tab-' + key;
+            tabBtn.className = 'tab-btn';
+            tabBtn.dataset.tab = key;
+            tabBtn.textContent = list.title;
+            tabBtn.addEventListener('click', function() { selectReferenceTab(key); });
+            tabBarEl.insertBefore(tabBtn, dataTabBtn);
+
+            const panel = document.createElement('div');
+            panel.id = 'panel-' + key;
+            panel.className = 'reference-panel';
+            panel.hidden = true;
+
+            const page = document.createElement('div');
+            page.className = 'notes-page';
+
+            const controls = document.createElement('div');
+            controls.className = 'custom-tab-controls';
+
+            const renameBtn = document.createElement('button');
+            renameBtn.type = 'button';
+            renameBtn.className = 'sort-toggle-btn';
+            renameBtn.textContent = '✏️ Rename tab';
+            renameBtn.addEventListener('click', function() { renameCustomTab(list); });
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.type = 'button';
+            deleteBtn.className = 'sort-toggle-btn';
+            deleteBtn.textContent = '🗑️ Delete tab';
+            deleteBtn.addEventListener('click', function() { deleteCustomTab(list); });
+
+            controls.appendChild(renameBtn);
+            controls.appendChild(deleteBtn);
+            page.appendChild(controls);
+
+            const listContainer = document.createElement('div');
+            listContainer.id = 'list-' + key;
+            page.appendChild(listContainer);
+            panel.appendChild(page);
+            dataPanel.parentNode.insertBefore(panel, dataPanel);
+
+            // Only registered once both the tab and its panel actually exist -
+            // selectReferenceTab looks up both for every key in this map.
+            REFERENCE_TAB_TITLES[key] = list.title;
+
+            // The container has to be in the page before this runs - the
+            // builder looks it up by id immediately.
+            buildReferenceListPage({
+                container: listContainer.id,
+                load: function() { return copyItems(list.items); },
+                save: function(items) {
+                    list.items = copyItems(items);
+                    return saveCustomLists();
+                },
+                fields: [
+                    { key: 'name', label: '' },
+                    { key: 'description', label: '', multiline: true }
+                ]
+            });
+        }
+
+        function renameCustomTab(list) {
+            const title = askForTabName('New name for this tab:', list.title);
+            if (!title) return;
+            const key = customTabKey(list);
+            list.title = title;
+            REFERENCE_TAB_TITLES[key] = title;
+            document.getElementById('tab-' + key).textContent = title;
+            saveCustomLists();
+            selectReferenceTab(key); // re-select just to refresh the page heading/title
+        }
+
+        function deleteCustomTab(list) {
+            if (!confirm('Delete the "' + list.title + '" tab and everything in it? This can\'t be undone.')) return;
+            const key = customTabKey(list);
+            customLists = customLists.filter(function(l) { return l !== list; });
+            delete REFERENCE_TAB_TITLES[key];
+            document.getElementById('tab-' + key).remove();
+            document.getElementById('panel-' + key).remove();
+            saveCustomLists();
+            selectReferenceTab('notes');
+        }
+
+        addTabBtn.addEventListener('click', function() {
+            const title = askForTabName('Name for the new tab (e.g. 💡 Ideas):');
+            if (!title) return;
+            const list = { id: Date.now().toString(36), title: title, items: [] };
+            customLists.push(list);
+            createCustomTab(list);
+            saveCustomLists();
+            selectReferenceTab(customTabKey(list));
+        });
+
+        fetch('/custom-lists')
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                // A failed load comes back as an error object, not an array -
+                // leave "＋" disabled in that case rather than let a new tab
+                // get saved over the real (just not loaded) list.
+                if (!Array.isArray(data)) return;
+                customLists = data;
+                customLists.forEach(function(list) {
+                    if (!Array.isArray(list.items)) list.items = [];
+                    createCustomTab(list);
+                });
+                addTabBtn.disabled = false;
+
+                // The initial tab was picked before these existed, so a deep
+                // link straight to one (#custom-...), or just refreshing the
+                // page while on one, needs redoing. Only if nothing's been
+                // clicked in the meantime - the hash still being the fallback
+                // we set is how we know - so this never yanks you away from
+                // a tab you already switched to.
+                if (requestedTab.indexOf('custom-') === 0 && REFERENCE_TAB_TITLES[requestedTab] &&
+                        window.location.hash.slice(1) === initialTab) {
+                    selectReferenceTab(requestedTab);
+                }
+            })
+            .catch(function() {});
 
         // Unlike the local version, this can't just navigate straight to
         // /export - there's no real server here for the browser to
