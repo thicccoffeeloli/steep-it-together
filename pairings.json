@@ -94,7 +94,8 @@
     "Red Wine"
   ],
   "Dried Coconut Flakes": [
-    "Rooibos Teabag"
+    "Rooibos Teabag",
+    "枸杞"
   ],
   "Dark Roast Coffee": [
     "Hazelnut Coffee",
@@ -166,7 +167,8 @@
   ],
   "枸杞": [
     "红枣",
-    "菊花"
+    "菊花",
+    "Dried Coconut Flakes"
   ],
   "桂圆": [
     "红枣"
