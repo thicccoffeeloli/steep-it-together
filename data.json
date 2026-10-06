@@ -898,5 +898,16 @@
     "temperature": "cold",
     "rating": 9,
     "starred": true
+  },
+  {
+    "ingredients": [
+      "Barley tea"
+    ],
+    "name": "Cold Brew Barley Tea",
+    "description": "A ghost of the hot version. Faint barley flavour without the roasted nutty depth. Drinkable but lacks body and oomph.",
+    "notes": "Cold water can't extract the roasted compounds properly. Hot-then-cool is the move for barley tea.",
+    "temperature": "cold",
+    "rating": 5,
+    "starred": false
   }
 ]
