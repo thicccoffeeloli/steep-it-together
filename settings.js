@@ -84,12 +84,31 @@ document.getElementById('import-data-btn').addEventListener('click', function() 
     reader.readAsText(file);
 });
 
+// ===== Share with a friend =====
+
+const guestLinkInput = document.getElementById('guest-link');
+guestLinkInput.value = window.location.origin + window.location.pathname.replace(/settings\.html$/, '') + '?guest';
+document.getElementById('copy-guest-link-btn').addEventListener('click', function() {
+    guestLinkInput.select();
+    (navigator.clipboard ? navigator.clipboard.writeText(guestLinkInput.value) : Promise.reject()).catch(function() {
+        document.execCommand('copy');
+    }).then(function() { flashStatus('✓ Link copied'); });
+});
+
 // ===== GitHub connection =====
+
+// A guest has nothing to disconnect - offer the way in instead.
+if (window.steepIsGuest && window.steepIsGuest()) {
+    const btn = document.getElementById('gh-disconnect-btn');
+    btn.textContent = '🔑 Connect to GitHub (leave guest view)';
+    btn.id = 'gh-leave-guest-btn';
+    btn.addEventListener('click', function() { window.leaveGuestMode(); });
+}
 
 // disconnectGitHubStorage (github-storage.js) clears the saved
 // owner/repo/token and reloads, which puts the connect screen
 // straight back up - same effect as a sign-out.
-document.getElementById('gh-disconnect-btn').addEventListener('click', function() {
+if (document.getElementById('gh-disconnect-btn')) document.getElementById('gh-disconnect-btn').addEventListener('click', function() {
     if (confirm('Disconnect this device from its current GitHub repo? You\'ll need to reconnect (or connect to a different repo) to use the app again.')) {
         window.disconnectGitHubStorage();
     }

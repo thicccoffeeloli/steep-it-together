@@ -105,15 +105,89 @@
         overlay.innerHTML =
             '<div class="github-config-card">' +
             '<h1>Steep It Together</h1>' +
-            '<p>Connect the private GitHub repo you\'re using to store your tea data.</p>' +
+            '<p>Connect the GitHub repo that stores your tea data - or just have a look around as a guest.</p>' +
             '<label>GitHub username<input type="text" id="gh-owner-input" autocomplete="off"></label>' +
             '<label>Repo name<input type="text" id="gh-repo-input" autocomplete="off"></label>' +
             '<label>Personal access token<input type="password" id="gh-token-input" autocomplete="off"></label>' +
             '<button id="gh-connect-btn" type="button">Connect</button>' +
             '<p class="github-config-note" id="gh-config-status"></p>' +
+            '<p class="github-config-or">or</p>' +
+            '<button id="gh-guest-btn" type="button">👀 Just look around (view only)</button>' +
             '</div>';
         document.body.appendChild(overlay);
         return overlay;
+    }
+
+    // ===== Guest (view-only) mode - for friends =====
+    // The repo is public (GitHub Pages' free tier requires it), so the data
+    // files are already served as plain static files right next to this
+    // page. A guest reads those directly - no token, no GitHub API at all -
+    // and every write is refused with a friendly note instead of saved.
+    // Entered via a shared link (?guest) or the button on the connect
+    // screen; remembered on that device until they leave it from Settings.
+    const GUEST_KEY = 'steepItTogetherGuest';
+    function isGuest() {
+        try { return localStorage.getItem(GUEST_KEY) === '1'; } catch (e) { return false; }
+    }
+    function enterGuestMode() {
+        try { localStorage.setItem(GUEST_KEY, '1'); } catch (e) { /* private window - lasts this page only */ }
+        guestForThisPage = true;
+    }
+    let guestForThisPage = false;
+    function guestActive() { return guestForThisPage || isGuest(); }
+    window.steepIsGuest = guestActive;
+    window.leaveGuestMode = function() {
+        try { localStorage.removeItem(GUEST_KEY); } catch (e) {}
+        window.location.reload();
+    };
+    (function guestFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        if (!params.has('guest')) return;
+        enterGuestMode();
+        params.delete('guest');
+        const rest = params.toString();
+        history.replaceState(null, '', window.location.pathname + (rest ? '?' + rest : '') + window.location.hash);
+    })();
+
+    function showGuestNotice() {
+        let el = document.getElementById('gh-save-status');
+        if (!el) {
+            el = document.createElement('div');
+            el.id = 'gh-save-status';
+            document.body.appendChild(el);
+        }
+        el.textContent = '👀 Guest view - not saved';
+        el.className = 'gh-save-status-error visible';
+        clearTimeout(el._hideTimer);
+        el._hideTimer = setTimeout(function() { el.classList.remove('visible'); }, 2500);
+    }
+
+    function addGuestBanner() {
+        if (document.getElementById('guest-banner')) return;
+        const banner = document.createElement('div');
+        banner.id = 'guest-banner';
+        banner.innerHTML = '👀 You\'re looking around as a guest - have a play, but nothing you change is saved. ' +
+            '<a href="settings.html">Connect</a>';
+        document.body.appendChild(banner);
+    }
+    if (guestActive()) {
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', addGuestBanner);
+        else addGuestBanner();
+    }
+
+    async function guestReadJson(route) {
+        try {
+            const res = await realFetch(route.file + '?t=' + Date.now(), { cache: 'no-store' });
+            if (!res.ok) return route.default;
+            return await res.json();
+        } catch (e) {
+            return route.default;
+        }
+    }
+
+    function guestRefuse() {
+        showGuestNotice();
+        return jsonResponse({ success: false, error: 'Guest view - changes aren\'t saved' }, 403);
     }
 
     function setConfigStatus(message) {
@@ -165,6 +239,13 @@
     async function interactiveConfigure() {
         const overlay = buildConfigOverlay();
         return new Promise(function(resolve) {
+            // Reloads rather than carrying on: this page's first data requests
+            // are already waiting on this screen, on the token route - a fresh
+            // load sends them down the guest route from the start. ?guest
+            // (not just localStorage) so it works even where storage is blocked.
+            document.getElementById('gh-guest-btn').addEventListener('click', function() {
+                window.location.replace(window.location.pathname + '?guest' + window.location.hash);
+            });
             document.getElementById('gh-connect-btn').addEventListener('click', async function() {
                 const owner = document.getElementById('gh-owner-input').value.trim();
                 const repo = document.getElementById('gh-repo-input').value.trim();
@@ -216,7 +297,7 @@
     }
 
     function ensureConfigured() {
-        if (activeConfig) return Promise.resolve();
+        if (activeConfig || guestActive()) return Promise.resolve();
         if (!ensureConfiguredPromise) {
             ensureConfiguredPromise = (async function() {
                 const saved = getConfig();
@@ -588,6 +669,7 @@
     // once per page load, not re-fetched every time something re-renders.
     const imageBlobUrlCache = new Map();
     async function getImageBlobUrl(path) {
+        if (guestActive()) throw new Error('guest - static images only');
         if (imageBlobUrlCache.has(path)) return imageBlobUrlCache.get(path);
         const promise = (async function() {
             const res = await githubRequest(path, { headers: { Accept: 'application/vnd.github.raw+json' } });
@@ -614,6 +696,23 @@
     window.fetch = async function(input, init) {
         const url = typeof input === 'string' ? input : input.url;
         const method = ((init && init.method) || 'GET').toUpperCase();
+
+        if (guestActive()) {
+            if (JSON_ROUTES[url]) {
+                if (method === 'GET') return jsonResponse(await guestReadJson(JSON_ROUTES[url]));
+                return guestRefuse();
+            }
+            if (url === '/export' && method === 'GET') {
+                const bundle = {};
+                for (const route in JSON_ROUTES) bundle[EXPORT_KEY_BY_ROUTE[route]] = await guestReadJson(JSON_ROUTES[route]);
+                return jsonResponse(bundle);
+            }
+            if (url === '/import' || url === '/upload-image' || url === '/copy-image' || url === '/delete-image') {
+                return guestRefuse();
+            }
+            return realFetch(input, init);
+        }
+
         const body = init && init.body ? JSON.parse(init.body) : null;
 
         if (JSON_ROUTES[url]) {

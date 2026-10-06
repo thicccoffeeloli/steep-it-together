@@ -2781,3 +2781,52 @@ h3.note-section-title {
     margin: 0 0 14px;
     font-size: 13px;
 }
+
+/* ===== Guest (view-only) mode ===== */
+
+#guest-banner {
+    position: fixed;
+    left: 50%;
+    bottom: 14px;
+    transform: translateX(-50%);
+    z-index: 1400;
+    max-width: calc(100% - 32px);
+    padding: 8px 16px;
+    border-radius: 999px;
+    background: #3d1c5c;
+    color: #fff6e0;
+    font-size: 13px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    text-align: center;
+}
+
+#guest-banner a {
+    color: #ffd166;
+    font-weight: 700;
+}
+
+.github-config-or {
+    margin: 16px 0 10px !important;
+    font-size: 13px !important;
+    color: var(--ink-soft, #6b6155);
+}
+
+#gh-guest-btn {
+    width: 100%;
+}
+
+.settings-share-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.settings-share-row input {
+    flex: 1 1 260px;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font: inherit;
+    font-size: 13px;
+    background: var(--card-bg);
+}

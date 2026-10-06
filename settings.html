@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Steep It Together — Settings</title>
     <link rel="icon" type="image/png" href="Images/teabag-rooibos.png">
-    <link rel="stylesheet" href="styles.css?v=20261007e">
+    <link rel="stylesheet" href="styles.css?v=20261007f">
 </head>
 
 <body>
@@ -47,16 +47,28 @@
     </div>
 
     <div class="notes-page settings-section">
+        <h2>Share with a friend</h2>
+        <p class="note-callout">Send a friend this link and they can look around your brews, log, matrix,
+            graphs and notes - no account or password needed. It's <strong>view only</strong>: they can
+            play with the cauldron, but nothing they change is saved. (Your repo is public, so this shows
+            nothing that wasn't already readable.)</p>
+        <div class="settings-share-row">
+            <input type="text" id="guest-link" readonly>
+            <button id="copy-guest-link-btn" type="button">📋 Copy link</button>
+        </div>
+    </div>
+
+    <div class="notes-page settings-section">
         <h2>GitHub connection</h2>
         <p class="note-callout">This device is connected to a GitHub repo for syncing (see github-storage.js).
             Only needed if you're switching to a different repo or token.</p>
         <button id="gh-disconnect-btn">🔌 Disconnect / change repo</button>
     </div>
 
-    <script src="github-storage.js?v=20261007e"></script>
-    <script src="app-settings.js?v=20261007e"></script>
-    <script src="tooltip.js?v=20261007e"></script>
-    <script src="settings.js?v=20261007e"></script>
+    <script src="github-storage.js?v=20261007f"></script>
+    <script src="app-settings.js?v=20261007f"></script>
+    <script src="tooltip.js?v=20261007f"></script>
+    <script src="settings.js?v=20261007f"></script>
 </body>
 
 </html>
