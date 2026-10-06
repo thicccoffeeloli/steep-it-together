@@ -2629,3 +2629,16 @@ h3.note-section-title {
 .column-filter [hidden] {
     display: none !important;
 }
+
+.graphs-filter-mode {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+/* A selected ingredient in "+ connections" mode - glows so it's clear which
+   node you asked about versus the ones it's merely connected to. */
+.graph-node-focus {
+    filter: drop-shadow(0 0 5px var(--accent));
+}

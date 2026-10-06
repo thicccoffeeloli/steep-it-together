@@ -53,6 +53,13 @@ function graphsFilterActive() {
     return graphsFilterCategories.size > 0 || graphsFilterIngredients.size > 0;
 }
 
+// How the filter is applied to the Pairing outcomes network (the preference
+// scatter always uses 'only' - it has no connections to follow):
+//   'only'        - exactly what's selected, and the lines between those
+//   'connections' - what's selected PLUS everything it's connected to: every
+//                   line and 3+ combo that touches a selected ingredient
+let graphsFilterMode = 'only'; // 'only' | 'connections'
+
 // 'word' (colored circle + name) or 'icon' (the ingredient's own picture,
 // no text) - shared by both network graphs (3+ combo network, Pairing
 // outcomes), see buildGraphNodeSvg.
@@ -2111,7 +2118,29 @@ function renderPairingNetwork() {
         });
     });
 
-    if (graphsFilterActive()) {
+    const followConnections = graphsFilterActive() && graphsFilterMode === 'connections';
+    const focusNames = new Set();
+    if (followConnections) {
+        names.forEach(function(name) { if (ingredientPassesGraphsFilter(name)) focusNames.add(name); });
+        // Anything touching a selected ingredient stays - the selected
+        // ingredient itself, and whatever it's paired with on the other end.
+        edges = edges.filter(function(e) { return focusNames.has(e[0]) || focusNames.has(e[1]); });
+        multiCombos = multiCombos.filter(function(combo) {
+            return combo.ingredients.some(function(n) { return focusNames.has(n); });
+        });
+        names = [];
+        const keptNames = new Set();
+        edges.forEach(function(edge) {
+            edge.forEach(function(name) {
+                if (!keptNames.has(name)) { keptNames.add(name); names.push(name); }
+            });
+        });
+        multiCombos.forEach(function(combo) {
+            combo.ingredients.forEach(function(name) {
+                if (!keptNames.has(name)) { keptNames.add(name); names.push(name); }
+            });
+        });
+    } else if (graphsFilterActive()) {
         const allowed = new Set(names.filter(ingredientPassesGraphsFilter));
         names = names.filter(function(name) { return allowed.has(name); });
         edges = edges.filter(function(e) { return allowed.has(e[0]) && allowed.has(e[1]); });
@@ -2123,9 +2152,11 @@ function renderPairingNetwork() {
     if (names.length === 0) {
         const empty = document.createElement('p');
         empty.className = 'graphs-empty';
-        empty.textContent = graphsFilterActive()
-            ? 'Nothing matches this filter yet.'
-            : 'No potential pairings recorded yet - add some from the cauldron\'s suggestions first.';
+        empty.textContent = followConnections
+            ? 'None of the selected ingredients have a recorded pairing yet.'
+            : graphsFilterActive()
+                ? 'Nothing matches this filter yet.'
+                : 'No potential pairings recorded yet - add some from the cauldron\'s suggestions first.';
         container.appendChild(empty);
         return;
     }
@@ -2239,6 +2270,7 @@ function renderPairingNetwork() {
     names.forEach(function(name) {
         const node = buildGraphNodeSvg(name, positions[name], graphNodeMode, clipId);
         nodeElements[name] = node;
+        if (focusNames.has(name)) node.classList.add('graph-node-focus');
         svg.appendChild(node);
     });
     wireGraphHoverHighlight(nodeElements, shapesByNode);
@@ -2263,6 +2295,24 @@ function renderPairingNetwork() {
 function buildGraphsFilterUI(onChange) {
     const wrap = document.createElement('div');
     wrap.className = 'graphs-filter';
+
+    if (graphsView === 'pairings') {
+        const modeRow = document.createElement('div');
+        modeRow.className = 'graphs-filter-mode';
+        [['only', 'Only what I select'], ['connections', 'What I select + all its connections']].forEach(function(pair) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'sort-toggle-btn';
+            btn.textContent = pair[1];
+            btn.classList.toggle('active', graphsFilterMode === pair[0]);
+            btn.addEventListener('click', function() {
+                graphsFilterMode = pair[0];
+                onChange();
+            });
+            modeRow.appendChild(btn);
+        });
+        wrap.appendChild(modeRow);
+    }
 
     const categoriesRow = document.createElement('div');
     categoriesRow.className = 'graphs-filter-categories';
