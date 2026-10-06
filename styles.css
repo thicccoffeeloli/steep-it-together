@@ -771,7 +771,14 @@ li {
        a perfect square, top/bottom percentages (which CSS bases on width,
        not height) work out correctly here too. Estimated from a screenshot,
        not pixel-measured - nudge if it's off. */
-    padding: 38% 22% 30%;
+    /* Percentage padding is measured against the PARENT's width, not this
+       box's own - and the pot is capped at max-width 420px, so whenever its
+       column was wider than that (roughly 700-1000px windows) the padding
+       inflated while the pot didn't, shoving chips down onto the rim. This
+       works out the pot's real width off the wrapper (see
+       .cauldron-wrapper's container-type) and derives the padding from that. */
+    --pot-w: min(100cqw, 420px);
+    padding: calc(var(--pot-w) * 0.38) calc(var(--pot-w) * 0.22) calc(var(--pot-w) * 0.30);
     /* Keeps ingredients from spilling out past the pot's visual bounds if
        there are enough of them to overflow - scrolls inside the pot
        instead of escaping it. */
@@ -878,6 +885,7 @@ li {
    rather than floating over the whole wrapper. */
 .cauldron-wrapper {
     position: relative;
+    container-type: inline-size;
 }
 
 .cauldron-bubbles {

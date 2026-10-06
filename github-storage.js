@@ -427,7 +427,16 @@
         const path = 'Images/' + filename;
         return enqueueWrite(async function() {
             const body = { message: 'upload ' + path, content: match[1] };
-            const sha = shaCache.get(path);
+            let sha = shaCache.get(path);
+            if (!sha) {
+                // Replacing an icon that already exists in the repo (e.g. one
+                // of the original baked-in ones, which this page never
+                // fetched, so no sha was ever cached) - GitHub rejects a PUT
+                // over an existing file with a 422 unless it's told that
+                // file's current sha.
+                const existing = await githubRequest(path);
+                if (existing.ok) sha = (await existing.json()).sha;
+            }
             if (sha) body.sha = sha;
             const res = await githubRequest(path, {
                 method: 'PUT',
@@ -671,7 +680,7 @@
     // the current script queue is idle" instead guarantees both run after
     // script.js has finished declaring its own versions, so these apply
     // last and stick.
-    setTimeout(function() {
+    function applyLiveIconPatches() {
         // Patches displayIconSrc, NOT imagePathFor itself - script.js calls
         // imagePathFor for two very different purposes, and only one of
         // them wants this redirect. Upload/delete/rename code calls it to
@@ -724,5 +733,12 @@
                     });
             });
         };
-    }, 0);
+    }
+    // Not setTimeout(0): script.js is a separate network fetch, so that timer
+    // could fire BEFORE it had even loaded - the patches then found nothing
+    // to patch (or got overwritten by script.js's own declarations a moment
+    // later) and silently never applied. DOMContentLoaded only fires once
+    // every classic script on the page has actually run.
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applyLiveIconPatches);
+    else applyLiveIconPatches();
 })();
