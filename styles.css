@@ -2745,3 +2745,39 @@ h3.note-section-title {
     opacity: 0.4;
     cursor: default;
 }
+
+/* ===== Blocked pairings ===== */
+
+.pair-cell-blocked {
+    background: repeating-linear-gradient(45deg, #ece6ef, #ece6ef 5px, #ddd3e2 5px, #ddd3e2 10px);
+    color: #8a2b3b;
+    cursor: default;
+}
+
+.blocked-warning {
+    margin: 0 0 14px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: #fdecee;
+    border: 1.5px dashed #c0485a;
+    color: #7a1f2e;
+    font-size: 14px;
+}
+
+.blocked-warning-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.blocked-warning-row + .blocked-warning-row {
+    margin-top: 6px;
+}
+
+.block-pair-btn {
+    display: block;
+    margin: 0 0 14px;
+    font-size: 13px;
+}

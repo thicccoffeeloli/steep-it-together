@@ -404,6 +404,7 @@ function enterEditingMode() {
     pairingsBackup = JSON.parse(JSON.stringify(pairings));
     ingredientColorsBackup = JSON.parse(JSON.stringify(ingredientColors));
     categoryColorsBackup = JSON.parse(JSON.stringify(categoryColors));
+    blockedPairsBackup = new Set(blockedPairs);
     combinationsBackup = JSON.parse(JSON.stringify(combinations));
     pendingImageRenames = [];
     panelMode = 'editing';
@@ -644,6 +645,8 @@ function buildIngredientsPanel() {
                 // A section rename moves its colour to the new name (see the
                 // section name input) - only worth a save if that happened.
                 if (JSON.stringify(categoryColors) !== JSON.stringify(categoryColorsBackup)) saveCategoryColors();
+                if (blockedPairsBackup && Array.from(blockedPairs).sort().join(',') !== Array.from(blockedPairsBackup).sort().join(',')) saveBlockedPairs();
+                blockedPairsBackup = null;
                 ingredientsBackup = null;
                 pairingsBackup = null;
                 ingredientColorsBackup = null;
@@ -674,6 +677,8 @@ function buildIngredientsPanel() {
             pairings = pairingsBackup;
             ingredientColors = ingredientColorsBackup;
             categoryColors = categoryColorsBackup;
+            if (blockedPairsBackup) blockedPairs = blockedPairsBackup;
+            blockedPairsBackup = null;
             combinations = combinationsBackup;
             ingredientsBackup = null;
             pairingsBackup = null;
@@ -1216,6 +1221,7 @@ function createIngredientEl(name, sectionIndex, itemIndex) {
             const finalName = ingredientsData[sectionIndex].items[itemIndex];
             if (renameStartedAs === finalName) return;
             migratePairingsKey(renameStartedAs, finalName);
+            migrateBlockedPairs(renameStartedAs, finalName);
             migrateIngredientColorKey(renameStartedAs, finalName);
             migrateComboIngredientNames(renameStartedAs, finalName);
             pendingImageRenames.push({ oldName: renameStartedAs, newName: finalName });
@@ -1493,6 +1499,7 @@ const GOOD_PAIRING_RATING = 7;
 // pairing anymore. Never brewed (still just an idea), or brewed but never
 // rated, both still count as open - only an actual low score hides it.
 function pairingSuggestionAllowed(a, b) {
+    if (isBlockedPair(a, b)) return false;
     const tried = combinations.filter(function(combo) {
         return combo.ingredients.length === 2 &&
             combo.ingredients.includes(a) &&
@@ -1551,11 +1558,111 @@ function linkGoodBrewedPairings(onlyCombo) {
 // cauldron; its "x" removes the suggestion; the dropdown at the end adds a
 // new one. Edits apply immediately and save straight to pairings.json -
 // this is just a set of tags, not worth a separate edit/save/cancel mode.
+// ===== Blocked pairings =====
+// Pairs you've said shouldn't be mixed (blocked.json, a list of "A|B" keys
+// with the two names sorted). Blocked pairs are never suggested, never
+// picked by the randomizer, and show as ⛔ in the brew log's matrix. Not a
+// hard lock - you can still brew one (it just warns), and unblock any time.
+let blockedPairs = new Set();
+let blockedPairsBackup = null; // for ingredient-edit Cancel (renames migrate keys live)
+
+function blockedPairKey(a, b) {
+    return [a, b].sort().join('|');
+}
+
+function isBlockedPair(a, b) {
+    return blockedPairs.has(blockedPairKey(a, b));
+}
+
+function blockedPairsIn(names) {
+    const found = [];
+    for (let i = 0; i < names.length; i++) {
+        for (let j = i + 1; j < names.length; j++) {
+            if (isBlockedPair(names[i], names[j])) found.push([names[i], names[j]]);
+        }
+    }
+    return found;
+}
+
+function saveBlockedPairs() {
+    return fetch('/blocked', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(Array.from(blockedPairs).sort())
+    });
+}
+
+function setPairBlocked(a, b, blocked) {
+    const key = blockedPairKey(a, b);
+    if (blocked) blockedPairs.add(key); else blockedPairs.delete(key);
+    saveBlockedPairs();
+    renderPotentialPairings();
+    showToast(blocked ? '⛔ ' + a + ' + ' + b + ' blocked' : '✓ ' + a + ' + ' + b + ' unblocked');
+}
+
+// Keys are names, so an ingredient rename has to carry them over.
+function migrateBlockedPairs(oldName, newName) {
+    if (!oldName || !newName || oldName === newName) return;
+    const next = new Set();
+    blockedPairs.forEach(function(key) {
+        const parts = key.split('|').map(function(n) { return n === oldName ? newName : n; });
+        next.add(blockedPairKey(parts[0], parts[1]));
+    });
+    blockedPairs = next;
+}
+
+fetch('/blocked')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (Array.isArray(data)) blockedPairs = new Set(data);
+        renderPotentialPairings();
+    })
+    .catch(function() {});
+
+// Shown at the top of the potential-pairings area, right under the pot:
+// a warning (with Unblock) when the cauldron holds a blocked pair, or a
+// quiet "don't mix these" button when it holds exactly two ingredients.
+function buildBlockedPairsBox() {
+    const blockedHere = blockedPairsIn(cauldronItems);
+    if (blockedHere.length > 0) {
+        const box = document.createElement('div');
+        box.className = 'blocked-warning';
+        blockedHere.forEach(function(pair) {
+            const row = document.createElement('div');
+            row.className = 'blocked-warning-row';
+            const text = document.createElement('span');
+            text.textContent = '⛔ ' + pair[0] + ' + ' + pair[1] + ' is blocked - you marked these as not to be mixed.';
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'sort-toggle-btn';
+            btn.textContent = 'Unblock';
+            btn.addEventListener('click', function() { setPairBlocked(pair[0], pair[1], false); });
+            row.appendChild(text);
+            row.appendChild(btn);
+            box.appendChild(row);
+        });
+        return box;
+    }
+    if (cauldronItems.length === 2) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'sort-toggle-btn block-pair-btn';
+        btn.textContent = '⛔ Don\'t mix these two';
+        btn.title = 'Block this pairing - it won\'t be suggested or picked by Random brew (you can unblock it later)';
+        btn.addEventListener('click', function() { setPairBlocked(cauldronItems[0], cauldronItems[1], true); });
+        return btn;
+    }
+    return null;
+}
+
 function renderPotentialPairings() {
     const container = document.getElementById('potential-pairings');
     container.innerHTML = '';
 
     if (cauldronItems.length === 0) return;
+
+    const blockedBox = buildBlockedPairsBox();
+    if (blockedBox) container.appendChild(blockedBox);
 
     const suggestions = new Set();
     cauldronItems.forEach(function(name) {
@@ -2541,30 +2648,27 @@ randomBrewBtn.addEventListener('click', function() {
     if (allNames.length === 0) return;
     const count = Math.min(Math.max(1, Number(randomCountInput.value) || 1), allNames.length);
 
+    // Random sampling (rather than, say, enumerating every possible
+    // combination up front) stays cheap regardless of how many ingredients
+    // there are - this just keeps rolling until it lands on one that's
+    // allowed: never a blocked pair, and (with "New only") never one already
+    // tried. Capped so a combo size with nothing allowed left can't hang.
+    const untriedOnly = randomUntriedOnlyCheckbox.checked;
+    const triedKeys = untriedOnly ? getTriedComboKeys() : null;
+    const MAX_ATTEMPTS = 300;
     let picked;
-    if (randomUntriedOnlyCheckbox.checked) {
-        const triedKeys = getTriedComboKeys();
-        // Random sampling (rather than, say, enumerating every untried
-        // combination up front) stays cheap regardless of how many
-        // ingredients there are - this just keeps rolling until it lands
-        // on one that isn't in triedKeys yet, same odds as the plain
-        // version otherwise. A combo this size really might not exist
-        // untried anymore (e.g. count's bigger than the ingredient list
-        // itself has room for new ones) - capped so that doesn't hang.
-        const MAX_ATTEMPTS = 300;
-        for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
-            const candidate = randomSample(allNames, count);
-            if (!triedKeys.has(candidate.slice().sort().join('|'))) {
-                picked = candidate;
-                break;
-            }
-        }
-        if (!picked) {
-            showToast('⚠️ No untried combo of that size left - try a different count');
-            return;
-        }
-    } else {
-        picked = randomSample(allNames, count);
+    for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+        const candidate = randomSample(allNames, count);
+        if (blockedPairsIn(candidate).length > 0) continue;
+        if (untriedOnly && triedKeys.has(candidate.slice().sort().join('|'))) continue;
+        picked = candidate;
+        break;
+    }
+    if (!picked) {
+        showToast(untriedOnly
+            ? '⚠️ No untried, unblocked combo of that size left - try a different count'
+            : '⚠️ Couldn\'t find a combo of that size without a blocked pair - try a different count');
+        return;
     }
 
     cauldronItems = picked;

@@ -89,8 +89,10 @@ Promise.all([
     fetch('/category-colors').then(function(r) { return r.json(); }),
     // The real synced setting (falls back to the cached one) - waited on here
     // so the graphs never draw once in the wrong mode first.
-    window.AppSettings ? AppSettings.load().catch(function() { return AppSettings.get(); }) : Promise.resolve({})
+    window.AppSettings ? AppSettings.load().catch(function() { return AppSettings.get(); }) : Promise.resolve({}),
+    fetch('/blocked').then(function(r) { return r.json(); }).catch(function() { return []; })
 ]).then(function(results) {
+    if (Array.isArray(results[5])) blockedPairs = new Set(results[5]);
     ingredientsData = results[0];
     combinations = results[1];
     pairings = results[2];
@@ -573,13 +575,48 @@ function renderCategoryMatrix() {
 // detail matrix and the full matrix so they read the same way. Clicking a
 // tried cell opens its notes; clicking an untried one jumps to the main
 // page with the pairing preloaded, ready to brew.
+// Pairs marked "don't mix" (blocked.json, "A|B" keys with sorted names) -
+// see the blocked-pairings section of script.js.
+let blockedPairs = new Set();
+
+function isBlockedPair(a, b) {
+    return blockedPairs.has([a, b].sort().join('|'));
+}
+
+function toggleBlockedPair(a, b) {
+    const key = [a, b].sort().join('|');
+    if (blockedPairs.has(key)) blockedPairs.delete(key); else blockedPairs.add(key);
+    fetch('/blocked', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(Array.from(blockedPairs).sort())
+    });
+    renderMatrixArea();
+}
+
 function decoratePairCell(td, matches, linkIngredients) {
+    // Right-click any pair to block / unblock it.
+    if (linkIngredients.length === 2) {
+        td.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            toggleBlockedPair(linkIngredients[0], linkIngredients[1]);
+        });
+        if (isBlockedPair(linkIngredients[0], linkIngredients[1])) {
+            td.className = 'pair-cell pair-cell-blocked';
+            td.textContent = '⛔';
+            td.title = 'Blocked - you marked these as not to be mixed. Right-click to unblock.';
+            if (matches.some(comboIsTried)) {
+                td.addEventListener('click', function() { window.location.href = comboDetailUrl(linkIngredients); });
+            }
+            return;
+        }
+    }
     const tried = matches.some(comboIsTried);
 
     if (!tried) {
         td.className = 'pair-cell pair-cell-untried';
         td.textContent = '✗';
-        td.title = 'Brew this pairing';
+        td.title = 'Brew this pairing (right-click to block it)';
         td.addEventListener('click', function() {
             window.location.href = cauldronUrl(linkIngredients);
         });
@@ -916,7 +953,7 @@ function renderFullMatrix() {
 
     function hasUnpairedCell(rowName) {
         return colNames.some(function(colName) {
-            return colName !== rowName && !findPairMatches(rowName, colName).some(comboIsTried);
+            return colName !== rowName && !isBlockedPair(rowName, colName) && !findPairMatches(rowName, colName).some(comboIsTried);
         });
     }
 
@@ -2073,6 +2110,7 @@ function buildPairingEdges() {
         (pairings[a] || []).forEach(function(b) {
             if (!validNames.has(b)) return;
             const key = [a, b].sort().join('|');
+            if (blockedPairs.has(key)) return; // blocked = not a potential pairing
             if (!seenEdges.has(key)) {
                 seenEdges.add(key);
                 edges.push([a, b]);

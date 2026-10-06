@@ -36,7 +36,8 @@
         '/hard-to-get': { file: 'hard-to-get.json', default: [] },
         '/avoid-flask': { file: 'avoid-flask.json', default: [] },
         '/custom-lists': { file: 'custom-lists.json', default: [] },
-        '/settings': { file: 'settings.json', default: {} }
+        '/settings': { file: 'settings.json', default: {} },
+        '/blocked': { file: 'blocked.json', default: [] }
     };
 
     // EXPORT_FILES in server.js uses camelCase keys distinct from the
@@ -45,13 +46,13 @@
         '/combos': 'combos', '/ingredients': 'ingredients', '/pairings': 'pairings',
         '/ingredient-colors': 'ingredientColors', '/category-colors': 'categoryColors',
         '/notes': 'notes', '/hard-to-get': 'hardToGet', '/avoid-flask': 'avoidFlask',
-        '/custom-lists': 'customLists', '/settings': 'settings'
+        '/custom-lists': 'customLists', '/settings': 'settings', '/blocked': 'blocked'
     };
 
     // Same as OPTIONAL_EXPORT_KEYS in server.js - an import file made before
     // user-created Notepad tabs existed won't have this key, which
     // shouldn't make it unimportable (or wipe the tabs already saved).
-    const OPTIONAL_EXPORT_KEYS = ['customLists', 'settings'];
+    const OPTIONAL_EXPORT_KEYS = ['customLists', 'settings', 'blocked'];
 
     // Captured now, before fetch gets overridden below, so every GitHub API
     // call this file makes goes straight to the network.
