@@ -84,14 +84,14 @@ async function run(name, scenario) {
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const modeOnMain = page => page.evaluate(() => ({
     iconChips: document.querySelectorAll('.ingredient.icon-mode-chip').length,
-    toggleLabel: document.getElementById('display-mode-btn')?.textContent
+    switchValue: document.getElementById('display-mode-btn')?.dataset.value
 }));
 
 (async () => {
     // 1. Settings page: pick Word mode, check it was saved to settings.json in the repo.
     const s1 = async ({ page, world }) => {
-        console.log('  buttons:', JSON.stringify(await page.evaluate(() => [...document.querySelectorAll('[data-display-mode]')].map(b => b.dataset.displayMode + (b.classList.contains('active') ? '*' : '')))));
-        await page.evaluate(() => document.querySelector('[data-display-mode="word"]').click());
+        console.log('  switch starts at:', await page.evaluate(() => document.getElementById('settings-display-mode').dataset.value));
+        await page.evaluate(() => { const sw = document.getElementById('settings-display-mode'); if (sw.dataset.value !== 'word') sw.click(); });
         await sleep(800);
         console.log('  status:', await page.evaluate(() => document.getElementById('settings-status').textContent));
         console.log('  settings.json in repo:', world.repo['settings.json'] ? world.repo['settings.json'].toString().replace(/\s+/g, '') : 'MISSING');
@@ -104,10 +104,10 @@ const modeOnMain = page => page.evaluate(() => ({
         console.log('  main page after saving Word:', JSON.stringify(await modeOnMain(page)));
         await page.goto(page.url().replace('index.html', 'log.html') + '#graphs', { waitUntil: 'networkidle0' });
         await page.evaluate(() => [...document.querySelectorAll('#graphs-area button')].find(b => b.textContent.includes('Pairing outcomes')).click());
-        console.log('  graph mode buttons (active one marked):', JSON.stringify(await page.evaluate(() => [...document.querySelectorAll('.combo-viz-toggle .sort-toggle-btn')].filter(b => /Word|Icon/.test(b.textContent)).map(b => b.textContent + (b.classList.contains('active') ? '*' : '')))));
+        console.log('  graph mode buttons (active one marked):', JSON.stringify(await page.evaluate(() => [...document.querySelectorAll('.combo-viz-toggle .mode-switch')].filter(b => /Words|Icons/.test(b.textContent)).map(b => 'graph switch = ' + b.dataset.value))));
         // back to icon
         await page.goto(page.url().replace('log.html', 'settings.html').split('#')[0], { waitUntil: 'networkidle0' });
-        await page.evaluate(() => document.querySelector('[data-display-mode="icon"]').click());
+        await page.evaluate(() => { const sw = document.getElementById('settings-display-mode'); if (sw.dataset.value !== 'icon') sw.click(); });
         await sleep(800);
         await page.goto(page.url().replace('settings.html', 'index.html'), { waitUntil: 'networkidle0' });
         await page.evaluate(() => { const b = document.getElementById('toggle-all-btn'); if (b && b.textContent.includes('Expand')) b.click(); });

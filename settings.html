@@ -6,16 +6,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Steep It Together — Settings</title>
     <link rel="icon" type="image/png" href="Images/teabag-rooibos.png">
-    <link rel="stylesheet" href="styles.css?v=20261007f">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=20261007g">
 </head>
 
 <body>
+    <header class="site-header">
+        <a class="brand" href="index.html" title="Steep It Together - home">
+            <span class="brand-badge"><img src="Images/teabag-rooibos.png" alt=""></span>
+            <span class="brand-name">Steep <span class="brand-amp">it</span> Together</span>
+        </a>
+        <nav class="site-nav" aria-label="Pages">
+            <a class="nav-tag" href="index.html"><span class="nav-emoji" aria-hidden="true">🫖</span><span class="nav-label">Brew</span></a>
+            <a class="nav-tag" href="log.html"><span class="nav-emoji" aria-hidden="true">📖</span><span class="nav-label">Log</span></a>
+            <a class="nav-tag" href="reference.html#notes"><span class="nav-emoji" aria-hidden="true">📝</span><span class="nav-label">Notepad</span></a>
+            <a class="nav-tag is-active" aria-current="page" href="settings.html"><span class="nav-emoji" aria-hidden="true">⚙️</span><span class="nav-label">Settings</span></a>
+        </nav>
+    </header>
     <h1>⚙️ Settings</h1>
-    <p class="back-link">
-        <a href="index.html">← Back to brewing</a> ·
-        <a href="log.html">📖 View brew log</a> ·
-        <a href="reference.html#notes">📝 Notepad</a>
-    </p>
 
     <div class="notes-page settings-section">
         <h2>Display</h2>
@@ -25,8 +35,7 @@
             spot with its own button; this is just what you get when a page opens. Saved to your repo, so
             it follows you to your other devices.</p>
         <div class="settings-mode-row">
-            <button class="sort-toggle-btn" data-display-mode="icon">🖼️ Icon mode</button>
-            <button class="sort-toggle-btn" data-display-mode="word">🔤 Word mode</button>
+            <span id="display-mode-switch"></span>
             <span id="settings-status" class="settings-status" role="status"></span>
         </div>
     </div>
@@ -36,9 +45,8 @@
         <p class="note-callout">Move your data between devices, or keep a backup. Export downloads everything
             below as one file; Import replaces everything with whatever file you pick, so back up with Export
             first if you're not sure.</p>
-        <p class="note-desc"><strong>Included:</strong> ingredients, brew log, potential pairings, colors,
-            all the reference lists, any tabs you've added, and these settings.<br><strong>Not included:</strong>
-            uploaded pictures (ingredient icons/drink photos) - those live in the repo's Images folder.</p>
+        <p class="settings-note"><strong>Included:</strong> ingredients, brew log, potential pairings, colours, blocked pairs, all the reference lists, any tabs you've added, and these settings.</p>
+        <p class="settings-note"><strong>Not included:</strong> uploaded pictures (ingredient icons, drink photos) - those live in the repo's Images folder.</p>
         <button id="export-data-btn">⬇️ Export all data</button>
         <div class="data-import-row">
             <input type="file" id="import-data-input" accept="application/json">
@@ -65,10 +73,11 @@
         <button id="gh-disconnect-btn">🔌 Disconnect / change repo</button>
     </div>
 
-    <script src="github-storage.js?v=20261007f"></script>
-    <script src="app-settings.js?v=20261007f"></script>
-    <script src="tooltip.js?v=20261007f"></script>
-    <script src="settings.js?v=20261007f"></script>
+    <script src="github-storage.js?v=20261007g"></script>
+    <script src="app-settings.js?v=20261007g"></script>
+    <script src="tooltip.js?v=20261007g"></script>
+    <script src="ui.js?v=20261007g"></script>
+    <script src="settings.js?v=20261007g"></script>
 </body>
 
 </html>

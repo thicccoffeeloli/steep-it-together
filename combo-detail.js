@@ -226,17 +226,16 @@ function renderComboNav() {
 
     const orderToggle = document.createElement('div');
     orderToggle.className = 'combo-nav-order';
-    [['category', 'Category'], ['alphabetical', 'Alphabetical']].forEach(function(pair) {
-        const btn = document.createElement('button');
-        btn.className = 'sort-toggle-btn';
-        btn.textContent = pair[1];
-        btn.classList.toggle('active', navOrder === pair[0]);
-        btn.addEventListener('click', function() {
-            navOrder = pair[0];
+    orderToggle.appendChild(makeModeSwitch({
+        left: ['category', 'By section'],
+        right: ['alphabetical', 'A–Z'],
+        value: navOrder,
+        title: 'Which order Previous / Next steps through your entries',
+        onChange: function(value) {
+            navOrder = value;
             renderComboNav();
-        });
-        orderToggle.appendChild(btn);
-    });
+        }
+    }));
     nav.appendChild(orderToggle);
 
     const nextBtn = document.createElement('button');
@@ -467,13 +466,13 @@ function buildEditForm(combo, temp) {
         render();
     });
 
-    // Pinned to the bottom edge while the form is taller than the window
-    // (see .edit-actions-bottom) so Save is never off-screen.
+    // At the top of the form and pinned there while you scroll (like every
+    // other edit bar - see .edit-actions), so Save is never off-screen.
     const actions = document.createElement('div');
-    actions.className = 'edit-actions edit-actions-bottom';
+    actions.className = 'edit-actions';
     actions.appendChild(saveBtn);
     actions.appendChild(cancelBtn);
-    wrapper.appendChild(actions);
+    wrapper.insertBefore(actions, wrapper.firstChild);
 
     return wrapper;
 }

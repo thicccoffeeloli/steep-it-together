@@ -6,10 +6,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Steep It Together — Combo Notes</title>
     <link rel="icon" type="image/png" href="Images/teabag-rooibos.png">
-    <link rel="stylesheet" href="styles.css?v=20261007f">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=20261007g">
 </head>
 
 <body>
+    <header class="site-header">
+        <a class="brand" href="index.html" title="Steep It Together - home">
+            <span class="brand-badge"><img src="Images/teabag-rooibos.png" alt=""></span>
+            <span class="brand-name">Steep <span class="brand-amp">it</span> Together</span>
+        </a>
+        <nav class="site-nav" aria-label="Pages">
+            <a class="nav-tag" href="index.html"><span class="nav-emoji" aria-hidden="true">🫖</span><span class="nav-label">Brew</span></a>
+            <a class="nav-tag is-active" aria-current="page" href="log.html"><span class="nav-emoji" aria-hidden="true">📖</span><span class="nav-label">Log</span></a>
+            <a class="nav-tag" href="reference.html#notes"><span class="nav-emoji" aria-hidden="true">📝</span><span class="nav-label">Notepad</span></a>
+            <a class="nav-tag" href="settings.html"><span class="nav-emoji" aria-hidden="true">⚙️</span><span class="nav-label">Settings</span></a>
+        </nav>
+    </header>
     <h1>Combo Notes</h1>
     <p class="back-link">
         <a href="log.html">← Back to brew log</a> ·
@@ -29,9 +44,10 @@
         <div id="combo-detail"></div>
     </div>
 
-    <script src="github-storage.js?v=20261007f"></script>
-    <script src="tooltip.js?v=20261007f"></script>
-    <script src="combo-detail.js?v=20261007f"></script>
+    <script src="github-storage.js?v=20261007g"></script>
+    <script src="tooltip.js?v=20261007g"></script>
+    <script src="ui.js?v=20261007g"></script>
+    <script src="combo-detail.js?v=20261007g"></script>
 </body>
 
 </html>

@@ -105,23 +105,21 @@ Promise.all([
     renderBookArea();
 });
 
-document.getElementById('sort-name-btn').addEventListener('click', function() {
-    sortMode = 'name';
-    updateSortButtons();
-    renderComboViz();
-});
-
-document.getElementById('sort-rating-btn').addEventListener('click', function() {
-    sortMode = 'rating';
-    updateSortButtons();
-    renderComboViz();
-});
-
-function updateSortButtons() {
-    document.getElementById('sort-name-btn').classList.toggle('active', sortMode === 'name');
-    document.getElementById('sort-rating-btn').classList.toggle('active', sortMode === 'rating');
+function renderSortSwitch() {
+    const holder = document.getElementById('combo-sort-switch');
+    holder.innerHTML = '';
+    holder.appendChild(makeModeSwitch({
+        left: ['name', 'Name'],
+        right: ['rating', 'Rating'],
+        value: sortMode,
+        onChange: function(value) {
+            sortMode = value;
+            renderSortSwitch();
+            renderComboViz();
+        }
+    }));
 }
-updateSortButtons();
+renderSortSwitch();
 
 // The multi-ingredient list doesn't care which section an ingredient
 // belongs to, so this flattens every section's items into one flat list.
@@ -385,6 +383,30 @@ function ratingRgb(rating) {
     return interpolateRgb(RATING_COLOR_LOW, RATING_COLOR_HIGH, rating / 10);
 }
 
+// ===== Colour keys (see makeColorKey in ui.js) =====
+
+function ratingGradientCss() {
+    const stops = [0, 2.5, 5, 7.5, 10].map(function(r) { return rgbToCss(ratingRgb(r)); });
+    return 'linear-gradient(90deg, ' + stops.join(', ') + ')';
+}
+
+function pairCellKey() {
+    return makeColorKey([
+        { gradient: ratingGradientCss(), from: '0', to: '10', label: 'Average rating ✓' },
+        { swatch: '#b0b0b0', text: '✓', label: 'Brewed, not rated' },
+        { swatch: 'var(--card-bg)', border: '1px solid var(--border)', text: '✗', label: 'Not brewed yet (click to brew)' },
+        { swatch: 'repeating-linear-gradient(45deg, #ece6ef, #ece6ef 3px, #ddd3e2 3px, #ddd3e2 6px)', text: '⛔', label: 'Blocked (right-click any cell to block/unblock)' },
+        { swatch: 'transparent', text: '⭐', label: 'Starred' }
+    ]);
+}
+
+function sectionColorKey(names) {
+    const used = new Set(names.map(categoryOfIngredient));
+    return makeColorKey(getCategories().filter(function(cat) { return used.has(cat); }).map(function(cat) {
+        return { swatch: categoryColorHex(cat), label: cat };
+    }), 'Sections:');
+}
+
 // ===== Category x category overview =====
 
 // Every distinct, unordered ingredient pair between category A and B - if
@@ -558,6 +580,10 @@ function renderCategoryMatrix() {
 
     wrapper.appendChild(table);
     container.appendChild(wrapper);
+    container.appendChild(makeColorKey([
+        { gradient: 'linear-gradient(90deg, ' + PERCENT_TRIED_LOW + ', ' + PERCENT_TRIED_MID + ', ' + PERCENT_TRIED_HIGH + ')', from: 'none', to: 'all', label: 'of the pairings tried' },
+        { swatch: 'transparent', text: '7/10', label: 'Average rating of what you\'ve tried' }
+    ], 'Colour:'));
 
     const fullBtn = document.createElement('button');
     fullBtn.id = 'show-full-matrix-btn';
@@ -713,6 +739,7 @@ function renderDetailMatrix(catA, catB) {
 
     wrapper.appendChild(table);
     container.appendChild(wrapper);
+    container.appendChild(pairCellKey());
 }
 
 // ===== Full matrix (every ingredient) =====
@@ -829,17 +856,15 @@ function buildAxisFilter(axis) {
     // How the checklist itself is grouped - independent of the matrix's own
     // Order by (Category/Alphabetical/Rating) buttons, since you might want
     // to browse the filter list differently than the matrix is sorted.
-    [['category', 'By category'], ['alphabetical', 'Alphabetical']].forEach(function(pair) {
-        const btn = document.createElement('button');
-        btn.className = 'sort-toggle-btn';
-        btn.textContent = pair[1];
-        btn.classList.toggle('active', columnFilterOrder === pair[0]);
-        btn.addEventListener('click', function() {
-            columnFilterOrder = pair[0];
+    tools.appendChild(makeModeSwitch({
+        left: ['category', 'By section'],
+        right: ['alphabetical', 'A–Z'],
+        value: columnFilterOrder,
+        onChange: function(value) {
+            columnFilterOrder = value;
             renderFullMatrix();
-        });
-        tools.appendChild(btn);
-    });
+        }
+    }));
     wrapper.appendChild(tools);
 
     const search = document.createElement('input');
@@ -987,6 +1012,7 @@ function renderFullMatrix() {
     count.className = 'column-filter-hint';
     count.textContent = 'Showing ' + rowNames.length + ' rows × ' + colNames.length + ' columns';
     container.appendChild(count);
+    container.appendChild(pairCellKey());
 
     const wrapper = document.createElement('div');
     wrapper.id = 'matrix-wrapper';
@@ -1479,17 +1505,16 @@ function wireNodeDragging(svg, width, height, positions, nodeElements, shapesByN
 function buildGraphModeToggle(onChange) {
     const toggle = document.createElement('div');
     toggle.className = 'combo-viz-toggle';
-    [['word', '🔤 Word mode'], ['icon', '🖼️ Icon mode']].forEach(function(pair) {
-        const btn = document.createElement('button');
-        btn.className = 'sort-toggle-btn';
-        btn.textContent = pair[1];
-        btn.classList.toggle('active', graphNodeMode === pair[0]);
-        btn.addEventListener('click', function() {
-            graphNodeMode = pair[0];
+    toggle.appendChild(makeModeSwitch({
+        left: ['word', '🔤 Words'],
+        right: ['icon', '🖼️ Icons'],
+        value: graphNodeMode,
+        title: 'Just for now - the default for every page is in Settings',
+        onChange: function(value) {
+            graphNodeMode = value;
             onChange();
-        });
-        toggle.appendChild(btn);
-    });
+        }
+    }));
     return toggle;
 }
 
@@ -2095,6 +2120,11 @@ function renderPreferenceScatter() {
     wrapper.appendChild(svg);
     makeSvgZoomable(wrapper, svg);
     container.appendChild(wrapper);
+    container.appendChild(makeColorKey([
+        { swatch: 'transparent', text: '→', label: 'how often you\'ve brewed it' },
+        { swatch: 'transparent', text: '↑', label: 'its average rating' }
+    ], 'Position:'));
+    container.appendChild(sectionColorKey(data.map(function(d) { return d.name; })));
     container.appendChild(buildCategoryLegend(data.map(function(d) { return d.name; })));
 }
 
@@ -2323,6 +2353,12 @@ function renderPairingNetwork() {
     wrapper.appendChild(svg);
     makeSvgZoomable(wrapper, svg);
     container.appendChild(wrapper);
+    container.appendChild(makeColorKey([
+        { gradient: ratingGradientCss(), from: '0', to: '10', label: 'Line = average rating of that pair' },
+        { line: '#b0b0b0', dashed: true, label: 'Suggested, not brewed yet' },
+        { swatch: 'rgba(124, 168, 92, 0.35)', label: 'Shape = brewed together as 3+' }
+    ].concat(followConnections ? [{ swatch: 'var(--card-bg)', border: '2px solid var(--accent)', label: 'Glow = what you selected' }] : [])));
+    container.appendChild(sectionColorKey(names));
     container.appendChild(buildCategoryLegend(names));
 }
 
@@ -2343,18 +2379,15 @@ function buildGraphsFilterUI(onChange) {
     if (graphsView === 'pairings') {
         const modeRow = document.createElement('div');
         modeRow.className = 'graphs-filter-mode';
-        [['only', 'Only what I select'], ['connections', 'What I select + all its connections']].forEach(function(pair) {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'sort-toggle-btn';
-            btn.textContent = pair[1];
-            btn.classList.toggle('active', graphsFilterMode === pair[0]);
-            btn.addEventListener('click', function() {
-                graphsFilterMode = pair[0];
+        modeRow.appendChild(makeModeSwitch({
+            left: ['only', 'Only what I select'],
+            right: ['connections', '+ all their connections'],
+            value: graphsFilterMode,
+            onChange: function(value) {
+                graphsFilterMode = value;
                 onChange();
-            });
-            modeRow.appendChild(btn);
-        });
+            }
+        }));
         wrap.appendChild(modeRow);
     }
 
@@ -2457,17 +2490,15 @@ function renderGraphsArea() {
 
     const toggle = document.createElement('div');
     toggle.className = 'combo-viz-toggle';
-    [['preference', '🌟 My preferences'], ['pairings', '🕸️ Pairing outcomes']].forEach(function(pair) {
-        const btn = document.createElement('button');
-        btn.className = 'sort-toggle-btn';
-        btn.textContent = pair[1];
-        btn.classList.toggle('active', graphsView === pair[0]);
-        btn.addEventListener('click', function() {
-            graphsView = pair[0];
+    toggle.appendChild(makeModeSwitch({
+        left: ['preference', '🌟 My preferences'],
+        right: ['pairings', '🕸️ Pairing outcomes'],
+        value: graphsView,
+        onChange: function(value) {
+            graphsView = value;
             renderGraphsArea();
-        });
-        toggle.appendChild(btn);
-    });
+        }
+    }));
     container.appendChild(toggle);
 
     if (graphsView === 'pairings') {

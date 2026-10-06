@@ -6,17 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Steep It Together</title>
     <link rel="icon" type="image/png" href="Images/teabag-rooibos.png">
-    <link rel="stylesheet" href="styles.css?v=20261007f">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=20261007g">
 </head>
 
 <body class="home-page">
-    <header class="home-header">
-        <h1>Steep It Together!</h1>
-        <p class="back-link">
-            <a href="log.html">📖 View brew log</a> ·
-            <a href="reference.html#notes">📝 Notepad</a> ·
-            <a href="settings.html">⚙️ Settings</a>
-        </p>
+    <header class="site-header">
+        <a class="brand" href="index.html" title="Steep It Together - home">
+            <span class="brand-badge"><img src="Images/teabag-rooibos.png" alt=""></span>
+            <span class="brand-name">Steep <span class="brand-amp">it</span> Together</span>
+        </a>
+        <nav class="site-nav" aria-label="Pages">
+            <a class="nav-tag is-active" aria-current="page" href="index.html"><span class="nav-emoji" aria-hidden="true">🫖</span><span class="nav-label">Brew</span></a>
+            <a class="nav-tag" href="log.html"><span class="nav-emoji" aria-hidden="true">📖</span><span class="nav-label">Log</span></a>
+            <a class="nav-tag" href="reference.html#notes"><span class="nav-emoji" aria-hidden="true">📝</span><span class="nav-label">Notepad</span></a>
+            <a class="nav-tag" href="settings.html"><span class="nav-emoji" aria-hidden="true">⚙️</span><span class="nav-label">Settings</span></a>
+        </nav>
     </header>
     <!-- Only ever visible on narrow screens (see the media query in
          styles.css) - on a normal desktop-width window all three sections
@@ -146,10 +153,11 @@
             <button id="delete-entry-btn" style="display:none">Delete entry</button>
         </section>
     </main>
-    <script src="github-storage.js?v=20261007f"></script>
-    <script src="app-settings.js?v=20261007f"></script>
-    <script src="tooltip.js?v=20261007f"></script>
-    <script src="script.js?v=20261007f"></script>
+    <script src="github-storage.js?v=20261007g"></script>
+    <script src="app-settings.js?v=20261007g"></script>
+    <script src="tooltip.js?v=20261007g"></script>
+    <script src="ui.js?v=20261007g"></script>
+    <script src="script.js?v=20261007g"></script>
     <script>
         // Room tab bar (mobile only - see .room-tab-bar in styles.css).
         // Tapping a tab scrolls straight to that room; the scroll listener

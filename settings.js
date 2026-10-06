@@ -11,26 +11,28 @@ function flashStatus(message, isError) {
 }
 
 function renderModeButtons() {
-    const mode = AppSettings.get().displayMode;
-    document.querySelectorAll('[data-display-mode]').forEach(function(btn) {
-        btn.classList.toggle('active', btn.dataset.displayMode === mode);
-    });
+    const holder = document.getElementById('display-mode-switch');
+    holder.innerHTML = '';
+    holder.appendChild(makeModeSwitch({
+        id: 'settings-display-mode',
+        left: ['word', '🔤 Word mode'],
+        right: ['icon', '🖼️ Icon mode'],
+        value: AppSettings.get().displayMode,
+        onChange: function(value) {
+            AppSettings.save({ displayMode: value }).then(function() {
+                flashStatus('✓ Saved');
+            }).catch(function(err) {
+                flashStatus('⚠️ Couldn\'t save: ' + err.message, true);
+            });
+            renderModeButtons();
+        }
+    }));
 }
 
 renderModeButtons();
 // The cached value above paints instantly; this swaps in the real, synced one.
 AppSettings.load().then(renderModeButtons).catch(function() {});
 
-document.querySelectorAll('[data-display-mode]').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-        AppSettings.save({ displayMode: btn.dataset.displayMode }).then(function() {
-            flashStatus('✓ Saved');
-        }).catch(function(err) {
-            flashStatus('⚠️ Couldn\'t save: ' + err.message, true);
-        });
-        renderModeButtons();
-    });
-});
 
 // ===== Data export / import =====
 

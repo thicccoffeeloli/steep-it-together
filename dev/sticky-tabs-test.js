@@ -90,6 +90,7 @@ const barTop = (page, sel) => page.evaluate(sel => { const b = document.querySel
     await run('ingredients edit bar', Object.assign(async ({ page }) => {
         await page.setViewport({ width: 1300, height: 600 });
         await page.evaluate(() => { const t = document.getElementById('toggle-all-btn'); if (t.textContent.includes('Expand')) t.click(); });
+        await page.evaluate(() => document.querySelector('.ingredient').scrollIntoView({ block: 'center' }));
         const li = await page.$('.ingredient');
         const box = await li.boundingBox();
         await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2, { button: 'right' });
@@ -112,7 +113,7 @@ const barTop = (page, sel) => page.evaluate(sel => { const b = document.querySel
         console.log('  bar before scrolling:', JSON.stringify(await barTop(page, '#panel-notes .edit-actions')));
         await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
         await sleep(200);
-        console.log('  after scrolling to the bottom:', JSON.stringify(await barTop(page, '#panel-notes .edit-actions')), '| page height', await page.evaluate(() => document.body.scrollHeight));
+        console.log('  after scrolling to the bottom:', JSON.stringify(await barTop(page, '#panel-notes .edit-actions')), '| header height', await page.evaluate(() => Math.round(document.querySelector('.site-header').getBoundingClientRect().height)), '(bar top should equal it)');
     }, { page: 'reference.html' }));
 
     // 3. Combo editor (Save/Cancel at the end of a long form)
@@ -122,7 +123,9 @@ const barTop = (page, sel) => page.evaluate(sel => { const b = document.querySel
         console.log('  page says:', await page.evaluate(() => (document.querySelector('#combo-detail-container, main, body').innerText || '').slice(0, 160).split(String.fromCharCode(10)).join(' / ')));
         await page.evaluate(() => document.querySelector('.reference-remove').click());
         await sleep(300);
-        console.log('  bar (should be visible at the bottom edge, page scrolled to top):', JSON.stringify(await barTop(page, '.edit-actions-bottom')));
+        await page.evaluate(() => document.querySelector('.reference-edit-form').scrollIntoView({ block: 'end' }));
+        await sleep(200);
+        console.log('  bar with the bottom of the form in view (top should equal header height):', JSON.stringify(await barTop(page, '.reference-edit-form .edit-actions')), '| header', await page.evaluate(() => Math.round(document.querySelector('.site-header').getBoundingClientRect().height)));
     }, { page: 'combo-detail.html?ingredient=Dark%20Roast%20Coffee&ingredient=Hazelnut%20Coffee' }));
 
     // 4. Reordering tabs

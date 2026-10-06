@@ -377,8 +377,6 @@ main section > .edit-actions {
 }
 
 #toggle-all-btn,
-#alpha-toggle-btn,
-#display-mode-btn,
 #refresh-colors-btn {
     display: inline-block;
     font-size: 12px;
@@ -2829,4 +2827,614 @@ h3.note-section-title {
     font: inherit;
     font-size: 13px;
     background: var(--card-bg);
+}
+
+/* =====================================================================
+   THEME: the candy-maker's travel trunk
+   ---------------------------------------------------------------------
+   A Willy-Wonka-ish steamer trunk: plum velvet (Wonka's coat), golden-
+   ticket brass, chocolate leather straps with cream stitching, candy
+   pink and mint accents, on vanilla-cream paper. Everything below
+   layers on top of the original styles - delete this block to undo it.
+   Fonts: Fredoka (rounded, from Google Fonts - linked in each page's
+   <head>) for all the "chrome" (header, buttons, tabs, headings);
+   content text stays in the original book serif.
+   ===================================================================== */
+
+:root {
+    --bg: #f8efe1;            /* vanilla cream paper */
+    --card-bg: #fffaf2;
+    --ink: #2f2433;
+    --ink-soft: #6e5f6a;
+    --border: #e6d3b8;
+    --accent: #6a2c91;        /* Wonka's plum coat */
+    --accent-dark: #3f1a5a;
+    --accent-soft: #f1e4fa;
+    --gold: #f0b93a;          /* golden ticket */
+    --gold-dark: #a8741a;
+    --gold-soft: #fff1c9;
+    --candy: #e2457a;         /* candy pink */
+    --candy-soft: #fde4ee;
+    --mint: #5cc5a4;
+    --leather: #6b3b28;       /* trunk leather */
+    --leather-dark: #45251a;
+    --stitch: rgba(255, 226, 170, 0.75);
+    --ui-font: 'Fredoka', 'Trebuchet MS', 'Segoe UI', sans-serif;
+    --shadow: 0 3px 10px rgba(63, 26, 90, 0.12);
+    --tape-gold: rgba(240, 185, 58, 0.75);
+}
+
+/* Candy-dot paper: pink and mint sprinkles, very faint. */
+body {
+    background-color: var(--bg);
+    background-image:
+        radial-gradient(rgba(226, 69, 122, 0.11) 1.4px, transparent 1.6px),
+        radial-gradient(rgba(92, 197, 164, 0.12) 1.4px, transparent 1.6px);
+    background-size: 26px 26px, 26px 26px;
+    background-position: 0 0, 13px 13px;
+}
+
+/* ---------- The trunk strap: site header on every page ---------- */
+
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    margin: -32px -24px 28px;
+    padding: 12px 26px;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(0, 0, 0, 0.08)),
+        linear-gradient(180deg, #7b4630 0%, var(--leather) 55%, var(--leather-dark) 100%);
+    border-bottom: 3px solid var(--gold-dark);
+    box-shadow: 0 3px 0 #2e160d, 0 8px 18px rgba(46, 22, 13, 0.25);
+}
+
+/* cream stitching just inside the strap's edge */
+.site-header::before {
+    content: '';
+    position: absolute;
+    inset: 5px 8px;
+    border: 2px dashed var(--stitch);
+    border-radius: 10px;
+    opacity: 0.55;
+    pointer-events: none;
+}
+
+body.home-page .site-header {
+    margin: -16px -24px 12px;
+    flex-shrink: 0;
+}
+
+.brand {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+}
+
+/* a brass medallion holding the rooibos teabag */
+.brand-badge {
+    width: 50px;
+    height: 50px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: radial-gradient(circle at 34% 28%, #fff6d6 0%, #ffd56b 32%, var(--gold) 60%, var(--gold-dark) 100%);
+    box-shadow: 0 0 0 3px #2e160d, inset 0 -3px 0 rgba(0, 0, 0, 0.18), 0 4px 0 #24110a;
+    transform: rotate(-8deg);
+    transition: transform 0.25s cubic-bezier(0.3, 1.5, 0.6, 1);
+}
+
+.brand-badge img {
+    width: 38px;
+    height: 38px;
+    object-fit: contain;
+    filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.25));
+}
+
+.brand:hover .brand-badge {
+    transform: rotate(8deg) scale(1.06);
+}
+
+.brand-name {
+    font-family: var(--ui-font);
+    font-weight: 700;
+    font-size: 27px;
+    line-height: 1;
+    color: #fff3d6;
+    letter-spacing: 0.4px;
+    text-shadow: 0 2px 0 var(--gold-dark), 0 4px 0 #2e160d;
+    white-space: nowrap;
+}
+
+.brand-amp {
+    font-weight: 500;
+    font-size: 0.68em;
+    color: var(--gold);
+    text-shadow: 0 2px 0 #2e160d;
+    margin: 0 1px;
+}
+
+.site-nav {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* each page is a little brass-edged luggage tag, with its punched hole */
+.nav-tag {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 15px 6px 22px;
+    border-radius: 6px 14px 14px 6px;
+    font-family: var(--ui-font);
+    font-weight: 600;
+    font-size: 15px;
+    color: #fff3d6;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid rgba(255, 226, 170, 0.4);
+    transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.nav-tag::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    width: 7px;
+    height: 7px;
+    margin-top: -3.5px;
+    border-radius: 50%;
+    background: var(--leather-dark);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.6), 0 0 0 1.5px rgba(255, 226, 170, 0.5);
+}
+
+.nav-tag:hover {
+    background: rgba(255, 255, 255, 0.17);
+    transform: translateY(-1px);
+}
+
+.nav-tag:focus-visible,
+.brand:focus-visible {
+    outline: 3px solid #ffd56b;
+    outline-offset: 2px;
+}
+
+/* the page you're on: a polished golden-ticket tag, pressed in and glowing */
+.nav-tag.is-active {
+    color: var(--leather-dark);
+    background: linear-gradient(180deg, #ffe596 0%, var(--gold) 100%);
+    border-color: var(--gold-dark);
+    box-shadow:
+        inset 0 2px 5px rgba(110, 60, 8, 0.45),
+        0 0 0 3px rgba(255, 213, 107, 0.35),
+        0 0 16px rgba(255, 206, 102, 0.65);
+}
+
+@media (max-width: 760px) {
+    .site-header {
+        padding: 9px 14px;
+        gap: 8px;
+    }
+    .brand-badge { width: 40px; height: 40px; }
+    .brand-badge img { width: 30px; height: 30px; }
+    .brand-name { font-size: 20px; }
+    .nav-tag { font-size: 13px; padding: 6px 10px 5px 18px; }
+    .nav-tag::before { left: 6px; width: 6px; height: 6px; margin-top: -3px; }
+}
+
+@media (max-width: 520px) {
+    .site-header { justify-content: center; }
+    .brand { width: 100%; justify-content: center; }
+    .site-nav { width: 100%; justify-content: center; gap: 5px; }
+    .nav-tag { padding: 5px 8px 4px 16px; font-size: 12.5px; gap: 4px; }
+    .nav-tag::before { left: 5px; }
+}
+
+/* ---------- Page titles ---------- */
+
+h1 {
+    font-family: var(--ui-font);
+    font-weight: 700;
+    color: var(--accent-dark);
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 0 var(--gold-soft);
+}
+
+/* the strip of tape over each title becomes a candy-striped ribbon */
+body:not(.home-page) h1::before {
+    background: repeating-linear-gradient(45deg,
+        rgba(226, 69, 122, 0.75), rgba(226, 69, 122, 0.75) 7px,
+        rgba(255, 255, 255, 0.85) 7px, rgba(255, 255, 255, 0.85) 14px);
+    border-radius: 3px;
+}
+
+main section h2,
+.notes-page h2,
+.settings-section h2 {
+    font-family: var(--ui-font);
+    font-weight: 600;
+}
+
+/* ---------- Buttons: chunky candy that presses down ---------- */
+
+button {
+    font-family: var(--ui-font);
+    font-weight: 500;
+    border: 2px solid var(--accent);
+    background: var(--card-bg);
+    color: var(--accent-dark);
+    box-shadow: 0 3px 0 var(--accent-dark);
+    transition: background 0.15s ease, transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+button:hover {
+    background: var(--accent-soft);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 0 var(--accent-dark);
+}
+
+button:active {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 var(--accent-dark);
+}
+
+button:disabled,
+button:disabled:hover {
+    transform: none;
+    box-shadow: 0 3px 0 var(--accent-dark);
+}
+
+button:focus-visible {
+    outline: 3px solid var(--gold);
+    outline-offset: 2px;
+}
+
+/* Brew / Save: golden tickets */
+#brew-btn,
+#save-btn,
+#save-edits-btn,
+#gh-connect-btn {
+    background: linear-gradient(180deg, #ffe596 0%, var(--gold) 100%);
+    color: #4a2a08;
+    border-color: var(--gold-dark);
+    box-shadow: 0 3px 0 var(--gold-dark);
+    font-weight: 700;
+}
+
+#brew-btn:hover,
+#save-btn:hover,
+#save-edits-btn:hover,
+#gh-connect-btn:hover {
+    background: linear-gradient(180deg, #fff0bd 0%, #ffcb52 100%);
+    box-shadow: 0 4px 0 var(--gold-dark);
+}
+
+#brew-btn:active,
+#save-btn:active,
+#save-edits-btn:active,
+#gh-connect-btn:active {
+    box-shadow: 0 1px 0 var(--gold-dark);
+}
+
+.sort-toggle-btn.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent-dark);
+    box-shadow: 0 3px 0 var(--accent-dark), inset 0 2px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* small round / icon buttons keep their own flat look */
+.cauldron-temp-btn,
+.drink-star-btn,
+.drink-image-upload-btn,
+.drink-image-remove-btn,
+.graph-zoom-btn,
+.graph-fullscreen-btn,
+.graphs-filter-chip button,
+.graphs-filter-suggestion,
+#context-menu button {
+    box-shadow: none;
+}
+
+.cauldron-temp-btn:hover,
+.drink-star-btn:hover,
+.drink-image-upload-btn:hover,
+.drink-image-remove-btn:hover,
+.graph-zoom-btn:hover,
+.graph-fullscreen-btn:hover,
+.graphs-filter-chip button:hover,
+.graphs-filter-suggestion:hover,
+#context-menu button:hover,
+.cauldron-temp-btn:active,
+.drink-star-btn:active,
+.graph-zoom-btn:active,
+#context-menu button:active {
+    box-shadow: none;
+    transform: none;
+}
+
+/* ---------- Tabs: brass-edged binder tabs ---------- */
+
+.tab-btn,
+.temp-btn {
+    font-family: var(--ui-font);
+    font-weight: 500;
+    box-shadow: none;
+    border-width: 2px;
+    border-bottom-width: 0;
+}
+
+.tab-btn:hover,
+.temp-btn:hover,
+.tab-btn:active,
+.temp-btn:active {
+    box-shadow: none;
+    transform: none;
+}
+
+.tab-btn.active,
+.temp-btn.active {
+    background: linear-gradient(180deg, #ffe596 0%, var(--gold) 100%);
+    border-color: var(--gold-dark);
+    color: #4a2a08;
+    font-weight: 600;
+    box-shadow: 0 -3px 10px rgba(240, 185, 58, 0.35);
+}
+
+/* ---------- Cards: stitched like the panels of a trunk ---------- */
+
+main section {
+    border: 2px solid var(--border);
+    border-radius: 18px;
+    outline: 2px dashed rgba(106, 44, 145, 0.17);
+    outline-offset: -9px;
+}
+
+.settings-section {
+    background: var(--card-bg);
+    border: 2px solid var(--border);
+    border-radius: 18px;
+    padding: 18px 26px 22px;
+    box-shadow: var(--shadow);
+    outline: 2px dashed rgba(106, 44, 145, 0.15);
+    outline-offset: -9px;
+}
+
+#matrix-wrapper,
+#graphs-svg-wrapper {
+    border-width: 2px;
+    border-radius: 18px;
+}
+
+/* ---------- Mode switches (makeModeSwitch in ui.js) ---------- */
+
+.mode-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    border: 2px solid var(--border);
+    background: var(--card-bg);
+    box-shadow: none;
+    font-family: var(--ui-font);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-soft);
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+.mode-switch:hover {
+    background: var(--gold-soft);
+    border-color: var(--gold);
+    transform: none;
+    box-shadow: none;
+}
+
+.mode-switch:active {
+    transform: none;
+    box-shadow: none;
+}
+
+.mode-switch-track {
+    position: relative;
+    flex-shrink: 0;
+    width: 42px;
+    height: 24px;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    border: 2px solid var(--accent);
+    box-shadow: inset 0 2px 3px rgba(63, 26, 90, 0.18);
+    transition: background 0.2s ease;
+}
+
+.mode-switch-knob {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 34% 28%, #fff6d6 0%, #ffd56b 40%, var(--gold) 70%, var(--gold-dark) 100%);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+    transition: left 0.18s cubic-bezier(0.3, 1.4, 0.6, 1);
+}
+
+.mode-switch[aria-checked="true"] .mode-switch-track {
+    background: var(--accent);
+}
+
+.mode-switch[aria-checked="true"] .mode-switch-knob {
+    left: 20px;
+}
+
+.mode-switch-label.is-on {
+    color: var(--accent-dark);
+    font-weight: 700;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mode-switch-knob,
+    .brand-badge { transition: none; }
+}
+
+/* the ingredients toolbar */
+#alpha-toggle-btn,
+#display-mode-btn {
+    margin: 0 6px 10px 0;
+    font-size: 12px;
+    padding: 3px 10px;
+}
+
+.graphs-filter-mode {
+    justify-content: center;
+}
+
+/* ---------- Colour keys (makeColorKey in ui.js) ---------- */
+
+.color-key {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 6px 16px;
+    max-width: 1100px;
+    margin: 12px auto 16px;
+    padding: 8px 14px;
+    font-family: var(--ui-font);
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    background: var(--card-bg);
+    border: 2px dashed var(--border);
+    border-radius: 14px;
+}
+
+.color-key-title {
+    font-weight: 600;
+    color: var(--accent-dark);
+}
+
+.color-key-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.color-key-bar {
+    width: 92px;
+    height: 12px;
+    border-radius: 6px;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.color-key-end {
+    font-size: 11px;
+}
+
+.color-key-swatch {
+    display: inline-grid;
+    place-items: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 3px;
+    border-radius: 5px;
+    font-size: 11px;
+    color: var(--ink);
+}
+
+.color-key-line {
+    width: 28px;
+    border-top: 3px solid;
+}
+
+.color-key-line.is-dashed {
+    border-top-style: dashed;
+}
+
+#ingredients-panel .color-key {
+    justify-content: flex-start;
+    margin: 0 0 14px;
+    padding: 6px 10px;
+    gap: 4px 12px;
+}
+
+/* ---------- Small touches ---------- */
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+textarea:focus,
+select:focus {
+    outline: 3px solid rgba(240, 185, 58, 0.55);
+    outline-offset: 1px;
+}
+
+#gh-save-status,
+#guest-banner {
+    font-family: var(--ui-font);
+}
+
+.github-config-card h1 {
+    font-family: var(--ui-font);
+}
+
+/* ---------- polish ---------- */
+
+.settings-section h2 {
+    margin-top: 6px;
+}
+
+.settings-note {
+    font-size: 14px;
+    margin: 0 0 8px;
+}
+
+.tab-move-row {
+    justify-content: center;
+}
+
+/* lighter candy for the many small toggle pills (filters, order-by) */
+.sort-toggle-btn {
+    box-shadow: 0 2px 0 var(--accent-dark);
+}
+
+.sort-toggle-btn:hover {
+    box-shadow: 0 3px 0 var(--accent-dark);
+}
+
+.sort-toggle-btn:active {
+    box-shadow: 0 0 0 var(--accent-dark);
+}
+
+.mode-switch,
+.combo-nav-btn {
+    white-space: nowrap;
+}
+
+@media (max-width: 420px) {
+    .mode-switch { gap: 6px; padding: 4px 9px; font-size: 12px; }
+    .combo-nav-btn { padding: 6px 12px; }
+}
+
+/* Page-level pinned bars sit just under the sticky header (--sticky-top is
+   kept up to date by ui.js); bars inside the ingredients card keep pinning
+   to that card's own top instead (the more specific rule further up). */
+.edit-actions {
+    top: var(--sticky-top, 0px);
+}
+
+main section > .edit-actions {
+    top: -24px;
 }

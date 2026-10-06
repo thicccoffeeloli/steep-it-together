@@ -6,16 +6,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Steep It Together — Log</title>
     <link rel="icon" type="image/png" href="Images/teabag-rooibos.png">
-    <link rel="stylesheet" href="styles.css?v=20261007f">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=20261007g">
 </head>
 
 <body>
+    <header class="site-header">
+        <a class="brand" href="index.html" title="Steep It Together - home">
+            <span class="brand-badge"><img src="Images/teabag-rooibos.png" alt=""></span>
+            <span class="brand-name">Steep <span class="brand-amp">it</span> Together</span>
+        </a>
+        <nav class="site-nav" aria-label="Pages">
+            <a class="nav-tag" href="index.html"><span class="nav-emoji" aria-hidden="true">🫖</span><span class="nav-label">Brew</span></a>
+            <a class="nav-tag is-active" aria-current="page" href="log.html"><span class="nav-emoji" aria-hidden="true">📖</span><span class="nav-label">Log</span></a>
+            <a class="nav-tag" href="reference.html#notes"><span class="nav-emoji" aria-hidden="true">📝</span><span class="nav-label">Notepad</span></a>
+            <a class="nav-tag" href="settings.html"><span class="nav-emoji" aria-hidden="true">⚙️</span><span class="nav-label">Settings</span></a>
+        </nav>
+    </header>
     <h1>Brew Log</h1>
-    <p class="back-link">
-        <a href="index.html">← Back to brewing</a> ·
-        <a href="reference.html#notes">📝 Notepad</a> ·
-        <a href="settings.html">⚙️ Settings</a>
-    </p>
 
     <!-- Two top-level tabs, each holding two sub-tabs (see SUB_TAB_KEYS in
          log.js) - everything is still rendered up front on load and just
@@ -42,8 +52,7 @@
 
             <div class="sort-controls" id="combo-sort-controls">
                 <span>Combo list sort:</span>
-                <button id="sort-name-btn" class="sort-toggle-btn">Name</button>
-                <button id="sort-rating-btn" class="sort-toggle-btn">Rating</button>
+                <span id="combo-sort-switch"></span>
             </div>
 
             <!-- Combos with 3+ ingredients - cards (default) or a network
@@ -78,10 +87,11 @@
         </div>
     </div>
 
-    <script src="github-storage.js?v=20261007f"></script>
-    <script src="app-settings.js?v=20261007f"></script>
-    <script src="tooltip.js?v=20261007f"></script>
-    <script src="log.js?v=20261007f"></script>
+    <script src="github-storage.js?v=20261007g"></script>
+    <script src="app-settings.js?v=20261007g"></script>
+    <script src="tooltip.js?v=20261007g"></script>
+    <script src="ui.js?v=20261007g"></script>
+    <script src="log.js?v=20261007g"></script>
 </body>
 
 </html>

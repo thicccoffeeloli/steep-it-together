@@ -576,15 +576,17 @@ function buildIngredientsPanel() {
     // into an edit session never silently changes what order you're looking
     // at. Purely a view preference - the underlying custom drag order in
     // ingredientsData is never touched, so switching back restores it exactly.
-    const alphaToggleBtn = document.createElement('button');
-    alphaToggleBtn.id = 'alpha-toggle-btn';
-    alphaToggleBtn.textContent = alphabeticalView ? '↕ Custom order' : '🔤 A-Z order';
-    alphaToggleBtn.title = 'Your custom drag order is kept either way - this only changes what you see';
-    alphaToggleBtn.addEventListener('click', function() {
-        alphabeticalView = !alphabeticalView;
-        buildIngredientsPanel();
-    });
-    panel.appendChild(alphaToggleBtn);
+    panel.appendChild(makeModeSwitch({
+        id: 'alpha-toggle-btn',
+        left: ['custom', '↕ My order'],
+        right: ['alpha', '🔤 A–Z'],
+        value: alphabeticalView ? 'alpha' : 'custom',
+        title: 'Your custom drag order is kept either way - this only changes what you see',
+        onChange: function(value) {
+            alphabeticalView = value === 'alpha';
+            buildIngredientsPanel();
+        }
+    }));
 
     // Word/Icon display toggle - Word mode is the existing text-chip look;
     // Icon mode shows a picture per ingredient instead, meant to be dropped
@@ -592,15 +594,18 @@ function buildIngredientsPanel() {
     // (see imagePathFor) - anything without one yet just falls back to
     // showing its name, so this is safe to turn on before every ingredient
     // has an image.
-    const displayModeBtn = document.createElement('button');
-    displayModeBtn.id = 'display-mode-btn';
-    displayModeBtn.textContent = displayMode === 'word' ? '🖼️ Icon mode' : '🔤 Word mode';
-    displayModeBtn.addEventListener('click', function() {
-        displayMode = displayMode === 'word' ? 'icon' : 'word';
-        buildIngredientsPanel();
-        renderCauldron();
-    });
-    panel.appendChild(displayModeBtn);
+    panel.appendChild(makeModeSwitch({
+        id: 'display-mode-btn',
+        left: ['word', '🔤 Words'],
+        right: ['icon', '🖼️ Icons'],
+        value: displayMode,
+        title: 'Just for now - the default for every page is in Settings',
+        onChange: function(value) {
+            displayMode = value;
+            buildIngredientsPanel();
+            renderCauldron();
+        }
+    }));
 
     // One-off catch-up action, not a live-updating toggle like the buttons
     // above - re-samples every ingredient's mixing color from its actual
@@ -612,6 +617,12 @@ function buildIngredientsPanel() {
     refreshColorsBtn.title = 'Re-samples every ingredient\'s mixing color from its actual icon picture';
     refreshColorsBtn.addEventListener('click', refreshAllIngredientColorsFromIcons);
     panel.appendChild(refreshColorsBtn);
+
+    panel.appendChild(makeColorKey([
+        { swatch: '#dff3df', border: '1px solid #a9d6a9', label: 'Brewed' },
+        { swatch: '#fdf6d8', border: '1px solid #e2cf8a', label: 'Not brewed yet' },
+        { swatch: 'var(--accent-soft)', border: '1.5px solid var(--accent)', label: 'In the cauldron' }
+    ]));
 
     // Save/Cancel live in their own bar below the heading.
     if (panelMode === 'editing') {
