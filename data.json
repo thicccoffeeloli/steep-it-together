@@ -977,5 +977,16 @@
     "temperature": "hot",
     "rating": 6,
     "starred": false
+  },
+  {
+    "ingredients": [
+      "Moringa Teabag"
+    ],
+    "name": "Hot Moringa Tea",
+    "description": "Earthy and vegetal. Spinach water is the most accurate description. Grassy and green, mild rather than bitter. Pale yellow-green colour. Slight nutty aftertaste, almost toasted sesame-like.",
+    "notes": "The sulphurous smell is genuinely a bit off-putting. Taste is milder than the smell suggests. \nWould not buy again.",
+    "temperature": "hot",
+    "rating": 3,
+    "starred": false
   }
 ]
