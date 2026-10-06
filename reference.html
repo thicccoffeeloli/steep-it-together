@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Witch's Brew — Reference</title>
+    <title>Steep It Together — Reference</title>
+    <link rel="icon" type="image/png" href="Images/teabag-rooibos.png">
     <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -116,7 +117,7 @@
             // Strips a leading emoji/symbol (and the space after it) from the
             // browser-tab title - only that, not "the first word", so a
             // custom tab named "Ideas list" doesn't end up as just "list".
-            document.title = 'Witch\'s Brew — ' + REFERENCE_TAB_TITLES[tab].replace(/^[^\p{L}\p{N}\s]+\s+/u, '');
+            document.title = 'Steep It Together — ' + REFERENCE_TAB_TITLES[tab].replace(/^[^\p{L}\p{N}\s]+\s+/u, '');
             history.replaceState(null, '', '#' + tab);
         }
 

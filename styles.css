@@ -832,11 +832,17 @@ li {
 }
 
 #cauldron .icon-shape {
-    /* 16cqw of the default 420px-wide cauldron is ~67px, matching the old
-       fixed size almost exactly - clamp()'d so it still shrinks smoothly
-       on a narrower window but never gets too small to tap/see. */
-    width: clamp(32px, 16cqw, 68px);
-    height: clamp(32px, 16cqw, 68px);
+    /* Container query units are relative to #cauldron's own CONTENT box -
+       i.e. *inside* its 36%/19%/18% padding, not its full width. That
+       padding eats ~38% of the width, so cqw here is relative to a box
+       only ~62% as wide as #cauldron itself; 26cqw of that is ~67px at
+       the default 420px-wide cauldron, matching the old fixed size
+       (an earlier 16cqw here mistakenly assumed cqw meant the full,
+       unpadded width, and came out visibly too small even at full size).
+       clamp()'d so it still shrinks smoothly on a narrower window but
+       never gets too small to tap/see. */
+    width: clamp(32px, 26cqw, 68px);
+    height: clamp(32px, 26cqw, 68px);
     border-radius: 16px;
     background: rgba(255, 255, 255, 0.12);
     border-color: rgba(255, 255, 255, 0.25);

@@ -508,12 +508,26 @@
                 const existingData = await existing.json();
                 contentBase64 = existingData.content;
             }
+            // A rename is a deliberate "this icon now belongs to the new
+            // name" action, so this overwrites whatever's already at the
+            // destination rather than refusing to touch it - silently
+            // skipping the copy because some unrelated leftover (a stale
+            // test upload, a coincidental slug collision) happened to
+            // already be sitting there used to leave the renamed
+            // ingredient showing that wrong picture with no error at all.
+            // GitHub's PUT needs the destination's current sha to allow
+            // overwriting it (unlike a plain filesystem copy) - fetch it
+            // first if something's there.
             const dest = await githubRequest(newPath);
-            if (dest.ok) return false; // already something there - don't clobber it
+            const putBody = { message: 'copy ' + oldPath + ' to ' + newPath, content: contentBase64 };
+            if (dest.ok) {
+                const destData = await dest.json();
+                putBody.sha = destData.sha;
+            }
             const res = await githubRequest(newPath, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: 'copy ' + oldPath + ' to ' + newPath, content: contentBase64 })
+                body: JSON.stringify(putBody)
             });
             if (!res.ok) return false;
             const data = await res.json();
@@ -658,10 +672,24 @@
     // script.js has finished declaring its own versions, so these apply
     // last and stick.
     setTimeout(function() {
-        // imagePathFor still computes the real filename exactly as before -
-        // for anything in forceOverrideFilenames, this just routes it
+        // Patches displayIconSrc, NOT imagePathFor itself - script.js calls
+        // imagePathFor for two very different purposes, and only one of
+        // them wants this redirect. Upload/delete/rename code calls it to
+        // find the *real* filename to read/write; the icon <img src> calls
+        // displayIconSrc (which just defers to imagePathFor by default) to
+        // find what to *show*. An earlier version of this patched
+        // imagePathFor directly, which also silently redirected the
+        // upload/rename code - so re-uploading an icon that had just been
+        // removed computed a "filename" of
+        // "__force-live__/apple.png" (only the leading "Images/" gets
+        // stripped before it's sent to the server) and the save rejected
+        // it as an invalid filename, since the request now contained a
+        // literal "/", with no indication this redirect path was ever the
+        // actual cause.
+        //
+        // For anything in forceOverrideFilenames, this routes display
         // through a path that's guaranteed to 404 against the static file
-        // server (no such subfolder exists) while keeping that real
+        // server (no such subfolder exists) while keeping the real
         // filename as the URL's last segment, which is exactly what
         // usePlaceholderOnError's error handler below parses back out
         // (img.src.split('/').pop()...) to know what to look up in the
@@ -670,10 +698,9 @@
         // instead of the plain static path matching first (nothing 404s,
         // so the error handler never even runs) and silently winning
         // forever with whatever it originally shipped with.
-        const originalImagePathFor = window.imagePathFor;
-        if (typeof originalImagePathFor === 'function') {
-            window.imagePathFor = function(name) {
-                const real = originalImagePathFor(name);
+        if (typeof window.imagePathFor === 'function') {
+            window.displayIconSrc = function(name) {
+                const real = window.imagePathFor(name);
                 const filename = real.replace(/^Images\//, '');
                 return forceOverrideFilenames.has(filename) ? 'Images/__force-live__/' + filename : real;
             };

@@ -145,6 +145,22 @@ function imagePathFor(name) {
     return 'Images/' + slug + '.png';
 }
 
+// What an <img> should actually point at to *display* this ingredient's
+// icon - normally identical to imagePathFor(name), but the cloud version
+// (github-storage.js) patches this specifically to redirect a
+// freshly-uploaded/removed/renamed icon through a live lookup instead of
+// a same-named static file that would otherwise shadow it forever (see
+// the comment over that patch for the full story). Deliberately a
+// separate function from imagePathFor itself: upload/delete/rename code
+// below needs the *real* underlying filename to read/write, and calling
+// a possibly-redirected path there sent a redirect path fragment to the
+// server as if it were a filename - the exact cause of a confusing
+// "Invalid filename" error when re-uploading an icon that had just been
+// removed.
+function displayIconSrc(name) {
+    return imagePathFor(name);
+}
+
 // Falls back to a generic placeholder image if the specific one 404s,
 // rather than just removing the picture - guarded so a failing
 // placeholder.png itself can't retry forever.
@@ -1185,7 +1201,7 @@ function createIngredientEl(name, sectionIndex, itemIndex) {
 
         const img = document.createElement('img');
         img.className = 'ingredient-icon';
-        img.src = imagePathFor(name) + '?v=' + iconCacheBust;
+        img.src = displayIconSrc(name) + '?v=' + iconCacheBust;
         img.alt = '';
         img.draggable = false; // otherwise the browser's own "drag this image" kicks in instead of ours
         usePlaceholderOnError(img);
@@ -1355,7 +1371,7 @@ function renderCauldron() {
 
             const img = document.createElement('img');
             img.className = 'ingredient-icon';
-            img.src = imagePathFor(name) + '?v=' + iconCacheBust;
+            img.src = displayIconSrc(name) + '?v=' + iconCacheBust;
             img.alt = '';
             img.draggable = false;
             usePlaceholderOnError(img);
@@ -2101,6 +2117,21 @@ function migrateIngredientImage(oldName, newName) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ oldFilename: oldFilename, newFilename: newFilename })
+    }).then(function(response) {
+        // Same "don't just assume it worked" fix as uploadImage/deleteImage -
+        // this used to return the bare fetch() promise, which resolves even
+        // on a failed (4xx/5xx) response, so Save proceeded as if the icon
+        // had followed the rename when it actually hadn't, with nothing
+        // telling you why your icon just vanished.
+        return response.json().catch(function() { return {}; }).then(function(data) {
+            if (!response.ok || !data.success) {
+                throw new Error(data.error || (response.status + ' ' + response.statusText));
+            }
+            return true;
+        });
+    }).catch(function(err) {
+        showToast('⚠️ Icon didn\'t carry over to the new name: ' + err.message, 5000);
+        return false;
     });
 }
 
