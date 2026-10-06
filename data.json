@@ -999,5 +999,16 @@
     "temperature": "cold",
     "rating": 3,
     "starred": false
+  },
+  {
+    "ingredients": [
+      "Masala Chai"
+    ],
+    "name": "Plain Masala Chai Tea ",
+    "description": "Warming and spiced. Black tea base with classic chai spices: cinnamon, cardamom, ginger, cloves. Bold and aromatic with a slight natural sweetness from the spices. Don't over-steep or the black tea base turns astringent. \nCaffeinated - so it's a morning drink.",
+    "notes": "Forage & Feast Brand\nWould be great with milk",
+    "temperature": "hot",
+    "rating": 7,
+    "starred": false
   }
 ]
