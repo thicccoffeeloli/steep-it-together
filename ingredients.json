@@ -48,19 +48,6 @@
     ]
   },
   {
-    "section": "Citrus & Fruits",
-    "items": [
-      "Citrus Zest",
-      "Citrus Slice",
-      "Naartjie Peel",
-      "Orange Slice",
-      "Lemon Slice",
-      "Dried Apple Peel",
-      "Dried Coconut Flakes",
-      "Dried Lychee"
-    ]
-  },
-  {
     "section": "Herbal & Botanicals",
     "items": [
       "Dried Rose petals",
@@ -72,6 +59,19 @@
       "Fresh Mint Leaves",
       "Ginger",
       "Lemongrass"
+    ]
+  },
+  {
+    "section": "Citrus & Fruits",
+    "items": [
+      "Citrus Zest",
+      "Citrus Slice",
+      "Naartjie Peel",
+      "Orange Slice",
+      "Lemon Slice",
+      "Dried Apple Peel",
+      "Dried Coconut Flakes",
+      "Dried Lychee"
     ]
   },
   {
