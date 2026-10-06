@@ -123,7 +123,7 @@
     // trusting them - same check on first entry and on every later page
     // load, so a revoked token or renamed repo surfaces here instead of
     // confusingly on the first real data request.
-    async function validateConfig(owner, repo, token) {
+    async function configStatus(owner, repo, token) {
         const res = await realFetch(API_ROOT + '/repos/' + encodeURIComponent(owner) + '/' + encodeURIComponent(repo), {
             headers: {
                 Authorization: 'Bearer ' + token,
@@ -132,7 +132,12 @@
             },
             cache: 'no-store'
         });
-        return res.ok;
+        return res.status;
+    }
+
+    async function validateConfig(owner, repo, token) {
+        const status = await configStatus(owner, repo, token);
+        return status >= 200 && status < 300;
     }
 
     // A one-click "friend login" link (?owner=x&repo=y&token=z) connects
@@ -213,16 +218,27 @@
         if (!ensureConfiguredPromise) {
             ensureConfiguredPromise = (async function() {
                 const saved = getConfig();
-                if (saved && wasValidatedThisSession(saved)) {
+                if (saved) {
+                    // Use the saved token straight away instead of waiting a
+                    // full network round trip for a check before ANY data
+                    // request can even start - the token is almost always
+                    // still good. The check still happens, alongside the
+                    // real requests, and only a definite "no" (401 bad
+                    // token / 404 repo gone) throws it out and asks again.
+                    // A network error or rate limit says nothing about the
+                    // token, so those leave it alone.
                     activeConfig = saved;
+                    if (!wasValidatedThisSession(saved)) {
+                        configStatus(saved.owner, saved.repo, saved.token).then(function(status) {
+                            if (status >= 200 && status < 300) markValidatedThisSession(saved);
+                            else if (status === 401 || status === 404) {
+                                clearConfig();
+                                window.location.reload();
+                            }
+                        }).catch(function() { /* offline etc - not evidence the token is bad */ });
+                    }
                     return;
                 }
-                if (saved && await validateConfig(saved.owner, saved.repo, saved.token).catch(function() { return false; })) {
-                    activeConfig = saved;
-                    markValidatedThisSession(saved);
-                    return;
-                }
-                if (saved) clearConfig(); // stale/broken - fall through to asking again
                 if (await tryUrlAutoConnect()) {
                     activeConfig = getConfig();
                     markValidatedThisSession(activeConfig);
@@ -411,14 +427,6 @@
         if (forceOverrideFilenames.has(filename)) return;
         forceOverrideFilenames.add(filename);
         localStorage.setItem(FORCE_OVERRIDE_KEY, JSON.stringify(Array.from(forceOverrideFilenames)));
-    }
-
-    async function listImages() {
-        const res = await githubRequest('Images');
-        if (!res.ok) return [];
-        const entries = await res.json();
-        entries.forEach(function(entry) { shaCache.set(entry.path, entry.sha); });
-        return entries;
     }
 
     async function uploadImageDataUrl(filename, dataUrl) {

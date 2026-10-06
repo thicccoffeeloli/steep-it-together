@@ -218,7 +218,10 @@ iconUploadInput.addEventListener('change', function() {
             // keeps every icon a predictable size regardless of the
             // original file, and PNG is the only format imagePathFor()
             // ever looks for.
-            const size = 256;
+            // 128, not 256 - icons only ever display at ~64px (128 covers
+            // high-density screens), and 256 made every icon ~4x heavier to
+            // download for no visible gain.
+            const size = 128;
             const canvas = document.createElement('canvas');
             canvas.width = size;
             canvas.height = size;
@@ -2336,7 +2339,10 @@ drinkImageUploadInput.addEventListener('change', function() {
             // Same normalize-onto-a-square-canvas approach as the
             // ingredient icon upload - consistent size/format regardless
             // of what was actually picked.
-            const size = 256;
+            // 128, not 256 - icons only ever display at ~64px (128 covers
+            // high-density screens), and 256 made every icon ~4x heavier to
+            // download for no visible gain.
+            const size = 128;
             const canvas = document.createElement('canvas');
             canvas.width = size;
             canvas.height = size;

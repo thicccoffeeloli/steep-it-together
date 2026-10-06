@@ -1,0 +1,6 @@
+{
+  "name": "steep-it-together-dev",
+  "private": true,
+  "description": "Browser regression tests (not served to users)",
+  "dependencies": { "puppeteer-core": "^24.0.0" }
+}

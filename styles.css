@@ -152,78 +152,14 @@ body:not(.home-page) h1::before {
 }
 
 /* ===== Notebook/journal dress-up =====
-   A small set of reusable decorative pieces (ruled paper, washi tape, a
-   handwritten accent font, a page-turn entrance) rather than one-off styling
-   per page - see individual usages below for where each gets applied. */
-
-/* Faint ruled lines + a dusty-rose margin rule, like a page torn from a
-   lined notebook. Deliberately subtle (low-opacity, tinted plum rather than
-   flat grey) so it reads as paper texture, not visual noise. */
-.paper-ruled {
-    position: relative;
-    background-color: var(--card-bg);
-    background-image:
-        linear-gradient(to right, transparent 37px, var(--margin-rule) 37px, var(--margin-rule) 39px, transparent 39px),
-        repeating-linear-gradient(to bottom, transparent, transparent 26px, var(--paper-line) 26px, var(--paper-line) 27px);
-    padding-left: 50px;
-}
-
-/* A strip of tape "pinning" an element to the page - top-center by default,
-   with --gold/--rose/--plum color and --left/--right position modifiers so
-   it can vary a little from one card to the next rather than looking
-   copy-pasted. Needs the element to have room above it (margin-top) and
-   position:relative to anchor against. */
-.washi-tape {
-    position: relative;
-}
-
-.washi-tape::before {
-    content: '';
-    position: absolute;
-    top: -14px;
-    left: 50%;
-    width: 74px;
-    height: 26px;
-    transform: translateX(-50%);
-    background: repeating-linear-gradient(45deg,
-        var(--tape-gold), var(--tape-gold) 6px,
-        rgba(255, 255, 255, 0.4) 6px, rgba(255, 255, 255, 0.4) 12px);
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
-    opacity: 0.9;
-    pointer-events: none;
-}
-
-.washi-tape--rose::before {
-    background: repeating-linear-gradient(45deg,
-        var(--tape-rose), var(--tape-rose) 6px,
-        rgba(255, 255, 255, 0.4) 6px, rgba(255, 255, 255, 0.4) 12px);
-}
-
-.washi-tape--plum::before {
-    background: repeating-linear-gradient(45deg,
-        var(--tape-plum), var(--tape-plum) 6px,
-        rgba(255, 255, 255, 0.35) 6px, rgba(255, 255, 255, 0.35) 12px);
-}
-
-.washi-tape--left::before {
-    left: 18%;
-}
-
-.washi-tape--right::before {
-    left: 82%;
-}
+   A small set of reusable decorative pieces (a handwritten accent font, a
+   page-turn entrance) rather than one-off styling per page - see
+   individual usages below for where each gets applied. */
 
 /* Reserved for small stamp-like accents (a rating badge, a divider tab) -
    never body text, it's a display flourish, not something to read pages of. */
 .hand-label {
     font-family: var(--hand-font);
-}
-
-/* A rubber-stamp look for a rating/status badge - dashed "ink stamp" border
-   plus a slight rotation, instead of a flat solid pill. */
-.rubber-stamp {
-    border: 2px dashed currentColor;
-    border-radius: 50%;
 }
 
 /* Plays once whenever combo-detail re-renders (a fresh entry, or flipping
