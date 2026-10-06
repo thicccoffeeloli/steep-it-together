@@ -920,5 +920,16 @@
     "temperature": "cold",
     "rating": 7,
     "starred": false
+  },
+  {
+    "ingredients": [
+      "Rooibos Teabag"
+    ],
+    "name": "Plain rooibos tea (cold brew)",
+    "description": "Clean and smooth. A lighter, fainter version of the hot steep. Same nutty sweetness, just turned down.",
+    "notes": "",
+    "temperature": "cold",
+    "rating": 6,
+    "starred": false
   }
 ]
