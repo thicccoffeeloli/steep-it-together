@@ -36,6 +36,18 @@
     ]
   },
   {
+    "section": "Spices",
+    "items": [
+      "Cinnamon Stick",
+      "Cloves",
+      "Cardamom Pods",
+      "Turmeric",
+      "Star Anise",
+      "Black Peppercorn",
+      "Vanilla Pod"
+    ]
+  },
+  {
     "section": "Citrus & Fruits",
     "items": [
       "Citrus Zest",
@@ -60,18 +72,6 @@
       "Fresh Mint Leaves",
       "Ginger",
       "Lemongrass"
-    ]
-  },
-  {
-    "section": "Spices",
-    "items": [
-      "Cinnamon Stick",
-      "Cloves",
-      "Cardamom Pods",
-      "Turmeric",
-      "Star Anise",
-      "Black Peppercorn",
-      "Vanilla Pod"
     ]
   },
   {
