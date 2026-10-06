@@ -34,7 +34,6 @@
   "Apple Cider": "#eba856",
   "Whiskey": "#6f3a10",
   "Rum": "#744c24",
-  "Rosehip": "#C0392B",
   "Medium Roast Coffee": "#593815",
   "Ginger": "#e9c33f",
   "Red Wine": "#a87e8e",
@@ -43,8 +42,9 @@
   "Orange Slice": "#fdcb24",
   "Hazelnut Coffee": "#724920",
   "Fresh Mint Leaves": "#43c061",
-  "Rose petals": "#e298c9",
   "Rice": "#ffffff",
   "Dried Rose Buds": "#534937",
-  "Green Rooibos Teabag": "#373c37"
+  "Green Rooibos Teabag": "#373c37",
+  "Dried Rose petals": "#e298c9",
+  "Dried Rosehip": "#C0392B"
 }
