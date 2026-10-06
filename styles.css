@@ -343,6 +343,30 @@ button:active {
     background: var(--accent-soft);
     border: 1px solid var(--border);
     border-radius: 10px;
+    /* Freeze-pane: stays pinned to the top of whatever is scrolling (the
+       ingredients card, or the page itself) once you scroll past it, so
+       Save/Cancel are always in reach however far down you're editing. */
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+}
+
+/* The ingredients card has its own 24px padding, and sticky pins to the
+   edge inside that padding - leaving a strip above the bar where the list
+   scrolling underneath shows through. Pull the bar up over it. */
+main section > .edit-actions {
+    top: -24px;
+}
+
+/* For forms whose Save/Cancel sit at the END of the form (combo-detail's
+   editor) - pinned to the bottom edge instead, the same idea. */
+.edit-actions-bottom {
+    top: auto;
+    bottom: 0;
+    margin-bottom: 0;
+    margin-top: 12px;
+    box-shadow: 0 -3px 8px rgba(0, 0, 0, 0.12);
 }
 
 .edit-actions-label {
@@ -2664,4 +2688,42 @@ h3.note-section-title {
 
 .settings-status-error {
     color: #b3261e;
+}
+
+/* ===== Reordering the Notepad page's tabs (reference.html) ===== */
+
+.tab-bar .tab-btn[draggable="true"] {
+    cursor: grab;
+}
+
+.tab-dragging {
+    opacity: 0.4;
+}
+
+.tab-drop-before {
+    box-shadow: inset 4px 0 0 var(--accent);
+}
+
+.tab-drop-after {
+    box-shadow: inset -4px 0 0 var(--accent);
+}
+
+.tab-move-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin: -8px 0 14px;
+    font-size: 13px;
+    color: var(--ink-soft, #6b6155);
+}
+
+.tab-move-row button {
+    padding: 4px 12px;
+    font-size: 13px;
+}
+
+.tab-move-row button:disabled {
+    opacity: 0.4;
+    cursor: default;
 }

@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Steep It Together — Reference</title>
     <link rel="icon" type="image/png" href="Images/teabag-rooibos.png">
-    <link rel="stylesheet" href="styles.css?v=20261007b">
+    <link rel="stylesheet" href="styles.css?v=20261007c">
 </head>
 
 <body>
@@ -23,14 +23,20 @@
          shows/hides whichever one is selected, deep-linkable via #hash so
          old links can jump straight to the right tab (see selectReferenceTab). -->
     <div class="tab-bar">
-        <button id="tab-notes" class="tab-btn" data-tab="notes">📝 Notepad</button>
-        <button id="tab-hard-to-get" class="tab-btn" data-tab="hard-to-get">🔍 Hard to get</button>
-        <button id="tab-avoid-flask" class="tab-btn" data-tab="avoid-flask">⚠️ Avoid with flask</button>
+        <button id="tab-notes" class="tab-btn" data-tab="notes" draggable="true">📝 Notepad</button>
+        <button id="tab-hard-to-get" class="tab-btn" data-tab="hard-to-get" draggable="true">🔍 Hard to get</button>
+        <button id="tab-avoid-flask" class="tab-btn" data-tab="avoid-flask" draggable="true">⚠️ Avoid with flask</button>
         <!-- Makes a new list tab (see "User-created tabs" below). Starts
              disabled and only turns on once the existing tabs have actually
              loaded - adding one before then could save a list containing
              just the new tab over the real, not-yet-loaded ones. -->
         <button id="tab-add" class="tab-btn tab-add-btn" type="button" title="Add a new tab" disabled>＋</button>
+    </div>
+    <div class="tab-move-row">
+        <span>Move this tab:</span>
+        <button id="tab-move-left" type="button" class="sort-toggle-btn">◀ Left</button>
+        <button id="tab-move-right" type="button" class="sort-toggle-btn">Right ▶</button>
+        <span>(or drag a tab to where you want it)</span>
     </div>
 
     <div id="panel-notes" class="reference-panel">
@@ -59,10 +65,11 @@
         </div>
     </div>
 
-    <script src="github-storage.js?v=20261007b"></script>
-    <script src="tooltip.js?v=20261007b"></script>
-    <script src="notes.js?v=20261007b"></script>
-    <script src="reference-list.js?v=20261007b"></script>
+    <script src="github-storage.js?v=20261007c"></script>
+    <script src="app-settings.js?v=20261007c"></script>
+    <script src="tooltip.js?v=20261007c"></script>
+    <script src="notes.js?v=20261007c"></script>
+    <script src="reference-list.js?v=20261007c"></script>
     <script>
         buildReferenceListPage({
             endpoint: '/hard-to-get',
@@ -88,7 +95,10 @@
             'avoid-flask': '⚠️ Avoid with flask'
         };
 
+        let currentTabKey = 'notes';
+
         function selectReferenceTab(tab) {
+            currentTabKey = tab;
             Object.keys(REFERENCE_TAB_TITLES).forEach(function(key) {
                 document.getElementById('panel-' + key).hidden = key !== tab;
                 document.getElementById('tab-' + key).classList.toggle('active', key === tab);
@@ -99,7 +109,102 @@
             // custom tab named "Ideas list" doesn't end up as just "list".
             document.title = 'Steep It Together — ' + REFERENCE_TAB_TITLES[tab].replace(/^[^\p{L}\p{N}\s]+\s+/u, '');
             history.replaceState(null, '', '#' + tab);
+            updateMoveButtons();
         }
+
+        // ===== Reordering tabs =====
+        // Order is kept in the synced settings (referenceTabOrder: array of tab
+        // keys), so it follows you between devices. Anything not in that list
+        // (a tab made later, or on another device) just goes after the ones
+        // that are. These look the bar up by selector, not a const, because
+        // selectReferenceTab runs before the consts further down exist.
+        function tabKeysInOrder() {
+            return Array.prototype.map.call(document.querySelectorAll('.tab-bar .tab-btn[data-tab]'), function(b) { return b.dataset.tab; });
+        }
+
+        function applyTabOrder(order) {
+            const bar = document.querySelector('.tab-bar');
+            const addBtn = document.getElementById('tab-add');
+            const present = tabKeysInOrder();
+            const wanted = (Array.isArray(order) ? order : []).filter(function(k) { return present.indexOf(k) !== -1; });
+            wanted.concat(present.filter(function(k) { return wanted.indexOf(k) === -1; })).forEach(function(key) {
+                bar.insertBefore(document.getElementById('tab-' + key), addBtn);
+            });
+            updateMoveButtons();
+        }
+
+        function saveTabOrder() {
+            if (window.AppSettings) AppSettings.save({ referenceTabOrder: tabKeysInOrder() }).catch(function() {});
+            updateMoveButtons();
+        }
+
+        function updateMoveButtons() {
+            const keys = tabKeysInOrder();
+            const i = keys.indexOf(currentTabKey);
+            document.getElementById('tab-move-left').disabled = i <= 0;
+            document.getElementById('tab-move-right').disabled = i === -1 || i >= keys.length - 1;
+        }
+
+        function moveTab(key, delta) {
+            const keys = tabKeysInOrder();
+            const i = keys.indexOf(key);
+            const j = i + delta;
+            if (i === -1 || j < 0 || j >= keys.length) return;
+            const bar = document.querySelector('.tab-bar');
+            const btn = document.getElementById('tab-' + key);
+            const other = document.getElementById('tab-' + keys[j]);
+            bar.insertBefore(btn, delta < 0 ? other : other.nextSibling);
+            saveTabOrder();
+        }
+
+        document.getElementById('tab-move-left').addEventListener('click', function() { moveTab(currentTabKey, -1); });
+        document.getElementById('tab-move-right').addEventListener('click', function() { moveTab(currentTabKey, 1); });
+
+        (function wireTabDragging() {
+            const bar = document.querySelector('.tab-bar');
+            let dragged = null;
+
+            function clearMarks() {
+                bar.querySelectorAll('.tab-drop-before, .tab-drop-after').forEach(function(el) {
+                    el.classList.remove('tab-drop-before', 'tab-drop-after');
+                });
+            }
+            function tabUnder(e) { return e.target.closest ? e.target.closest('.tab-btn[data-tab]') : null; }
+
+            bar.addEventListener('dragstart', function(e) {
+                dragged = tabUnder(e);
+                if (!dragged) return;
+                dragged.classList.add('tab-dragging');
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', dragged.dataset.tab);
+            });
+            bar.addEventListener('dragover', function(e) {
+                const target = tabUnder(e);
+                if (!dragged || !target || target === dragged) return;
+                e.preventDefault();
+                clearMarks();
+                const rect = target.getBoundingClientRect();
+                target.classList.add(e.clientX > rect.left + rect.width / 2 ? 'tab-drop-after' : 'tab-drop-before');
+            });
+            bar.addEventListener('drop', function(e) {
+                const target = tabUnder(e);
+                if (!dragged || !target || target === dragged) return;
+                e.preventDefault();
+                const rect = target.getBoundingClientRect();
+                const after = e.clientX > rect.left + rect.width / 2;
+                bar.insertBefore(dragged, after ? target.nextSibling : target);
+                saveTabOrder();
+            });
+            bar.addEventListener('dragend', function() {
+                if (dragged) dragged.classList.remove('tab-dragging');
+                dragged = null;
+                clearMarks();
+            });
+        })();
+
+        // The remembered order, for the built-in tabs right now (custom tabs
+        // don't exist yet - see the custom-lists load below, which re-applies it).
+        if (window.AppSettings) applyTabOrder(AppSettings.get().referenceTabOrder);
 
         // [data-tab] specifically - the "＋" button is also a .tab-btn (for
         // the look) but isn't a tab, so it mustn't get this handler.
@@ -155,6 +260,7 @@
             tabBtn.className = 'tab-btn';
             tabBtn.dataset.tab = key;
             tabBtn.textContent = list.title;
+            tabBtn.draggable = true;
             tabBtn.addEventListener('click', function() { selectReferenceTab(key); });
             tabBarEl.insertBefore(tabBtn, addTabBtn);
 
@@ -256,6 +362,13 @@
                     createCustomTab(list);
                 });
                 addTabBtn.disabled = false;
+
+                // Now that custom tabs exist, put every tab in its saved order -
+                // the cached copy first (instant), then the real synced one.
+                if (window.AppSettings) {
+                    applyTabOrder(AppSettings.get().referenceTabOrder);
+                    AppSettings.load().then(function(settings) { applyTabOrder(settings.referenceTabOrder); }).catch(function() {});
+                }
 
                 // The initial tab was picked before these existed, so a deep
                 // link straight to one (#custom-...), or just refreshing the

@@ -452,8 +452,6 @@ function buildEditForm(combo, temp) {
             render();
         });
     });
-    wrapper.appendChild(saveBtn);
-
     const cancelBtn = document.createElement('button');
     cancelBtn.textContent = 'Cancel';
     cancelBtn.addEventListener('click', function() {
@@ -468,7 +466,14 @@ function buildEditForm(combo, temp) {
         editingCombos.delete(combo);
         render();
     });
-    wrapper.appendChild(cancelBtn);
+
+    // Pinned to the bottom edge while the form is taller than the window
+    // (see .edit-actions-bottom) so Save is never off-screen.
+    const actions = document.createElement('div');
+    actions.className = 'edit-actions edit-actions-bottom';
+    actions.appendChild(saveBtn);
+    actions.appendChild(cancelBtn);
+    wrapper.appendChild(actions);
 
     return wrapper;
 }

@@ -90,6 +90,11 @@ Data (all JSON in the repo root, edited through the app, not by hand):
   shifts. `findBestPotFilter()` in `script.js` searches the real filter math so the pot and the
   Drink card show the *same* colour. Very saturated targets (pure red/purple) can't be reached
   exactly - that's a limit of tinting a pale-blue image, not a bug.
+- **Save/Cancel bars** (`.edit-actions`) are `position: sticky` so they stay in view while scrolling; the
+  ingredients card has 24px padding, hence `top: -24px` for bars directly inside a `main section`.
+  `.edit-actions-bottom` pins to the bottom edge instead (combo editor, where Save is at the end).
+- **Notepad tab order** is saved in `settings.json` as `referenceTabOrder` (array of tab keys; custom tabs
+  are `custom-<id>`). Tabs can be dragged or moved with the Left/Right buttons.
 - `container-type: inline-size` elements can't size themselves from their own content.
 - The hidden attribute loses to any `display:` rule - the matrix filter list needs
   `.column-filter [hidden] { display:none !important }`.
@@ -109,7 +114,7 @@ git push origin main
 ```
 GitHub Pages redeploys in ~1-2 minutes. Browsers cache files for 10 minutes (Pages sets
 `max-age=600`), so **bump the `?v=` on the `<script>`/stylesheet links in the four HTML files**
-(e.g. `?v=20261008a`; the current one is `20261007b`) whenever you change a js/css file - that makes every browser fetch the new
+(e.g. `?v=20261008a`; the current one is `20261007c`) whenever you change a js/css file - that makes every browser fetch the new
 version immediately instead of showing an old copy. (Ctrl+Shift+R also works locally.) If a merge conflicts, it will be in a data file or an image written by the live
 site: keep the **live site's** version of data files.
 
