@@ -28,6 +28,14 @@
     ]
   },
   {
+    "section": "Coffee",
+    "items": [
+      "Hazelnut Coffee",
+      "Medium Roast Coffee",
+      "Dark Roast Coffee"
+    ]
+  },
+  {
     "section": "Citrus & Fruits",
     "items": [
       "Citrus Zest",
@@ -52,14 +60,6 @@
       "Fresh Mint Leaves",
       "Ginger",
       "Lemongrass"
-    ]
-  },
-  {
-    "section": "Coffee",
-    "items": [
-      "Hazelnut Coffee",
-      "Medium Roast Coffee",
-      "Dark Roast Coffee"
     ]
   },
   {
