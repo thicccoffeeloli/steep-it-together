@@ -771,7 +771,7 @@ li {
        a perfect square, top/bottom percentages (which CSS bases on width,
        not height) work out correctly here too. Estimated from a screenshot,
        not pixel-measured - nudge if it's off. */
-    padding: 36% 19% 18%;
+    padding: 38% 22% 30%;
     /* Keeps ingredients from spilling out past the pot's visual bounds if
        there are enough of them to overflow - scrolls inside the pot
        instead of escaping it. */
@@ -783,7 +783,7 @@ li {
        narrowed/shrank the moment enough ingredients were added to trigger
        one. Reserving the gutter permanently means that width never
        changes, scrollbar or not. */
-    scrollbar-gutter: stable;
+    scrollbar-width: none; /* a fixed-px scrollbar gutter broke proportions on a narrow pot; still scrolls */
 }
 
 /* The pot artwork lives on its own ::before layer, not #cauldron's own
@@ -841,8 +841,8 @@ li {
        unpadded width, and came out visibly too small even at full size).
        clamp()'d so it still shrinks smoothly on a narrower window but
        never gets too small to tap/see. */
-    width: clamp(32px, 26cqw, 68px);
-    height: clamp(32px, 26cqw, 68px);
+    width: clamp(28px, 24cqw, 60px);
+    height: clamp(28px, 24cqw, 60px);
     border-radius: 16px;
     background: rgba(255, 255, 255, 0.12);
     border-color: rgba(255, 255, 255, 0.25);
