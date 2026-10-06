@@ -27,7 +27,8 @@
     "Cinnamon Stick",
     "普洱",
     "红枣",
-    "Chamomile"
+    "Chamomile",
+    "Rose petals"
   ],
   "Cinnamon Stick": [
     "Dark Roast Coffee",
@@ -218,5 +219,8 @@
   ],
   "Rooibos + Honeybush Blend": [
     "红枣"
+  ],
+  "Rose petals": [
+    "Naartjie Peel"
   ]
 }
