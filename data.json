@@ -1010,5 +1010,16 @@
     "temperature": "hot",
     "rating": 7,
     "starred": false
+  },
+  {
+    "ingredients": [
+      "Masala Chai"
+    ],
+    "name": "Cold Brew Masala Chai ",
+    "description": "Spice notes are significantly muted cold, as cinnamon and cardamom especially need heat. Lightly spiced and mildly sweet black tea. Pleasant but a shadow of the hot version.",
+    "notes": "Hot is clearly the better vehicle for this one.",
+    "temperature": "cold",
+    "rating": 6,
+    "starred": false
   }
 ]
