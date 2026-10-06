@@ -37,7 +37,7 @@
     "Hibiscus Teabag",
     "Rooibos Teabag",
     "Cloves",
-    "Dried Apple Slices",
+    "Dried Apple",
     "Naartjie Peel",
     "Red Wine",
     "云南红茶",
@@ -56,7 +56,7 @@
     "Fresh Mint Leaves",
     "Lemon Slice",
     "Peppermint Teabag",
-    "Dried Apple Slices",
+    "Dried Apple",
     "Ginger",
     "Rooibos Teabag",
     "Naartjie Peel"
@@ -145,7 +145,7 @@
     "Naartjie Peel",
     "Ginger",
     "红枣",
-    "Dried Apple Slices",
+    "Dried Apple",
     "Roasted Corn Tea",
     "Soba Tea"
   ],
@@ -220,7 +220,7 @@
   "Dried Rosehip": [
     "Hibiscus Teabag"
   ],
-  "Dried Apple Slices": [
+  "Dried Apple": [
     "Barley tea",
     "Cinnamon Stick",
     "Chamomile"
