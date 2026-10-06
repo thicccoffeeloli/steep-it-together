@@ -863,5 +863,17 @@
     "temperature": "hot",
     "rating": 8,
     "starred": false
+  },
+  {
+    "ingredients": [
+      "Naartjie Peel",
+      "Rose petals"
+    ],
+    "name": "Naartjie Rose Cold Brew",
+    "description": "Delicately floral from the rose with a soft citrus lift from the naartjie. Clean and gently sweet. The cold extraction keeps both ingredients light and subtle, neither overpowering the other.",
+    "notes": "",
+    "temperature": "cold",
+    "rating": 7,
+    "starred": false
   }
 ]
