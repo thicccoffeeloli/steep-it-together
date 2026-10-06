@@ -28,7 +28,7 @@
     "普洱",
     "红枣",
     "Chamomile",
-    "Rose petals",
+    "Dried Rose petals",
     "Dark Roast Coffee"
   ],
   "Cinnamon Stick": [
@@ -71,15 +71,12 @@
     "Peppermint Teabag"
   ],
   "Hibiscus Teabag": [
-    "Rosehip",
+    "Dried Rosehip",
     "Ginger",
     "Cinnamon Stick",
     "Naartjie Peel",
     "Citrus Zest",
     "Lemon Slice"
-  ],
-  "Rosehip": [
-    "Hibiscus Teabag"
   ],
   "Rooibos Teabag": [
     "Naartjie Peel",
@@ -222,7 +219,10 @@
   "Rooibos + Honeybush Blend": [
     "红枣"
   ],
-  "Rose petals": [
+  "Dried Rose petals": [
     "Naartjie Peel"
+  ],
+  "Dried Rosehip": [
+    "Hibiscus Teabag"
   ]
 }
