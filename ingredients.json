@@ -1,13 +1,64 @@
 [
   {
+    "section": "Rooibos Related",
+    "items": [
+      "Rooibos Teabag",
+      "Rooibos + Honeybush Blend",
+      "Green Rooibos Teabag",
+      "Rooibos + Buchu Blend"
+    ]
+  },
+  {
     "section": "Teabags",
     "items": [
       "Hibiscus Teabag",
       "Peppermint Teabag",
       "Chamomile",
-      "Rooibos Teabag",
-      "Rooibos + Honeybush Blend",
-      "Masala Chai"
+      "Masala Chai",
+      "Moringa Teabag"
+    ]
+  },
+  {
+    "section": "Chinese Tea",
+    "items": [
+      "普洱",
+      "云南红茶",
+      "菊花",
+      "茉莉花"
+    ]
+  },
+  {
+    "section": "Coffee",
+    "items": [
+      "Hazelnut Coffee",
+      "Medium Roast Coffee",
+      "Dark Roast Coffee"
+    ]
+  },
+  {
+    "section": "Spices",
+    "items": [
+      "Cinnamon Stick",
+      "Cloves",
+      "Cardamom Pods",
+      "Turmeric",
+      "Star Anise",
+      "Black Peppercorn",
+      "Vanilla Pod"
+    ]
+  },
+  {
+    "section": "Herbal & Botanicals",
+    "items": [
+      "Dried Rose petals",
+      "Dried Rose Buds",
+      "Dried Rosehip",
+      "红枣",
+      "桂圆",
+      "枸杞",
+      "Fresh Mint Leaves",
+      "Ginger",
+      "Lemongrass"
     ]
   },
   {
@@ -18,40 +69,9 @@
       "Naartjie Peel",
       "Orange Slice",
       "Lemon Slice",
-      "Dried Coconut Flakes",
       "Dried Apple Peel",
+      "Dried Coconut Flakes",
       "Dried Lychee"
-    ]
-  },
-  {
-    "section": "Coffee",
-    "items": [
-      "Medium Roast Coffee",
-      "Dark Roast Coffee",
-      "Hazelnut Coffee"
-    ]
-  },
-  {
-    "section": "Herbal & Botanicals",
-    "items": [
-      "红枣",
-      "Fresh Mint Leaves",
-      "Ginger",
-      "Lemongrass",
-      "桂圆",
-      "枸杞",
-      "Rose petals"
-    ]
-  },
-  {
-    "section": "Spices",
-    "items": [
-      "Cinnamon Stick",
-      "Cloves",
-      "Cardamom Pods",
-      "Star Anise",
-      "Black Peppercorn",
-      "Turmeric"
     ]
   },
   {
@@ -61,15 +81,6 @@
       "Barley tea",
       "Roasted Corn Tea",
       "Soba Tea"
-    ]
-  },
-  {
-    "section": "Chinese Tea",
-    "items": [
-      "普洱",
-      "云南红茶",
-      "菊花",
-      "茉莉花"
     ]
   },
   {
@@ -92,9 +103,7 @@
   {
     "section": "Uncategorized",
     "items": [
-      "Dried Rose Buds",
-      "Vanilla Pod",
-      "Rosehip"
+      "Placeholder"
     ]
   }
 ]

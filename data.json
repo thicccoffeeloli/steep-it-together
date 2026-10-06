@@ -154,9 +154,10 @@
     ],
     "name": "Plain rooibos tea.",
     "description": "Classic rooibos tea.",
-    "notes": "Tried flavoured varieties (likely peach, cherry cranberry) — both unremarkable. Plain rooibos is the winner, flavoured versions not worth seeking out.",
+    "notes": "Ranking: \nrooibos + honeybush > pure rooibos > green rooibos > flavoured rooibos (pre-flavoured packs).\nFlavoured varieties (likely peach, cherry cranberry) are unremarkable. ",
     "temperature": "hot",
-    "rating": 8
+    "rating": 8,
+    "starred": false
   },
   {
     "ingredients": [
@@ -210,8 +211,8 @@
       "Naartjie Peel"
     ],
     "name": "Naartjie Rooibos Tea",
-    "description": "Extra naartjie freshness that does well with the rooibos",
-    "notes": "",
+    "description": "Rooibos's nutty sweetness as the base with soft, creamy citrus warmth from the naartjie layering on top. Comforting and subtly fruity. A natural, gentle pairing.",
+    "notes": "Tastes better brewed hot then cooled rather than drunk straight hot.",
     "temperature": "hot",
     "rating": 8,
     "starred": false
@@ -505,7 +506,7 @@
   },
   {
     "ingredients": [
-      "Rose petals"
+      "Dried Rose petals"
     ],
     "name": "Rose petal tea",
     "description": "Quite nice. Light and floral but not overwhelming. Colour can range from yellow/golden to pale pink depending on rose variety and water pH — adding a squeeze of lemon shifts it towards pink. A subtle, elegant drink — more perfumed hot water than a punchy tea, in the best way.",
@@ -516,7 +517,7 @@
   },
   {
     "ingredients": [
-      "Rose petals",
+      "Dried Rose petals",
       "Chamomile",
       "Cinnamon Stick"
     ],
@@ -616,10 +617,10 @@
       "Barley tea"
     ],
     "name": "红枣大麦茶",
-    "description": "Note: Good but not amazing. Soothing and smooth but not too interesting on its own. Better as part of the three-way blend with ginger where the ginger adds the lift it needs.",
-    "notes": "",
+    "description": "A jujube forward drink with a nutty, roasted barley background. The jujube's natural sweetness leads, and the barley adds warmth and depth underneath.\nTastes great both hot and cold.",
+    "notes": "Use less barley tea and more jujube for a more pleasant drinking experience, especially with an overnight steep. \n\nOriginal was too barley heavy, which got a bit bitter. Good but not amazing. Soothing and smooth but not too interesting on its own. Better as part of the three-way blend with ginger where the ginger adds the lift it needs.",
     "temperature": "hot",
-    "rating": 6,
+    "rating": 8,
     "starred": false
   },
   {
@@ -730,15 +731,15 @@
   },
   {
     "ingredients": [
-      "Cinnamon Stick",
       "Naartjie Peel",
-      "Dark Roast Coffee"
+      "Dark Roast Coffee",
+      "Cinnamon Stick"
     ],
     "name": "Spiced naartjie dark roast coffee",
-    "description": "A bold and layered coffee drink. The dark roast provides the earthy, robust base while the dried naartjie peel adds a surprising creaminess and softness — rounding out the edges of the dark roast rather than adding sharp citrus. The cinnamon weaves in depth and spice underneath, adding warmth without overwhelming. Together it's a citrusy, spiced dark roast with more complexity than the sum of its parts.",
-    "notes": "Quite good overall. Added slightly too much cinnamon which tipped it too sweet — dial back the cinnamon next time.\nThe naartjie peel's role here is softening and rounding rather than dominating, which works really well with coffee.\nWorth retrying with less cinnamon to find the right balance.",
+    "description": "A lighter, balanced coffee — naartjie's creamy citrus and dark roast sit evenly together, with a hint of sweetness and spice in the background from the cinnamon. Softer than a straight dark roast, with the naartjie rounding out the bitterness.\n\n[A bold and layered coffee drink. The dark roast provides the earthy, robust base while the dried naartjie peel adds a surprising creaminess and softness — rounding out the edges of the dark roast rather than adding sharp citrus. The cinnamon weaves in depth and spice underneath, adding warmth without overwhelming. Together it's a citrusy, spiced dark roast with more complexity than the sum of its parts.]\n",
+    "notes": "Pretty good. Proportions are key — large naartjie peel, slightly less dark roast, even less cinnamon (otherwise overpowering). Pairs beautifully with a milk sweet.\n\n[Quite good overall. Added slightly too much cinnamon which tipped it too sweet — dial back the cinnamon next time.\nThe naartjie peel's role here is softening and rounding rather than dominating, which works really well with coffee.\nWorth retrying with less cinnamon to find the right balance.]",
     "temperature": "hot",
-    "rating": null,
+    "rating": 9,
     "starred": false
   },
   {
@@ -776,7 +777,7 @@
   },
   {
     "ingredients": [
-      "Rose petals"
+      "Dried Rose petals"
     ],
     "name": "Cold steeped rose petal tea",
     "description": "Delicately floral and softly sweet — even more subtle and clean than the hot steep version. Almost like a floral water, very gentle and elegant. The cold extraction pulls the colour out into a striking purplish-pink, while preserving the delicate aromatic quality of the petals.",
@@ -862,6 +863,163 @@
     "notes": "Quite nice, as expected. A natural pairing — both ingredients are round and gentle so they don't compete.",
     "temperature": "hot",
     "rating": 8,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Naartjie Peel",
+      "Dried Rose petals"
+    ],
+    "name": "Naartjie Rose Cold Brew",
+    "description": "Delicately floral from the rose with a soft citrus lift from the naartjie. Clean and gently sweet. The cold extraction keeps both ingredients light and subtle, neither overpowering the other.",
+    "notes": "",
+    "temperature": "cold",
+    "rating": 7,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Naartjie Peel",
+      "Dark Roast Coffee"
+    ],
+    "name": "Iced Naartjie Dark Roast Coffee ",
+    "description": "Dark and muted cold brew with a cold-extracted citrus edge from the naartjie. Brighter than the hot version but less creamy and warm.",
+    "notes": "Slightly reminiscent of traditional Chinese medicine. Not bad but not amazing on its own. Pairs well with something sweet or rich (e.g. butter cookies), so it's much better as a food pairing than standalone. The hot version is the better vehicle for this combo.",
+    "temperature": "cold",
+    "rating": 7,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Chamomile"
+    ],
+    "name": "Chamomile Cold Brew",
+    "description": "Lightly sweet and apple-like. Clean and gentle. Less floral than rose petals, more quietly fruity. Subtle but pleasant and refreshing.",
+    "notes": "Light early in the steep, gets better as it sits. ",
+    "temperature": "cold",
+    "rating": 9,
+    "starred": true
+  },
+  {
+    "ingredients": [
+      "Barley tea"
+    ],
+    "name": "Cold Brew Barley Tea",
+    "description": "A ghost of the hot version. Faint barley flavour without the roasted nutty depth. Drinkable but lacks body and oomph.",
+    "notes": "Cold water can't extract the roasted compounds properly. Hot-then-cool is the move for barley tea.",
+    "temperature": "cold",
+    "rating": 5,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "红枣"
+    ],
+    "name": "红枣水",
+    "description": "Lightly sweet and subtly fruity. Brighter and fresher than the hot version, which can feel heavier. More of a lively cold water than a proper tea.",
+    "notes": "Still boring solo but more enjoyable cold than hot. Better as a supporting ingredient, so try it with naartjie peel or other additions.",
+    "temperature": "cold",
+    "rating": 7,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Rooibos Teabag"
+    ],
+    "name": "Plain rooibos tea (cold brew)",
+    "description": "Clean and smooth. A lighter, fainter version of the hot steep. Same nutty sweetness, just turned down.",
+    "notes": "",
+    "temperature": "cold",
+    "rating": 6,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Ginger"
+    ],
+    "name": "Cold water (with a whisper of ginger)",
+    "description": "Essentially water with a whisper of ginger. Barely registers, with none of the warmth or sharpness of the hot steep.",
+    "notes": "Not worth doing cold. If you want ginger in a bottle drink, steep it hot and cool it, as with barley tea.",
+    "temperature": "cold",
+    "rating": 5,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Green Rooibos Teabag"
+    ],
+    "name": "Green Rooibos Tea",
+    "description": "Lighter and grassier than regular rooibos. Delicate and clean with a mild, slightly vegetal sweetness. Less nutty and warming than red rooibos, more subtle and fresh. No bitterness despite the longer steep.",
+    "notes": "The vegetal sweetness has a sweet potato quality to it. 5-10 min steep.",
+    "temperature": "hot",
+    "rating": 7,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Rooibos + Buchu Blend"
+    ],
+    "name": "Rooibos & buchu tea",
+    "description": "Familiar rooibos base, nutty and slightly sweet, with a herbal, mildly medicinal edge from the buchu. Faint blackcurrant-minty quality with a slight liquorice aftertaste. More complex and wild than plain rooibos.",
+    "notes": "Would not buy again.",
+    "temperature": "hot",
+    "rating": 6,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Rooibos + Buchu Blend",
+      "Cardamom Pods"
+    ],
+    "name": "Cardamom rooibos buchu blend",
+    "description": "A layered flavour progression. Familiar rooibos nuttiness up front, then an acidic berry-like blackcurrant note from the buchu, finishing with warm cardamom spice and a muted liquorice tail. The cardamom bridges the rooibos and buchu well, making the buchu feel less out of place than solo. Complex and cohesive.",
+    "notes": "Cardamom dominates the longer it sits, and eventually it tastes more like rooibos cardamom than the full three-way blend. Could do well with some milk at that point.",
+    "temperature": "hot",
+    "rating": 6,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Moringa Teabag"
+    ],
+    "name": "Hot Moringa Tea",
+    "description": "Earthy and vegetal. Spinach water is the most accurate description. Grassy and green, mild rather than bitter. Pale yellow-green colour. Slight nutty aftertaste, almost toasted sesame-like.",
+    "notes": "The sulphurous smell is genuinely a bit off-putting. Taste is milder than the smell suggests. \nWould not buy again.",
+    "temperature": "hot",
+    "rating": 3,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Moringa Teabag"
+    ],
+    "name": "Cold Moringa Water",
+    "description": "Spinach water without the sesame aftertaste. Even more muted and flat than the hot version. Grassy and vegetal but very subtle.",
+    "notes": "The sulphurous smell carries over and is off-putting. ",
+    "temperature": "cold",
+    "rating": 3,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Masala Chai"
+    ],
+    "name": "Plain Masala Chai Tea ",
+    "description": "Warming and spiced. Black tea base with classic chai spices: cinnamon, cardamom, ginger, cloves. Bold and aromatic with a slight natural sweetness from the spices. Don't over-steep or the black tea base turns astringent. \nCaffeinated - so it's a morning drink.",
+    "notes": "Forage & Feast Brand\nWould be great with milk",
+    "temperature": "hot",
+    "rating": 7,
+    "starred": false
+  },
+  {
+    "ingredients": [
+      "Masala Chai"
+    ],
+    "name": "Cold Brew Masala Chai ",
+    "description": "Spice notes are significantly muted cold, as cinnamon and cardamom especially need heat. Lightly spiced and mildly sweet black tea. Pleasant but a shadow of the hot version.",
+    "notes": "Hot is clearly the better vehicle for this one.",
+    "temperature": "cold",
+    "rating": 6,
     "starred": false
   }
 ]

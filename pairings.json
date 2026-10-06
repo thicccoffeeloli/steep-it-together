@@ -27,7 +27,9 @@
     "Cinnamon Stick",
     "普洱",
     "红枣",
-    "Chamomile"
+    "Chamomile",
+    "Dried Rose petals",
+    "Dark Roast Coffee"
   ],
   "Cinnamon Stick": [
     "Dark Roast Coffee",
@@ -69,15 +71,12 @@
     "Peppermint Teabag"
   ],
   "Hibiscus Teabag": [
-    "Rosehip",
+    "Dried Rosehip",
     "Ginger",
     "Cinnamon Stick",
     "Naartjie Peel",
     "Citrus Zest",
     "Lemon Slice"
-  ],
-  "Rosehip": [
-    "Hibiscus Teabag"
   ],
   "Rooibos Teabag": [
     "Naartjie Peel",
@@ -94,14 +93,16 @@
     "Red Wine"
   ],
   "Dried Coconut Flakes": [
-    "Rooibos Teabag"
+    "Rooibos Teabag",
+    "枸杞"
   ],
   "Dark Roast Coffee": [
     "Hazelnut Coffee",
     "Cardamom Pods",
     "Cinnamon Stick",
     "Citrus Zest",
-    "Vanilla Pod"
+    "Vanilla Pod",
+    "Naartjie Peel"
   ],
   "Hazelnut Coffee": [
     "Dark Roast Coffee",
@@ -166,7 +167,8 @@
   ],
   "枸杞": [
     "红枣",
-    "菊花"
+    "菊花",
+    "Dried Coconut Flakes"
   ],
   "桂圆": [
     "红枣"
@@ -216,5 +218,11 @@
   ],
   "Rooibos + Honeybush Blend": [
     "红枣"
+  ],
+  "Dried Rose petals": [
+    "Naartjie Peel"
+  ],
+  "Dried Rosehip": [
+    "Hibiscus Teabag"
   ]
 }

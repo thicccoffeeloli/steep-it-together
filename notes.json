@@ -13,11 +13,6 @@
   },
   {
     "group": "untried",
-    "section": "Herbal",
-    "items": []
-  },
-  {
-    "group": "untried",
     "section": "Grain & Savoury Teas",
     "items": [
       {
@@ -91,6 +86,17 @@
       {
         "name": "Mulled port",
         "description": "Port wine warmed with cinnamon, cloves, star anise and orange zest. Richer and sweeter than Glühwein, almost dessert-like. Best for a shorter flask session as it's quite intense.",
+        "pairs": "",
+        "notes": []
+      }
+    ]
+  },
+  {
+    "section": "To Try Next (Cold Brew Suggestions)",
+    "items": [
+      {
+        "name": "Entries",
+        "description": "桂圆 (dried longan)\n\nDescription: Honeyed, slightly smoky-sweet. Large pieces that sink.\nPairs well with: ✅ 红枣, naartjie peel.\n\n罗汉果 (monk fruit)\n\nDescription: Sweet, malty and almost caramel-fruity with no sugar. Crack the whole fruit open and drop it in, and it sinks.\n\n山楂 (dried hawthorn)\n\nDescription: Tart and fruity, close to the 酸梅汤 quality you got from hibiscus + cinnamon. Whole berries sink, but thin slices may float.\n\n话梅 (dried salted plum)\n\nDescription: Salty, sour and sweet all at once. Divisive but different, and big enough to stay put.\n\n🔍 Kaffir lime leaves\n\nDescription: Floral, fragrant citrus. Large leaves, sold fresh or frozen at Asian shops.\nPairs well with: Naartjie peel.\n\n🔍 Scented geranium leaves (rose geranium)\n\nDescription: Rose-lemon flavour from large leaves. Make sure it's an edible variety.\nPairs well with: Rose petals.\n\nDried apricot halves\n\nDescription: Sweet-tart and fruity. They sink and hold their shape.\n\n陈皮 (aged tangerine peel)\n\nDescription: A deeper, earthier version of naartjie peel. Extracts slowly cold, so give it a long steep.\nPairs well with: 红枣.",
         "pairs": "",
         "notes": []
       }
