@@ -64,7 +64,9 @@ let collapsedSections = new Set();
 // 'word' (text-chip look) or 'icon' (each ingredient shows an image,
 // dropped into the pot like a cooking game, instead of/alongside its name).
 // Purely a view preference - doesn't touch ingredients.json.
-let displayMode = 'icon';
+// The starting value comes from Settings (app-settings.js) - see below for the
+// synced value arriving after the first paint.
+let displayMode = (window.AppSettings && AppSettings.get().displayMode) || 'icon';
 
 // Turns an ingredient name into the filename we look for in Images/, e.g.
 // "Hazelnut Coffee" -> "hazelnut-coffee.png". Lowercased and hyphenated so
@@ -450,6 +452,18 @@ fetch('/ingredients')
         data.forEach(function(section) { collapsedSections.add(section.section); });
         buildIngredientsPanel();
     });
+
+// The real synced setting - if it differs from the cached copy this page
+// started with (e.g. changed on another device), switch and redraw.
+if (window.AppSettings) {
+    AppSettings.load().then(function(settings) {
+        if (settings.displayMode !== displayMode) {
+            displayMode = settings.displayMode;
+            buildIngredientsPanel();
+            renderCauldron();
+        }
+    }).catch(function() {});
+}
 
 fetch('/pairings')
     .then(function(response) { return response.json(); })

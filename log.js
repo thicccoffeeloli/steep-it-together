@@ -63,7 +63,9 @@ let graphsFilterMode = 'only'; // 'only' | 'connections'
 // 'word' (colored circle + name) or 'icon' (the ingredient's own picture,
 // no text) - shared by both network graphs (3+ combo network, Pairing
 // outcomes), see buildGraphNodeSvg.
-let graphNodeMode = 'word';
+// Starts as whatever Settings says (see app-settings.js); the page's own
+// Word/Icon buttons still override it until you leave.
+let graphNodeMode = (window.AppSettings && AppSettings.get().displayMode) || 'icon';
 
 // Chinese-character entries sort after everything else, then alphabetically
 // among themselves - kept in sync with the same helper in script.js.
@@ -84,12 +86,16 @@ Promise.all([
     fetch('/ingredients').then(function(r) { return r.json(); }),
     fetch('/combos').then(function(r) { return r.json(); }),
     fetch('/pairings').then(function(r) { return r.json(); }),
-    fetch('/category-colors').then(function(r) { return r.json(); })
+    fetch('/category-colors').then(function(r) { return r.json(); }),
+    // The real synced setting (falls back to the cached one) - waited on here
+    // so the graphs never draw once in the wrong mode first.
+    window.AppSettings ? AppSettings.load().catch(function() { return AppSettings.get(); }) : Promise.resolve({})
 ]).then(function(results) {
     ingredientsData = results[0];
     combinations = results[1];
     pairings = results[2];
     categoryColors = results[3];
+    if (results[4] && results[4].displayMode) graphNodeMode = results[4].displayMode;
     renderMatrixArea();
     renderComboViz();
     renderCombosByRating();

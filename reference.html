@@ -6,14 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Steep It Together — Reference</title>
     <link rel="icon" type="image/png" href="Images/teabag-rooibos.png">
-    <link rel="stylesheet" href="styles.css?v=20261007a">
+    <link rel="stylesheet" href="styles.css?v=20261007b">
 </head>
 
 <body>
     <h1 id="reference-page-title">📝 Notepad</h1>
     <p class="back-link">
         <a href="index.html">← Back to brewing</a> ·
-        <a href="log.html">📖 View brew log</a>
+        <a href="log.html">📖 View brew log</a> ·
+        <a href="settings.html">⚙️ Settings</a>
     </p>
 
     <!-- Three panels below, each rendered by its own existing script
@@ -25,7 +26,6 @@
         <button id="tab-notes" class="tab-btn" data-tab="notes">📝 Notepad</button>
         <button id="tab-hard-to-get" class="tab-btn" data-tab="hard-to-get">🔍 Hard to get</button>
         <button id="tab-avoid-flask" class="tab-btn" data-tab="avoid-flask">⚠️ Avoid with flask</button>
-        <button id="tab-data" class="tab-btn" data-tab="data">📤 Data</button>
         <!-- Makes a new list tab (see "User-created tabs" below). Starts
              disabled and only turns on once the existing tabs have actually
              loaded - adding one before then could save a list containing
@@ -59,29 +59,10 @@
         </div>
     </div>
 
-    <div id="panel-data" class="reference-panel" hidden>
-        <div class="notes-page">
-            <p class="note-callout">Move your data between devices - e.g. logging on your phone, then bringing
-                it into your laptop app. Export downloads everything below as one file; Import replaces
-                everything with whatever file you pick, so back up with Export first if you're not sure.</p>
-            <p class="note-desc"><strong>Included:</strong> ingredients, brew log, potential pairings, colors,
-                all the reference lists, and any tabs you've added.<br><strong>Not included:</strong> uploaded pictures (ingredient
-                icons/drink photos) - those stay on whichever device they were uploaded from.</p>
-            <button id="export-data-btn">⬇️ Export all data</button>
-            <div class="data-import-row">
-                <input type="file" id="import-data-input" accept="application/json">
-                <button id="import-data-btn">⬆️ Import</button>
-            </div>
-            <p class="note-callout" style="margin-top:20px">Connected to a GitHub repo for syncing across
-                devices (see github-storage.js). Only need this if you're switching to a different repo/token.</p>
-            <button id="gh-disconnect-btn">🔌 Disconnect / change repo</button>
-        </div>
-    </div>
-
-    <script src="github-storage.js?v=20261007a"></script>
-    <script src="tooltip.js?v=20261007a"></script>
-    <script src="notes.js?v=20261007a"></script>
-    <script src="reference-list.js?v=20261007a"></script>
+    <script src="github-storage.js?v=20261007b"></script>
+    <script src="tooltip.js?v=20261007b"></script>
+    <script src="notes.js?v=20261007b"></script>
+    <script src="reference-list.js?v=20261007b"></script>
     <script>
         buildReferenceListPage({
             endpoint: '/hard-to-get',
@@ -104,8 +85,7 @@
         const REFERENCE_TAB_TITLES = {
             'notes': '📝 Notepad',
             'hard-to-get': '🔍 Hard to get',
-            'avoid-flask': '⚠️ Avoid with flask',
-            'data': '📤 Data'
+            'avoid-flask': '⚠️ Avoid with flask'
         };
 
         function selectReferenceTab(tab) {
@@ -131,6 +111,8 @@
         // custom tab (#custom-...) doesn't exist yet at this point, so this
         // falls back to Notepad, and the hash would otherwise be lost before
         // the custom tabs finish loading and could be restored.
+        // Data import/export moved to the Settings page - old #data links still land there.
+        if (window.location.hash === '#data') window.location.replace('settings.html');
         const requestedTab = window.location.hash.slice(1);
         const initialTab = REFERENCE_TAB_TITLES[requestedTab] ? requestedTab : 'notes';
         selectReferenceTab(initialTab);
@@ -145,8 +127,8 @@
         let customLists = [];
         const tabBarEl = document.querySelector('.tab-bar');
         const addTabBtn = document.getElementById('tab-add');
-        const dataTabBtn = document.getElementById('tab-data');
-        const dataPanel = document.getElementById('panel-data');
+        // Panels for new tabs go right before this script (after the last panel).
+        const panelsEnd = document.querySelector('script[src^="github-storage.js"]');
 
         function copyItems(items) { return JSON.parse(JSON.stringify(items)); }
         function customTabKey(list) { return 'custom-' + list.id; }
@@ -174,7 +156,7 @@
             tabBtn.dataset.tab = key;
             tabBtn.textContent = list.title;
             tabBtn.addEventListener('click', function() { selectReferenceTab(key); });
-            tabBarEl.insertBefore(tabBtn, dataTabBtn);
+            tabBarEl.insertBefore(tabBtn, addTabBtn);
 
             const panel = document.createElement('div');
             panel.id = 'panel-' + key;
@@ -207,7 +189,7 @@
             listContainer.id = 'list-' + key;
             page.appendChild(listContainer);
             panel.appendChild(page);
-            dataPanel.parentNode.insertBefore(panel, dataPanel);
+            panelsEnd.parentNode.insertBefore(panel, panelsEnd);
 
             // Only registered once both the tab and its panel actually exist -
             // selectReferenceTab looks up both for every key in this map.
@@ -287,65 +269,6 @@
                 }
             })
             .catch(function() {});
-
-        // Unlike the local version, this can't just navigate straight to
-        // /export - there's no real server here for the browser to
-        // download a response from, so github-storage.js can only
-        // intercept an actual fetch() call, not a page navigation. Same
-        // end result (a downloaded file), just triggered via a temporary
-        // blob link instead of the browser's native download prompt.
-        document.getElementById('export-data-btn').addEventListener('click', function() {
-            fetch('/export').then(function(r) { return r.blob(); }).then(function(blob) {
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'steep-it-together-export.json';
-                a.click();
-                URL.revokeObjectURL(url);
-            });
-        });
-
-        document.getElementById('import-data-btn').addEventListener('click', function() {
-            const file = document.getElementById('import-data-input').files[0];
-            if (!file) {
-                alert('Choose an exported file first.');
-                return;
-            }
-            if (!confirm('This replaces ALL current data with the contents of this file. Continue?')) return;
-
-            const reader = new FileReader();
-            reader.onload = function() {
-                let bundle;
-                try {
-                    bundle = JSON.parse(reader.result);
-                } catch (e) {
-                    alert('That file isn\'t valid JSON.');
-                    return;
-                }
-                fetch('/import', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(bundle)
-                }).then(function(r) { return r.json(); }).then(function(result) {
-                    if (result.success) {
-                        alert('Imported! Reloading...');
-                        window.location.reload();
-                    } else {
-                        alert('Import failed: ' + (result.error || 'unknown error'));
-                    }
-                });
-            };
-            reader.readAsText(file);
-        });
-
-        // disconnectGitHubStorage (github-storage.js) clears the saved
-        // owner/repo/token and reloads, which puts the connect screen
-        // straight back up - same effect as a sign-out.
-        document.getElementById('gh-disconnect-btn').addEventListener('click', function() {
-            if (confirm('Disconnect this device from its current GitHub repo? You\'ll need to reconnect (or connect to a different repo) to use the app again.')) {
-                window.disconnectGitHubStorage();
-            }
-        });
     </script>
 </body>
 

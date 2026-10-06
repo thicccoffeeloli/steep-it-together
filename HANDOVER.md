@@ -33,16 +33,18 @@ Consequence you must remember: **the repo gets commits you didn't make.** Always
 |---|---|---|
 | `index.html` | `script.js` | Main page: ingredients panel, cauldron, brew + Drink card (rating, notes, photo). On narrow screens it becomes 3 swipeable "rooms". |
 | `log.html` | `log.js` | Combo summary + Graphs tabs, Rating table + Book tabs. Includes the pairing matrix (category -> detail -> **full matrix** with focus columns / row filter). |
-| `reference.html` | `notes.js`, `reference-list.js` | Notepad (+ your own custom tabs), Hard to get, Avoid with flask, Data (export/import, disconnect). Old `notes.html#...` style links were removed; use `reference.html#notes`. |
+| `reference.html` | `notes.js`, `reference-list.js` | Notepad (+ your own custom tabs), Hard to get, Avoid with flask. Old `notes.html#...` links were removed; use `reference.html#notes`. |
+| `settings.html` | `settings.js`, `app-settings.js` | Settings: default Icon/Word mode (applies to ingredients, cauldron and graphs), data export/import, GitHub disconnect. Old `reference.html#data` links forward here. |
 | `combo-detail.html` | `combo-detail.js` | Notes for one specific combo, linked from the matrix/rating table. |
 | `github-storage.js` | - | The storage layer (below). **Must stay the first script.** |
+| `app-settings.js` | - | `AppSettings.get()/load()/save()` - settings synced via `settings.json`, with a localStorage copy so pages start in the right mode without a flash. Loaded on index, log and settings. |
 | `tooltip.js` | - | Sticky-note tooltips. |
 | `styles.css` | - | All styling (one file). |
 
 Data (all JSON in the repo root, edited through the app, not by hand):
 `data.json` (logged combos), `ingredients.json` (sections + ingredients),
 `pairings.json`, `ingredient-colors.json`, `category-colors.json`, `notes.json`,
-`hard-to-get.json`, `avoid-flask.json`, `custom-lists.json`.
+`hard-to-get.json`, `avoid-flask.json`, `custom-lists.json`, `settings.json` (created on first save).
 
 `Images/` - ingredient icons (128px PNG, named after the ingredient: "Dried Rose Buds" ->
 `dried-rose-buds.png`; exceptions are listed in `IMAGE_OVERRIDES` at the top of `script.js`),
@@ -107,7 +109,7 @@ git push origin main
 ```
 GitHub Pages redeploys in ~1-2 minutes. Browsers cache files for 10 minutes (Pages sets
 `max-age=600`), so **bump the `?v=` on the `<script>`/stylesheet links in the four HTML files**
-(e.g. `?v=20261008a`) whenever you change a js/css file - that makes every browser fetch the new
+(e.g. `?v=20261008a`; the current one is `20261007b`) whenever you change a js/css file - that makes every browser fetch the new
 version immediately instead of showing an old copy. (Ctrl+Shift+R also works locally.) If a merge conflicts, it will be in a data file or an image written by the live
 site: keep the **live site's** version of data files.
 
@@ -119,6 +121,7 @@ site: keep the **live site's** version of data files.
 cd dev && npm install
 node icons.js rename      # also: del, update  (ingredient-icon flows)
 node cauldron-widths.js   # cauldron at 7 window widths, writes c_<width>.png
+node settings-test.js     # Settings page + default Icon/Word mode on main page and graphs
 ```
 Set `EDGE_PATH` if the browser isn't at the default Edge location. Tests assume the ingredient
 "Dried Apple" exists with an icon; adjust the replace in `makeWorld()` if your data changed.

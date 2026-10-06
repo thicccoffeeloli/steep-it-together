@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Steep It Together — Settings</title>
+    <link rel="icon" type="image/png" href="Images/teabag-rooibos.png">
+    <link rel="stylesheet" href="styles.css?v=20261007b">
+</head>
+
+<body>
+    <h1>⚙️ Settings</h1>
+    <p class="back-link">
+        <a href="index.html">← Back to brewing</a> ·
+        <a href="log.html">📖 View brew log</a> ·
+        <a href="reference.html#notes">📝 Notepad</a>
+    </p>
+
+    <div class="notes-page settings-section">
+        <h2>Display</h2>
+        <p class="note-callout">Which look each page starts with: <strong>icon mode</strong> shows each
+            ingredient's picture, <strong>word mode</strong> shows its name. It applies everywhere at once -
+            the ingredients list, the cauldron, and the graphs. You can still flip a single page on the
+            spot with its own button; this is just what you get when a page opens. Saved to your repo, so
+            it follows you to your other devices.</p>
+        <div class="settings-mode-row">
+            <button class="sort-toggle-btn" data-display-mode="icon">🖼️ Icon mode</button>
+            <button class="sort-toggle-btn" data-display-mode="word">🔤 Word mode</button>
+            <span id="settings-status" class="settings-status" role="status"></span>
+        </div>
+    </div>
+
+    <div class="notes-page settings-section">
+        <h2>Your data</h2>
+        <p class="note-callout">Move your data between devices, or keep a backup. Export downloads everything
+            below as one file; Import replaces everything with whatever file you pick, so back up with Export
+            first if you're not sure.</p>
+        <p class="note-desc"><strong>Included:</strong> ingredients, brew log, potential pairings, colors,
+            all the reference lists, any tabs you've added, and these settings.<br><strong>Not included:</strong>
+            uploaded pictures (ingredient icons/drink photos) - those live in the repo's Images folder.</p>
+        <button id="export-data-btn">⬇️ Export all data</button>
+        <div class="data-import-row">
+            <input type="file" id="import-data-input" accept="application/json">
+            <button id="import-data-btn">⬆️ Import</button>
+        </div>
+    </div>
+
+    <div class="notes-page settings-section">
+        <h2>GitHub connection</h2>
+        <p class="note-callout">This device is connected to a GitHub repo for syncing (see github-storage.js).
+            Only needed if you're switching to a different repo or token.</p>
+        <button id="gh-disconnect-btn">🔌 Disconnect / change repo</button>
+    </div>
+
+    <script src="github-storage.js?v=20261007b"></script>
+    <script src="app-settings.js?v=20261007b"></script>
+    <script src="tooltip.js?v=20261007b"></script>
+    <script src="settings.js?v=20261007b"></script>
+</body>
+
+</html>
