@@ -19,6 +19,15 @@
     ]
   },
   {
+    "section": "Chinese Tea",
+    "items": [
+      "普洱",
+      "云南红茶",
+      "菊花",
+      "茉莉花"
+    ]
+  },
+  {
     "section": "Citrus & Fruits",
     "items": [
       "Citrus Zest",
@@ -72,15 +81,6 @@
       "Barley tea",
       "Roasted Corn Tea",
       "Soba Tea"
-    ]
-  },
-  {
-    "section": "Chinese Tea",
-    "items": [
-      "普洱",
-      "云南红茶",
-      "菊花",
-      "茉莉花"
     ]
   },
   {
