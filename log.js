@@ -2376,7 +2376,7 @@ function renderBookArea() {
     const toc = document.createElement('nav');
     toc.className = 'notes-page book-toc';
     const tocHeading = document.createElement('h2');
-    tocHeading.textContent = '📑 Table of Contents';
+    tocHeading.textContent = '📑 Table of Contents (' + entries.length + ' total)';
     toc.appendChild(tocHeading);
     const tocList = document.createElement('ul');
     populatedCategories.forEach(function(cat) {

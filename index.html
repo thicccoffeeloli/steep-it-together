@@ -41,7 +41,13 @@
                  and brews immediately - see randomBrewBtn in script.js. -->
             <div id="random-brew-controls">
                 <label for="random-count">🎲 Random brew:</label>
-                <input type="number" id="random-count" min="1" max="8" value="3">
+                <input type="number" id="random-count" min="1" max="8" value="2">
+                <!-- Only offer combinations that have never been logged
+                     before (as a set of ingredients, any method) - see
+                     randomBrewBtn in script.js. -->
+                <label for="random-untried-only" class="random-untried-label">
+                    <input type="checkbox" id="random-untried-only">🆕 New only
+                </label>
                 <button id="random-brew-btn">Go</button>
             </div>
             <div class="cauldron-wrapper">

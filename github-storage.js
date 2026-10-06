@@ -189,22 +189,48 @@
     // share one settings screen instead of stacking duplicates.
     let ensureConfiguredPromise = null;
     let activeConfig = null;
+
+    // Every page in this app (cauldron, reference, notes...) is a separate
+    // full navigation, not a SPA route - so without this, validateConfig
+    // paid for a full extra GitHub API round trip, before any real data
+    // could even start loading, on *every single page visited this
+    // session*, even though the token just got confirmed good a minute
+    // ago on the previous page. A token doesn't go bad mid-session, so
+    // once validated it's trusted for the rest of this tab's session; if
+    // it somehow does go bad, the real request fails with a 401 and
+    // githubRequest's own handling below drops it and asks again.
+    const VALIDATED_SESSION_KEY = 'gh-storage-validated-config';
+    function configIdentity(cfg) { return cfg.owner + '/' + cfg.repo + '/' + cfg.token; }
+    function markValidatedThisSession(cfg) {
+        try { sessionStorage.setItem(VALIDATED_SESSION_KEY, configIdentity(cfg)); } catch (e) { /* private window etc - just re-validates next time */ }
+    }
+    function wasValidatedThisSession(cfg) {
+        try { return sessionStorage.getItem(VALIDATED_SESSION_KEY) === configIdentity(cfg); } catch (e) { return false; }
+    }
+
     function ensureConfigured() {
         if (activeConfig) return Promise.resolve();
         if (!ensureConfiguredPromise) {
             ensureConfiguredPromise = (async function() {
                 const saved = getConfig();
+                if (saved && wasValidatedThisSession(saved)) {
+                    activeConfig = saved;
+                    return;
+                }
                 if (saved && await validateConfig(saved.owner, saved.repo, saved.token).catch(function() { return false; })) {
                     activeConfig = saved;
+                    markValidatedThisSession(saved);
                     return;
                 }
                 if (saved) clearConfig(); // stale/broken - fall through to asking again
                 if (await tryUrlAutoConnect()) {
                     activeConfig = getConfig();
+                    markValidatedThisSession(activeConfig);
                     return;
                 }
                 await interactiveConfigure();
                 activeConfig = getConfig();
+                markValidatedThisSession(activeConfig);
             })();
         }
         return ensureConfiguredPromise;
@@ -354,6 +380,39 @@
 
     // ===== Images =====
 
+    // Every icon that existed when this version was built ships as a real
+    // static file next to the page (see the top of this file) - fast, and
+    // correct for the overwhelming majority that are never touched again.
+    // But once one of *those* specific filenames gets uploaded over,
+    // renamed, or removed through the app, the static file itself can't
+    // change (that would need a code deploy, not something a data-repo
+    // token can do) - it just sits there, unchanged, silently shadowing
+    // the real edit in the data repo forever. That's what made updating an
+    // icon look like it needed a delete-then-reupload, and made delete
+    // look like it needed a tab close/reopen to "take": the *data* was
+    // always right, the *display* just kept trusting a static file that
+    // was now stale.
+    //
+    // Persisted (not just in-memory) so this sticks across page loads -
+    // the moment a filename is touched through the app it's added here
+    // and never removed, same spirit as the sha cache but durable, since
+    // there's no cheap way to ask "does this filename have a data-repo
+    // version" up front without fetching it.
+    const FORCE_OVERRIDE_KEY = 'steepItTogetherForcedImageOverrides';
+    let forceOverrideFilenames;
+    try {
+        const saved = JSON.parse(localStorage.getItem(FORCE_OVERRIDE_KEY));
+        forceOverrideFilenames = new Set(Array.isArray(saved) ? saved : []);
+    } catch (e) {
+        forceOverrideFilenames = new Set();
+    }
+
+    function addForceOverride(filename) {
+        if (forceOverrideFilenames.has(filename)) return;
+        forceOverrideFilenames.add(filename);
+        localStorage.setItem(FORCE_OVERRIDE_KEY, JSON.stringify(Array.from(forceOverrideFilenames)));
+    }
+
     async function listImages() {
         const res = await githubRequest('Images');
         if (!res.ok) return [];
@@ -378,6 +437,14 @@
             if (!res.ok) throw new Error('Upload failed (' + res.status + ')');
             const data = await res.json();
             shaCache.set(path, data.content.sha);
+            // The data repo now has the authoritative version of this
+            // filename - make sure display stops trusting a same-named
+            // static file from here on (see the comment above
+            // forceOverrideFilenames), and drop any previously-cached blob
+            // for it so the *next* live lookup actually re-fetches instead
+            // of handing back whatever was cached before this upload.
+            addForceOverride(filename);
+            imageBlobUrlCache.delete(path);
         });
     }
 
@@ -392,7 +459,16 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: 'delete ' + path, sha: data.sha })
             });
-            if (res.ok) shaCache.delete(path);
+            if (res.ok) {
+                shaCache.delete(path);
+                // There WAS a data-repo version (that's the only way this
+                // branch runs), so this filename needs forcing too, same
+                // reasoning as upload - otherwise "removed" an icon that
+                // started life as a static file just silently kept
+                // showing the old picture, looking like delete did nothing.
+                addForceOverride(filename);
+                imageBlobUrlCache.delete(path);
+            }
             return res.ok;
         });
     }
@@ -408,19 +484,45 @@
         const oldPath = 'Images/' + oldFilename;
         const newPath = 'Images/' + newFilename;
         return enqueueWrite(async function() {
+            let contentBase64;
             const existing = await githubRequest(oldPath);
-            if (existing.status === 404) return false;
+            if (existing.status === 404) {
+                // No data-repo copy - but the name being renamed *from* may
+                // still be one of the static baked-in icons (never
+                // uploaded/edited through the app, so it was never in the
+                // data repo to begin with). Fetch it the same way the page
+                // itself would (a plain same-origin request, no auth
+                // needed) rather than giving up - otherwise renaming any
+                // ingredient that still had its original icon silently
+                // lost the picture.
+                const staticRes = await realFetch(oldPath);
+                if (!staticRes.ok) return false;
+                const blob = await staticRes.blob();
+                contentBase64 = await new Promise(function(resolve, reject) {
+                    const reader = new FileReader();
+                    reader.onload = function() { resolve(reader.result.split(',')[1]); };
+                    reader.onerror = reject;
+                    reader.readAsDataURL(blob);
+                });
+            } else {
+                const existingData = await existing.json();
+                contentBase64 = existingData.content;
+            }
             const dest = await githubRequest(newPath);
             if (dest.ok) return false; // already something there - don't clobber it
-            const existingData = await existing.json();
             const res = await githubRequest(newPath, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: 'copy ' + oldPath + ' to ' + newPath, content: existingData.content })
+                body: JSON.stringify({ message: 'copy ' + oldPath + ' to ' + newPath, content: contentBase64 })
             });
             if (!res.ok) return false;
             const data = await res.json();
             shaCache.set(newPath, data.content.sha);
+            // The new name now has its own data-repo copy - same reasoning
+            // as upload/delete above. (The old name is deliberately left
+            // alone - copyImage never deletes it, see the comment above.)
+            addForceOverride(newFilename);
+            imageBlobUrlCache.delete(newPath);
             return true;
         });
     }
@@ -540,25 +642,43 @@
 
     ensureConfigured(); // kicks off immediately on page load
 
-    // ===== Live lookup for brand-new ingredient icons =====
+    // ===== Live lookup for brand-new/edited ingredient icons =====
     //
     // Every icon that existed when this version was built is a real static
-    // file and just loads normally - this only ever fires for a picture
-    // uploaded *after* that, which won't be in the static set and so 404s
-    // first. Patches the same fallback hook script.js already calls
-    // per-icon (usePlaceholderOnError).
-    //
-    // Deferred via setTimeout - this file's own <script> tag runs *before*
-    // script.js's (it has to, so the fetch override above is already in
-    // place for script.js's very first fetch() calls), but that means
-    // script.js's own top-level "function usePlaceholderOnError(img)"
-    // declaration hasn't been hoisted onto window yet at this point in
-    // *this* file's execution - it would silently overwrite an
-    // un-deferred assignment here the instant script.js's <script> tag
-    // ran. Scheduling this for "as soon as the current script queue is
-    // idle" instead guarantees it runs after script.js has finished
-    // declaring its own version, so this one applies last and sticks.
+    // file and just loads normally, instantly, for free. Two patches below,
+    // both to functions script.js declares at its own top level
+    // (imagePathFor, usePlaceholderOnError) - deferred via setTimeout since
+    // this file's own <script> tag runs *before* script.js's (it has to,
+    // so the fetch override above is already in place for script.js's very
+    // first fetch() calls), but that means those declarations haven't been
+    // hoisted onto window yet at this point in *this* file's execution - an
+    // un-deferred assignment here would get silently overwritten the
+    // instant script.js's <script> tag ran. Scheduling this for "as soon as
+    // the current script queue is idle" instead guarantees both run after
+    // script.js has finished declaring its own versions, so these apply
+    // last and stick.
     setTimeout(function() {
+        // imagePathFor still computes the real filename exactly as before -
+        // for anything in forceOverrideFilenames, this just routes it
+        // through a path that's guaranteed to 404 against the static file
+        // server (no such subfolder exists) while keeping that real
+        // filename as the URL's last segment, which is exactly what
+        // usePlaceholderOnError's error handler below parses back out
+        // (img.src.split('/').pop()...) to know what to look up in the
+        // data repo. That forced 404 is what gives a freshly
+        // uploaded/removed icon a chance to actually be looked up live,
+        // instead of the plain static path matching first (nothing 404s,
+        // so the error handler never even runs) and silently winning
+        // forever with whatever it originally shipped with.
+        const originalImagePathFor = window.imagePathFor;
+        if (typeof originalImagePathFor === 'function') {
+            window.imagePathFor = function(name) {
+                const real = originalImagePathFor(name);
+                const filename = real.replace(/^Images\//, '');
+                return forceOverrideFilenames.has(filename) ? 'Images/__force-live__/' + filename : real;
+            };
+        }
+
         window.usePlaceholderOnError = function(img) {
             img.addEventListener('error', function() {
                 if (img.dataset.triedGithub) {

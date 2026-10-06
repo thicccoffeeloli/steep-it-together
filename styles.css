@@ -744,6 +744,14 @@ li {
 
 #cauldron {
     position: relative;
+    /* Lets #cauldron .icon-shape below size itself off *this* box's own
+       current width (cqw) instead of a fixed pixel size - without this,
+       shrinking the window (e.g. splitting it with another app) shrinks
+       the pot artwork and its padding percentages just fine, but left the
+       68px chips exactly as big as always, so they ended up visually
+       bigger than the now-smaller pot and spilled past its drawn edges
+       instead of scaling down together with it. */
+    container-type: inline-size;
     /* The artwork is a square (800x800) canvas - matching that exactly
        means background-size just fills the box edge-to-edge with no
        letterboxing, so the padding percentages below (measured directly
@@ -824,8 +832,11 @@ li {
 }
 
 #cauldron .icon-shape {
-    width: 68px;
-    height: 68px;
+    /* 16cqw of the default 420px-wide cauldron is ~67px, matching the old
+       fixed size almost exactly - clamp()'d so it still shrinks smoothly
+       on a narrower window but never gets too small to tap/see. */
+    width: clamp(32px, 16cqw, 68px);
+    height: clamp(32px, 16cqw, 68px);
     border-radius: 16px;
     background: rgba(255, 255, 255, 0.12);
     border-color: rgba(255, 255, 255, 0.25);
@@ -2370,6 +2381,13 @@ h3.note-section-title {
     margin: 0 0 8px;
     font-size: 14px;
     line-height: 1.5;
+    /* Matches the textarea it was typed into - without this, a <p>'s
+       default white-space collapses every line break down to a single
+       space, so a multi-paragraph description you could clearly see
+       while editing came back as one run-on line once saved. Still wraps
+       normally (unlike "pre"), just stops collapsing the breaks you
+       actually typed. */
+    white-space: pre-line;
 }
 
 .note-notes {

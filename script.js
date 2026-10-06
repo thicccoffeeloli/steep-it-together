@@ -1864,38 +1864,85 @@ function mixCauldronColor() {
 // the pot *from* this color; nudge it if the result looks off.
 const POT_WATER_RGB = { r: 195, g: 225, b: 245 };
 
-function rgbToHsl(r, g, b) {
-    r /= 255; g /= 255; b /= 255;
-    const max = Math.max(r, g, b), min = Math.min(r, g, b);
-    const l = (max + min) / 2;
-    const delta = max - min;
-    let h = 0, s = 0;
-    if (delta !== 0) {
-        s = delta / (1 - Math.abs(2 * l - 1));
-        if (max === r) h = 60 * (((g - b) / delta) % 6);
-        else if (max === g) h = 60 * ((b - r) / delta + 2);
-        else h = 60 * ((r - g) / delta + 4);
-        if (h < 0) h += 360;
-    }
-    return { h: h, s: s, l: l };
+// CSS's hue-rotate()/saturate()/brightness() are matrix transforms (the
+// W3C Filter Effects spec matrices below - the same math every browser
+// actually runs), NOT a shift of the color's HSL hue/saturation/lightness.
+// hue-rotate(30deg) on a pale blue, for instance, visibly brightens and
+// desaturates it too, not just rotates its hue - a naive "do the
+// equivalent in HSL space" calculation (the previous approach here)
+// quietly drifts from what the filter really renders, which is exactly
+// why the pot and the Drink card used to come out as different colors for
+// the same brew. These reproduce the real per-channel math exactly, so
+// the predicted result *is* what the filter will actually paint.
+function applyColorMatrix(rgb, m) {
+    const r = rgb.r / 255, g = rgb.g / 255, b = rgb.b / 255;
+    const clamp = function(v) { return Math.max(0, Math.min(255, Math.round(v * 255))); };
+    return {
+        r: clamp(m[0] * r + m[1] * g + m[2] * b),
+        g: clamp(m[3] * r + m[4] * g + m[5] * b),
+        b: clamp(m[6] * r + m[7] * g + m[8] * b)
+    };
 }
 
-function hslToRgb(h, s, l) {
-    const c = (1 - Math.abs(2 * l - 1)) * s;
-    const x = c * (1 - Math.abs((h / 60) % 2 - 1));
-    const m = l - c / 2;
-    let r1, g1, b1;
-    if (h < 60) { r1 = c; g1 = x; b1 = 0; }
-    else if (h < 120) { r1 = x; g1 = c; b1 = 0; }
-    else if (h < 180) { r1 = 0; g1 = c; b1 = x; }
-    else if (h < 240) { r1 = 0; g1 = x; b1 = c; }
-    else if (h < 300) { r1 = x; g1 = 0; b1 = c; }
-    else { r1 = c; g1 = 0; b1 = x; }
-    return {
-        r: Math.round((r1 + m) * 255),
-        g: Math.round((g1 + m) * 255),
-        b: Math.round((b1 + m) * 255)
-    };
+function hueRotateFilter(rgb, degrees) {
+    const rad = degrees * Math.PI / 180;
+    const cos = Math.cos(rad), sin = Math.sin(rad);
+    return applyColorMatrix(rgb, [
+        0.213 + cos * 0.787 - sin * 0.213, 0.715 - cos * 0.715 - sin * 0.715, 0.072 - cos * 0.072 + sin * 0.928,
+        0.213 - cos * 0.213 + sin * 0.143, 0.715 + cos * 0.285 + sin * 0.140, 0.072 - cos * 0.072 - sin * 0.283,
+        0.213 - cos * 0.213 - sin * 0.787, 0.715 - cos * 0.715 + sin * 0.715, 0.072 + cos * 0.928 + sin * 0.072
+    ]);
+}
+
+function saturateFilter(rgb, s) {
+    return applyColorMatrix(rgb, [
+        0.213 + 0.787 * s, 0.715 - 0.715 * s, 0.072 - 0.072 * s,
+        0.213 - 0.213 * s, 0.715 + 0.285 * s, 0.072 - 0.072 * s,
+        0.213 - 0.213 * s, 0.715 - 0.715 * s, 0.072 + 0.928 * s
+    ]);
+}
+
+function brightnessFilter(rgb, factor) {
+    const clamp = function(v) { return Math.max(0, Math.min(255, Math.round(v))); };
+    return { r: clamp(rgb.r * factor), g: clamp(rgb.g * factor), b: clamp(rgb.b * factor) };
+}
+
+// What #cauldron's hue-rotate/saturate/brightness chain (styles.css)
+// actually produces when applied to POT_WATER_RGB.
+function predictPotFilterResult(hueDeg, saturate, brightness) {
+    let rgb = hueRotateFilter(POT_WATER_RGB, hueDeg);
+    rgb = saturateFilter(rgb, saturate);
+    return brightnessFilter(rgb, brightness);
+}
+
+function colorDistanceSq(a, b) {
+    const dr = a.r - b.r, dg = a.g - b.g, db = a.b - b.b;
+    return dr * dr + dg * dg + db * db;
+}
+
+// There's no clean closed-form inverse for "what hue/saturate/brightness
+// makes the filter chain land on this exact target color" (hue-rotate's
+// matrix doesn't decompose that way), so this searches the reasonable
+// range of each and keeps whichever combination the real filter math
+// predicts will land closest to the target. Saturate/brightness are kept
+// within a modest range - pushed much further they "win" on a flat test
+// color but badly over-amplify the pot artwork's own shading texture, so
+// a close approximation that still looks like water beats an exact match
+// that looks posterized. One-time cost per brew change, not per frame.
+function findBestPotFilter(targetRgb) {
+    let best = null;
+    for (let hue = 0; hue < 360; hue += 3) {
+        for (let sat = 0; sat <= 4; sat += 0.15) {
+            for (let bright = 0.2; bright <= 2.4; bright += 0.08) {
+                const predicted = predictPotFilterResult(hue, sat, bright);
+                const dist = colorDistanceSq(predicted, targetRgb);
+                if (!best || dist < best.dist) {
+                    best = { hue: hue, saturate: sat, brightness: bright, predicted: predicted, dist: dist };
+                }
+            }
+        }
+    }
+    return best;
 }
 
 // Tints the Drink card's illustration area, and the pot's own liquid, with
@@ -1904,35 +1951,21 @@ function hslToRgb(h, s, l) {
 // be *filtered* toward the target (hue-rotate/saturate/brightness on
 // #cauldron::before - see styles.css - chosen so only the already-colored
 // water shifts, never the ingredient <li> chips sitting in front of it),
-// so this works out what that filter combination actually produces and
-// uses the same result for the Drink picture, rather than the picture
-// showing the raw mixed color while the pot showed a rough approximation
-// of it.
-//
-// hue-rotate alone isn't enough: it preserves the water's own saturation
-// exactly, so a near-colorless ingredient (rice, coconut...) still came out
-// exactly as vividly colored as plain water, just hued toward whatever
-// direction its (essentially meaningless, for a near-grey color) hue
-// happened to compute to - saturate()/brightness() are what actually let
-// the result go pale for a pale ingredient instead of stubbornly staying
-// exactly as saturated as the water always was.
+// so this works out what filter combination gets closest and paints the
+// Drink picture with that same predicted result, rather than the picture
+// showing the raw mixed color while the pot showed a different, only
+// approximately-related one.
 function applyBrewColor() {
     const mixed = mixCauldronColor();
     const picture = document.querySelector('.output-picture');
 
     if (mixed) {
-        const waterHsl = rgbToHsl(POT_WATER_RGB.r, POT_WATER_RGB.g, POT_WATER_RGB.b);
-        const targetHsl = rgbToHsl(mixed.r, mixed.g, mixed.b);
+        const best = findBestPotFilter(mixed);
 
-        const rotation = ((targetHsl.h - waterHsl.h) + 360) % 360;
-        const saturateFactor = waterHsl.s > 0.02 ? Math.min(3, targetHsl.s / waterHsl.s) : 1;
-        const brightnessFactor = waterHsl.l > 0.02 ? Math.min(2, Math.max(0.3, targetHsl.l / waterHsl.l)) : 1;
-        const resultRgb = hslToRgb((waterHsl.h + rotation) % 360, targetHsl.s, targetHsl.l);
-
-        cauldron.style.setProperty('--pot-hue', rotation + 'deg');
-        cauldron.style.setProperty('--pot-saturate', saturateFactor);
-        cauldron.style.setProperty('--pot-brightness', brightnessFactor);
-        picture.style.background = 'rgba(' + resultRgb.r + ', ' + resultRgb.g + ', ' + resultRgb.b + ', 0.45)';
+        cauldron.style.setProperty('--pot-hue', best.hue + 'deg');
+        cauldron.style.setProperty('--pot-saturate', best.saturate);
+        cauldron.style.setProperty('--pot-brightness', best.brightness);
+        picture.style.background = 'rgba(' + best.predicted.r + ', ' + best.predicted.g + ', ' + best.predicted.b + ', 0.45)';
     } else {
         cauldron.style.removeProperty('--pot-hue');
         cauldron.style.removeProperty('--pot-saturate');
@@ -2467,23 +2500,65 @@ brewBtn.addEventListener('click', function() {
 
 const randomBrewBtn = document.getElementById('random-brew-btn');
 const randomCountInput = document.getElementById('random-count');
+const randomUntriedOnlyCheckbox = document.getElementById('random-untried-only');
 
-randomBrewBtn.addEventListener('click', function() {
-    const allNames = getAllIngredientNames();
-    if (allNames.length === 0) return;
-    const count = Math.min(Math.max(1, Number(randomCountInput.value) || 1), allNames.length);
-
-    // Fisher-Yates shuffle, then take the first `count` - a random sample
-    // without repeats, regardless of how many ingredients exist in total.
-    const shuffled = allNames.slice();
+// Fisher-Yates shuffle, then take the first `count` - a random sample
+// without repeats, regardless of how many ingredients exist in total.
+function randomSample(names, count) {
+    const shuffled = names.slice();
     for (let i = shuffled.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         const temp = shuffled[i];
         shuffled[i] = shuffled[j];
         shuffled[j] = temp;
     }
+    return shuffled.slice(0, count);
+}
 
-    cauldronItems = shuffled.slice(0, count);
+// Every combo (any ingredient count, any method) that's actually been
+// brewed before, as a "sorted ingredients joined together" key - so
+// "New only" below can tell a genuinely new combination apart from one
+// that's just a reordering of an already-tried one.
+function getTriedComboKeys() {
+    const keys = new Set();
+    combinations.forEach(function(combo) {
+        if (comboIsTried(combo)) keys.add(combo.ingredients.slice().sort().join('|'));
+    });
+    return keys;
+}
+
+randomBrewBtn.addEventListener('click', function() {
+    const allNames = getAllIngredientNames();
+    if (allNames.length === 0) return;
+    const count = Math.min(Math.max(1, Number(randomCountInput.value) || 1), allNames.length);
+
+    let picked;
+    if (randomUntriedOnlyCheckbox.checked) {
+        const triedKeys = getTriedComboKeys();
+        // Random sampling (rather than, say, enumerating every untried
+        // combination up front) stays cheap regardless of how many
+        // ingredients there are - this just keeps rolling until it lands
+        // on one that isn't in triedKeys yet, same odds as the plain
+        // version otherwise. A combo this size really might not exist
+        // untried anymore (e.g. count's bigger than the ingredient list
+        // itself has room for new ones) - capped so that doesn't hang.
+        const MAX_ATTEMPTS = 300;
+        for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+            const candidate = randomSample(allNames, count);
+            if (!triedKeys.has(candidate.slice().sort().join('|'))) {
+                picked = candidate;
+                break;
+            }
+        }
+        if (!picked) {
+            showToast('⚠️ No untried combo of that size left - try a different count');
+            return;
+        }
+    } else {
+        picked = randomSample(allNames, count);
+    }
+
+    cauldronItems = picked;
     renderCauldron();
     buildIngredientsPanel();
     renderPotentialPairings();
