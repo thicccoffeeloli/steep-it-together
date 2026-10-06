@@ -2675,3 +2675,21 @@ h3.note-section-title {
     font-weight: 600;
     cursor: pointer;
 }
+
+.column-filter-hint {
+    margin: 6px 0;
+    font-size: 13px;
+    color: var(--ink-soft, #6b6155);
+}
+
+.column-filter-unpaired {
+    display: block;
+    margin: 8px 0;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* The list rules above set display on these, which beats the hidden attribute the search box uses. */
+.column-filter [hidden] {
+    display: none !important;
+}

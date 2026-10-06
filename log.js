@@ -19,7 +19,10 @@ let categoryColors = {}; // category name -> hex color *override*, loaded from c
 let matrixView = 'category'; // 'category' | 'detail' | 'full'
 let detailCategories = null; // { a, b } - which two categories, while 'detail'
 let fullMatrixOrder = 'category'; // 'category' | 'alphabetical' | 'rating'
-let hiddenColumns = new Set(); // ingredient names hidden as *columns* only in the full matrix
+let focusColumns = new Set(); // ingredients picked as the full matrix's columns - empty = no focus, every ingredient is a column
+let hiddenRows = new Set(); // ingredients unticked as *rows* in the full matrix
+let rowFilterOpen = false;
+let onlyUnpairedRows = false; // full matrix: hide rows already tried with every shown column
 let columnFilterOpen = false; // whether the <details> filter panel was left open
 let columnFilterOrder = 'category'; // 'category' | 'alphabetical' - how the filter checklist itself is grouped
 
@@ -694,17 +697,21 @@ function getFullMatrixOrderedNames() {
     return result;
 }
 
-// A checkbox per ingredient, unchecking hides it as a *column* only - its
-// own row stays, so nothing's actually lost (row i x column j is the same
-// pairing as row j x column i), it just narrows how wide the table is.
-function buildColumnFilterCheckbox(name) {
+// Two independent filters, one per axis. Columns work as a FOCUS picker:
+// nothing picked = every ingredient is a column (the old behavior), pick
+// some and only those become columns - e.g. pick A, B, C to see what's
+// left to try with them. Rows are the opposite: everything shows unless
+// you specifically untick it. Both share the same checklist builder below.
+const axisFilterSearch = { columns: '', rows: '' };
+
+function buildAxisFilterCheckbox(name, axis) {
     const label = document.createElement('label');
+    label.dataset.name = name.toLowerCase();
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
-    checkbox.checked = !hiddenColumns.has(name);
+    checkbox.checked = axis.isChecked(name);
     checkbox.addEventListener('change', function() {
-        if (checkbox.checked) hiddenColumns.delete(name);
-        else hiddenColumns.add(name);
+        axis.setChecked(name, checkbox.checked);
         renderFullMatrix();
     });
     label.appendChild(checkbox);
@@ -714,8 +721,8 @@ function buildColumnFilterCheckbox(name) {
 
 // One category's worth of checkboxes, with its own heading checkbox that
 // selects/deselects every ingredient in that category at once - shows as
-// indeterminate (a dash) when only some of them are currently visible.
-function buildColumnFilterGroup(category, items) {
+// indeterminate (a dash) when only some of them are currently checked.
+function buildAxisFilterGroup(category, items, axis) {
     const group = document.createElement('div');
     group.className = 'column-filter-group';
 
@@ -723,14 +730,11 @@ function buildColumnFilterGroup(category, items) {
     headingLabel.className = 'column-filter-group-heading';
     const headingCheckbox = document.createElement('input');
     headingCheckbox.type = 'checkbox';
-    const visibleCount = items.filter(function(name) { return !hiddenColumns.has(name); }).length;
-    headingCheckbox.checked = visibleCount === items.length;
-    headingCheckbox.indeterminate = visibleCount > 0 && visibleCount < items.length;
+    const checkedCount = items.filter(axis.isChecked).length;
+    headingCheckbox.checked = checkedCount === items.length;
+    headingCheckbox.indeterminate = checkedCount > 0 && checkedCount < items.length;
     headingCheckbox.addEventListener('change', function() {
-        items.forEach(function(name) {
-            if (headingCheckbox.checked) hiddenColumns.delete(name);
-            else hiddenColumns.add(name);
-        });
+        items.forEach(function(name) { axis.setChecked(name, headingCheckbox.checked); });
         renderFullMatrix();
     });
     headingLabel.appendChild(headingCheckbox);
@@ -740,28 +744,41 @@ function buildColumnFilterGroup(category, items) {
     const itemsWrapper = document.createElement('div');
     itemsWrapper.className = 'column-filter-group-items';
     items.slice().sort(alphabeticalCompare).forEach(function(name) {
-        itemsWrapper.appendChild(buildColumnFilterCheckbox(name));
+        itemsWrapper.appendChild(buildAxisFilterCheckbox(name, axis));
     });
     group.appendChild(itemsWrapper);
 
     return group;
 }
 
-function buildColumnFilter() {
+function buildAxisFilter(axis) {
     const wrapper = document.createElement('details');
     wrapper.className = 'column-filter';
-    wrapper.open = columnFilterOpen;
-    wrapper.addEventListener('toggle', function() { columnFilterOpen = wrapper.open; });
+    wrapper.open = axis.isOpen();
+    wrapper.addEventListener('toggle', function() { axis.setOpen(wrapper.open); });
 
     const summary = document.createElement('summary');
-    summary.textContent = '🧮 Filter columns' + (hiddenColumns.size > 0 ? ' (' + hiddenColumns.size + ' hidden)' : '');
+    summary.textContent = axis.summary();
     wrapper.appendChild(summary);
 
+    const hint = document.createElement('p');
+    hint.className = 'column-filter-hint';
+    hint.textContent = axis.hint;
+    wrapper.appendChild(hint);
+
+    const tools = document.createElement('div');
+    tools.className = 'column-filter-order';
+    const clearBtn = document.createElement('button');
+    clearBtn.className = 'sort-toggle-btn';
+    clearBtn.textContent = axis.clearLabel;
+    clearBtn.addEventListener('click', function() {
+        axis.clear();
+        renderFullMatrix();
+    });
+    tools.appendChild(clearBtn);
     // How the checklist itself is grouped - independent of the matrix's own
-    // Order by (Category/Alphabetical/Rating) buttons above, since you might
-    // want to browse the filter list differently than the matrix is sorted.
-    const orderToggle = document.createElement('div');
-    orderToggle.className = 'column-filter-order';
+    // Order by (Category/Alphabetical/Rating) buttons, since you might want
+    // to browse the filter list differently than the matrix is sorted.
     [['category', 'By category'], ['alphabetical', 'Alphabetical']].forEach(function(pair) {
         const btn = document.createElement('button');
         btn.className = 'sort-toggle-btn';
@@ -771,29 +788,76 @@ function buildColumnFilter() {
             columnFilterOrder = pair[0];
             renderFullMatrix();
         });
-        orderToggle.appendChild(btn);
+        tools.appendChild(btn);
     });
-    wrapper.appendChild(orderToggle);
+    wrapper.appendChild(tools);
+
+    const search = document.createElement('input');
+    search.type = 'text';
+    search.className = 'rating-table-search-input';
+    search.placeholder = '🔍 Find an ingredient...';
+    search.value = axisFilterSearch[axis.key];
+    wrapper.appendChild(search);
 
     const list = document.createElement('div');
-
     if (columnFilterOrder === 'alphabetical') {
         list.className = 'column-filter-list column-filter-list-flat';
         getAllIngredientNames().slice().sort(alphabeticalCompare).forEach(function(name) {
-            list.appendChild(buildColumnFilterCheckbox(name));
+            list.appendChild(buildAxisFilterCheckbox(name, axis));
         });
     } else {
         list.className = 'column-filter-list column-filter-list-grouped';
         ingredientsData.forEach(function(section) {
             if (section.items.length === 0) return;
-            list.appendChild(buildColumnFilterGroup(section.section, section.items));
+            list.appendChild(buildAxisFilterGroup(section.section, section.items, axis));
         });
     }
-
     wrapper.appendChild(list);
+
+    // Only toggles visibility - never re-renders - so typing keeps focus.
+    function applySearch() {
+        const q = search.value.trim().toLowerCase();
+        axisFilterSearch[axis.key] = search.value;
+        list.querySelectorAll('label[data-name]').forEach(function(label) {
+            label.hidden = q !== '' && label.dataset.name.indexOf(q) === -1;
+        });
+        list.querySelectorAll('.column-filter-group').forEach(function(group) {
+            group.hidden = group.querySelectorAll('label[data-name]:not([hidden])').length === 0;
+        });
+    }
+    search.addEventListener('input', applySearch);
+    applySearch();
 
     return wrapper;
 }
+
+const fullMatrixColumnAxis = {
+    key: 'columns',
+    hint: 'Pick the ingredients you want to focus on - they become the columns. Nothing picked shows every ingredient.',
+    clearLabel: 'Clear focus',
+    isChecked: function(name) { return focusColumns.has(name); },
+    setChecked: function(name, on) { if (on) focusColumns.add(name); else focusColumns.delete(name); },
+    clear: function() { focusColumns.clear(); },
+    isOpen: function() { return columnFilterOpen; },
+    setOpen: function(open) { columnFilterOpen = open; },
+    summary: function() {
+        return '🎯 Focus columns' + (focusColumns.size > 0 ? ' (' + focusColumns.size + ' picked)' : ' (none picked - showing all)');
+    }
+};
+
+const fullMatrixRowAxis = {
+    key: 'rows',
+    hint: 'Every ingredient is a row by default - untick any you don\'t want to see.',
+    clearLabel: 'Show all rows',
+    isChecked: function(name) { return !hiddenRows.has(name); },
+    setChecked: function(name, on) { if (on) hiddenRows.delete(name); else hiddenRows.add(name); },
+    clear: function() { hiddenRows.clear(); },
+    isOpen: function() { return rowFilterOpen; },
+    setOpen: function(open) { rowFilterOpen = open; },
+    summary: function() {
+        return '📋 Rows' + (hiddenRows.size > 0 ? ' (' + hiddenRows.size + ' hidden)' : ' (showing all)');
+    }
+};
 
 function renderFullMatrix() {
     const container = document.getElementById('matrix-area');
@@ -829,10 +893,50 @@ function renderFullMatrix() {
     });
     container.appendChild(orderControls);
 
-    const rowNames = getFullMatrixOrderedNames();
-    container.appendChild(buildColumnFilter());
+    container.appendChild(buildAxisFilter(fullMatrixColumnAxis));
+    container.appendChild(buildAxisFilter(fullMatrixRowAxis));
 
-    const colNames = rowNames.filter(function(name) { return !hiddenColumns.has(name); });
+    const orderedNames = getFullMatrixOrderedNames();
+    const colNames = focusColumns.size > 0
+        ? orderedNames.filter(function(name) { return focusColumns.has(name); })
+        : orderedNames;
+
+    function hasUnpairedCell(rowName) {
+        return colNames.some(function(colName) {
+            return colName !== rowName && !findPairMatches(rowName, colName).some(comboIsTried);
+        });
+    }
+
+    const unpairedLabel = document.createElement('label');
+    unpairedLabel.className = 'column-filter-unpaired';
+    const unpairedBox = document.createElement('input');
+    unpairedBox.type = 'checkbox';
+    unpairedBox.checked = onlyUnpairedRows;
+    unpairedBox.addEventListener('change', function() {
+        onlyUnpairedRows = unpairedBox.checked;
+        renderFullMatrix();
+    });
+    unpairedLabel.appendChild(unpairedBox);
+    unpairedLabel.appendChild(document.createTextNode(' Only rows with something I haven\'t tried yet'));
+    container.appendChild(unpairedLabel);
+
+    const rowNames = orderedNames.filter(function(name) {
+        if (hiddenRows.has(name)) return false;
+        return !onlyUnpairedRows || hasUnpairedCell(name);
+    });
+
+    // The classic triangle (the part below the diagonal just mirrors the
+    // part above) only makes sense when rows and columns are the same
+    // complete list. As soon as either axis is narrowed, a column's mirror
+    // may not even be a row, so every cell is shown instead.
+    const showFullGrid = focusColumns.size > 0 || hiddenRows.size > 0 || onlyUnpairedRows;
+    const positionInOrder = {};
+    orderedNames.forEach(function(name, i) { positionInOrder[name] = i; });
+
+    const count = document.createElement('p');
+    count.className = 'column-filter-hint';
+    count.textContent = 'Showing ' + rowNames.length + ' rows × ' + colNames.length + ' columns';
+    container.appendChild(count);
 
     const wrapper = document.createElement('div');
     wrapper.id = 'matrix-wrapper';
@@ -848,21 +952,14 @@ function renderFullMatrix() {
     });
     table.appendChild(headerRow);
 
-    // Rows always use the full list but columns can have some filtered out
-    // (see buildColumnFilter), so a column's *position in rowNames* - not
-    // its index within the already-filtered colNames - is what actually
-    // determines whether it's below the diagonal.
-    const positionInOrder = {};
-    rowNames.forEach(function(name, i) { positionInOrder[name] = i; });
-
-    rowNames.forEach(function(rowName, rowIndex) {
+    rowNames.forEach(function(rowName) {
         const tr = document.createElement('tr');
         const rowHeader = document.createElement('th');
         rowHeader.textContent = rowName;
         tr.appendChild(rowHeader);
 
         colNames.forEach(function(colName) {
-            if (positionInOrder[colName] < rowIndex) {
+            if (!showFullGrid && positionInOrder[colName] < positionInOrder[rowName]) {
                 tr.appendChild(blankMatrixCell());
                 return;
             }
