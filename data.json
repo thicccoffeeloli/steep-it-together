@@ -988,5 +988,16 @@
     "temperature": "hot",
     "rating": 3,
     "starred": false
+  },
+  {
+    "ingredients": [
+      "Moringa Teabag"
+    ],
+    "name": "Cold Moringa Water",
+    "description": "Spinach water without the sesame aftertaste. Even more muted and flat than the hot version. Grassy and vegetal but very subtle.",
+    "notes": "The sulphurous smell carries over and is off-putting. ",
+    "temperature": "cold",
+    "rating": 3,
+    "starred": false
   }
 ]
