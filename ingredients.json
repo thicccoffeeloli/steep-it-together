@@ -1,14 +1,5 @@
 [
   {
-    "section": "Rooibos Related",
-    "items": [
-      "Rooibos Teabag",
-      "Rooibos + Honeybush Blend",
-      "Green Rooibos Teabag",
-      "Rooibos + Buchu Blend"
-    ]
-  },
-  {
     "section": "Teabags",
     "items": [
       "Hibiscus Teabag",
@@ -16,6 +7,15 @@
       "Chamomile",
       "Masala Chai",
       "Moringa Teabag"
+    ]
+  },
+  {
+    "section": "Rooibos Related",
+    "items": [
+      "Rooibos Teabag",
+      "Rooibos + Honeybush Blend",
+      "Green Rooibos Teabag",
+      "Rooibos + Buchu Blend"
     ]
   },
   {
