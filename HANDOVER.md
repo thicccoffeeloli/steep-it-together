@@ -105,8 +105,10 @@ git add -A && git commit -m "what and why"
 git fetch origin && git merge origin/main      # pulls in commits the live site made
 git push origin main
 ```
-GitHub Pages redeploys in ~1-2 minutes. Then hard-refresh (Ctrl+Shift+R) - the stylesheet and
-scripts are cached. If a merge conflicts, it will be in a data file or an image written by the live
+GitHub Pages redeploys in ~1-2 minutes. Browsers cache files for 10 minutes (Pages sets
+`max-age=600`), so **bump the `?v=` on the `<script>`/stylesheet links in the four HTML files**
+(e.g. `?v=20261008a`) whenever you change a js/css file - that makes every browser fetch the new
+version immediately instead of showing an old copy. (Ctrl+Shift+R also works locally.) If a merge conflicts, it will be in a data file or an image written by the live
 site: keep the **live site's** version of data files.
 
 ## 6. Testing (no real GitHub needed)
