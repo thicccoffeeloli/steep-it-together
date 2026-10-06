@@ -49,6 +49,7 @@
       "桂圆",
       "枸杞",
       "Rose petals",
+      "Rosehip",
       "Dried Rose Buds"
     ]
   },
@@ -102,8 +103,7 @@
   {
     "section": "Uncategorized",
     "items": [
-      "Placeholder",
-      "Rosehip"
+      "Placeholder"
     ]
   }
 ]
