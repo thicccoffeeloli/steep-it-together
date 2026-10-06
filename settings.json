@@ -1,3 +1,9 @@
 {
-  "displayMode": "icon"
+  "displayMode": "icon",
+  "referenceTabOrder": [
+    "notes",
+    "hard-to-get",
+    "custom-mua8g55p",
+    "avoid-flask"
+  ]
 }
