@@ -954,5 +954,16 @@
     "temperature": "hot",
     "rating": 7,
     "starred": false
+  },
+  {
+    "ingredients": [
+      "Rooibos + Buchu Blend"
+    ],
+    "name": "Rooibos & buchu tea",
+    "description": "Familiar rooibos base, nutty and slightly sweet, with a herbal, mildly medicinal edge from the buchu. Faint blackcurrant-minty quality with a slight liquorice aftertaste. More complex and wild than plain rooibos.",
+    "notes": "Would not buy again.",
+    "temperature": "hot",
+    "rating": 6,
+    "starred": false
   }
 ]
