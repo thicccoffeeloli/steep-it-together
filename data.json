@@ -154,9 +154,10 @@
     ],
     "name": "Plain rooibos tea.",
     "description": "Classic rooibos tea.",
-    "notes": "Tried flavoured varieties (likely peach, cherry cranberry) — both unremarkable. Plain rooibos is the winner, flavoured versions not worth seeking out.",
+    "notes": "Ranking: \nrooibos + honeybush > pure rooibos > green rooibos > flavoured rooibos (pre-flavoured packs).\nFlavoured varieties (likely peach, cherry cranberry) are unremarkable. ",
     "temperature": "hot",
-    "rating": 8
+    "rating": 8,
+    "starred": false
   },
   {
     "ingredients": [
