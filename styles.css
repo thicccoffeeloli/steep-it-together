@@ -753,12 +753,9 @@ li {
     scrollbar-width: none; /* a fixed-px scrollbar gutter broke proportions on a narrow pot; still scrolls */
 }
 
-/* The pot artwork lives on its own ::before layer, not #cauldron's own
-   background - that's what lets applyBrewColor's hue-rotate (--pot-hue,
-   script.js) recolor *only* the pot/water and never bleed onto the
-   ingredient <li> children sitting in front of it, which was the bug (a
-   pink rose icon getting rotated to green right along with the water,
-   since filter on a parent applies to everything painted inside it). */
+/* The pot artwork lives on its own ::before layer, with the brew colour on
+   ::after above it (see below) - keeps both independent of the ingredient
+   <li> chips sitting in front of them. */
 #cauldron::before {
     content: '';
     position: absolute;
@@ -767,8 +764,28 @@ li {
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
-    filter: hue-rotate(var(--pot-hue, 0deg)) saturate(var(--pot-saturate, 1)) brightness(var(--pot-brightness, 1));
     pointer-events: none;
+}
+
+/* The brew colour, masked to the exact shape of the water in pot-in.png
+   (Images/pot-water-mask.png was traced from that artwork). Sits above the
+   pot art but below the ingredient chips (#cauldron li has z-index 1).
+   See applyBrewColor in script.js. */
+#cauldron::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-color: rgb(var(--brew-rgb, 0 0 0));
+    -webkit-mask: url('Images/pot-water-mask.png') center / contain no-repeat;
+    mask: url('Images/pot-water-mask.png') center / contain no-repeat;
+    opacity: 0;
+    transition: opacity 0.35s ease, background-color 0.35s ease;
+    pointer-events: none;
+}
+
+#cauldron.has-brew::after {
+    opacity: var(--brew-opacity, 0.8);
 }
 
 #cauldron.cauldron-open::before,
@@ -778,6 +795,7 @@ li {
 
 #cauldron li {
     position: relative; /* anchors .cauldron-remove to the chip's corner */
+    z-index: 1; /* above the brew-colour layer (#cauldron::after) */
     padding-right: 26px; /* room so the corner badge doesn't overlap the name */
     border-radius: 999px; /* same pill shape as .ingredient chips in the panel */
     background: #4a3763;

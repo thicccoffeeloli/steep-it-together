@@ -384,6 +384,7 @@ let pendingImageRenames = [];
 // immediately (cheap, just moving a map entry), so Cancel needs a way to
 // undo that too.
 let ingredientColorsBackup = null;
+let categoryColorsBackup = null;
 
 // Same idea again, for combinations (data.json) - a rename used to leave
 // every already-logged combo pointing at the old name, which is exactly why
@@ -402,6 +403,7 @@ function enterEditingMode() {
     ingredientsBackup = JSON.parse(JSON.stringify(ingredientsData));
     pairingsBackup = JSON.parse(JSON.stringify(pairings));
     ingredientColorsBackup = JSON.parse(JSON.stringify(ingredientColors));
+    categoryColorsBackup = JSON.parse(JSON.stringify(categoryColors));
     combinationsBackup = JSON.parse(JSON.stringify(combinations));
     pendingImageRenames = [];
     panelMode = 'editing';
@@ -639,9 +641,13 @@ function buildIngredientsPanel() {
                 saveCombinations(); // same, for migrateComboIngredientNames
                 pruneOrphanedPairings(); // drop pairings.json entries for anything actually deleted
                 pruneOrphanedIngredientColors(); // same, for ingredient-colors.json
+                // A section rename moves its colour to the new name (see the
+                // section name input) - only worth a save if that happened.
+                if (JSON.stringify(categoryColors) !== JSON.stringify(categoryColorsBackup)) saveCategoryColors();
                 ingredientsBackup = null;
                 pairingsBackup = null;
                 ingredientColorsBackup = null;
+                categoryColorsBackup = null;
                 combinationsBackup = null;
                 pendingImageRenames = [];
                 panelMode = 'view';
@@ -667,10 +673,12 @@ function buildIngredientsPanel() {
             ingredientsData = ingredientsBackup;
             pairings = pairingsBackup;
             ingredientColors = ingredientColorsBackup;
+            categoryColors = categoryColorsBackup;
             combinations = combinationsBackup;
             ingredientsBackup = null;
             pairingsBackup = null;
             ingredientColorsBackup = null;
+            categoryColorsBackup = null;
             combinationsBackup = null;
             pendingImageRenames = [];
             panelMode = 'view';
@@ -774,6 +782,12 @@ function buildIngredientsPanel() {
                 if (collapsedSections.has(currentName)) {
                     collapsedSections.delete(currentName);
                     collapsedSections.add(newName);
+                }
+                // Section colours are stored by section name - carry the colour
+                // over to the new name, or a rename silently lost it.
+                if (categoryColors[currentName] && !categoryColors[newName]) {
+                    categoryColors[newName] = categoryColors[currentName];
+                    delete categoryColors[currentName];
                 }
                 section.section = newName;
                 currentName = newName;
@@ -1758,17 +1772,35 @@ function openCategoryColorPicker(category) {
     colorPickerInput.click();
 }
 
-colorPickerInput.addEventListener('input', function() {
-    if (!colorPickerTarget) return;
+// 'input' fires continuously while you drag around the picker - it only
+// previews. Saving happens once, on 'change' (when the picker closes).
+// Saving on every 'input' used to queue dozens of full GitHub writes in a
+// row; leave the page before they'd all finished and the colour you
+// actually settled on was never saved.
+function applyPickedColor() {
+    if (!colorPickerTarget) return false;
     if (colorPickerTarget.kind === 'category') {
         categoryColors[colorPickerTarget.name] = colorPickerInput.value;
-        saveCategoryColors();
         buildIngredientsPanel();
         renderPotentialPairings();
     } else {
         ingredientColors[colorPickerTarget.name] = colorPickerInput.value;
+        applyBrewColor();
+    }
+    return true;
+}
+
+colorPickerInput.addEventListener('input', applyPickedColor);
+
+colorPickerInput.addEventListener('change', function() {
+    if (!applyPickedColor()) return;
+    if (colorPickerTarget.kind === 'category') {
+        // Not while editing - that's saved (or thrown away) by Save/Cancel.
+        if (panelMode !== 'editing') saveCategoryColors();
+    } else {
         saveIngredientColors();
     }
+    showToast('✓ Colour saved');
 });
 
 function hexToRgb(hex) {
@@ -1786,20 +1818,36 @@ function hexToRgb(hex) {
 // ingredient's mixing color straight from its uploaded photo (see the
 // icon-upload handler above) rather than requiring a separate manual pick.
 function averageCanvasColor(ctx, width, height) {
+    // Weighted by how colourful each pixel is, not a plain average. A plain
+    // average let everything that ISN'T the ingredient's colour - white
+    // teabag paper, a glass, black outlines, highlights - drown it out, so
+    // anything whose colour only covers part of its picture (hibiscus in a
+    // teabag, wine in a glass) came out as a muddy grey-pink. Reds suffered
+    // most because they're so often a small accent on a pale picture.
+    // Falls back to the plain average for a genuinely colourless picture
+    // (rice, coconut) so those still come out pale instead of random.
     const data = ctx.getImageData(0, 0, width, height).data;
     let r = 0, g = 0, b = 0, count = 0;
+    let wr = 0, wg = 0, wb = 0, wSum = 0;
     for (let i = 0; i < data.length; i += 4) {
-        if (data[i + 3] === 0) continue; // fully transparent - not part of the actual picture
-        r += data[i];
-        g += data[i + 1];
-        b += data[i + 2];
-        count++;
+        const alpha = data[i + 3];
+        if (alpha === 0) continue; // fully transparent - not part of the actual picture
+        const pr = data[i], pg = data[i + 1], pb = data[i + 2];
+        r += pr; g += pg; b += pb; count++;
+        const max = Math.max(pr, pg, pb), min = Math.min(pr, pg, pb);
+        const chroma = (max - min) / 255; // 0 for white/grey/black, 1 for a pure colour
+        const w = chroma * chroma * (alpha / 255);
+        wr += pr * w; wg += pg * w; wb += pb * w; wSum += w;
     }
     if (count === 0) return null;
-    function toHex(sum) {
-        return Math.round(sum / count).toString(16).padStart(2, '0');
+    const useVivid = wSum / count > 0.01;
+    const rr = useVivid ? wr / wSum : r / count;
+    const gg = useVivid ? wg / wSum : g / count;
+    const bb = useVivid ? wb / wSum : b / count;
+    function toHex(v) {
+        return Math.round(v).toString(16).padStart(2, '0');
     }
-    return '#' + toHex(r) + toHex(g) + toHex(b);
+    return '#' + toHex(rr) + toHex(gg) + toHex(bb);
 }
 
 // Only tried here, not in the render path (usePlaceholderOnError) - this
@@ -1892,117 +1940,27 @@ function mixCauldronColor() {
     };
 }
 
-// pot-in.png's own water color - an approximate eyeball read off the
-// artwork (a light sky blue), not pixel-sampled. applyBrewColor hue-rotates
-// the pot *from* this color; nudge it if the result looks off.
-const POT_WATER_RGB = { r: 195, g: 225, b: 245 };
+// How strongly the brew colour covers the water (and the Drink card's
+// picture - the same value for both, so they always look the same).
+const BREW_TINT_OPACITY = 0.8;
 
-// CSS's hue-rotate()/saturate()/brightness() are matrix transforms (the
-// W3C Filter Effects spec matrices below - the same math every browser
-// actually runs), NOT a shift of the color's HSL hue/saturation/lightness.
-// hue-rotate(30deg) on a pale blue, for instance, visibly brightens and
-// desaturates it too, not just rotates its hue - a naive "do the
-// equivalent in HSL space" calculation (the previous approach here)
-// quietly drifts from what the filter really renders, which is exactly
-// why the pot and the Drink card used to come out as different colors for
-// the same brew. These reproduce the real per-channel math exactly, so
-// the predicted result *is* what the filter will actually paint.
-function applyColorMatrix(rgb, m) {
-    const r = rgb.r / 255, g = rgb.g / 255, b = rgb.b / 255;
-    const clamp = function(v) { return Math.max(0, Math.min(255, Math.round(v * 255))); };
-    return {
-        r: clamp(m[0] * r + m[1] * g + m[2] * b),
-        g: clamp(m[3] * r + m[4] * g + m[5] * b),
-        b: clamp(m[6] * r + m[7] * g + m[8] * b)
-    };
-}
-
-function hueRotateFilter(rgb, degrees) {
-    const rad = degrees * Math.PI / 180;
-    const cos = Math.cos(rad), sin = Math.sin(rad);
-    return applyColorMatrix(rgb, [
-        0.213 + cos * 0.787 - sin * 0.213, 0.715 - cos * 0.715 - sin * 0.715, 0.072 - cos * 0.072 + sin * 0.928,
-        0.213 - cos * 0.213 + sin * 0.143, 0.715 + cos * 0.285 + sin * 0.140, 0.072 - cos * 0.072 - sin * 0.283,
-        0.213 - cos * 0.213 - sin * 0.787, 0.715 - cos * 0.715 + sin * 0.715, 0.072 + cos * 0.928 + sin * 0.072
-    ]);
-}
-
-function saturateFilter(rgb, s) {
-    return applyColorMatrix(rgb, [
-        0.213 + 0.787 * s, 0.715 - 0.715 * s, 0.072 - 0.072 * s,
-        0.213 - 0.213 * s, 0.715 + 0.285 * s, 0.072 - 0.072 * s,
-        0.213 - 0.213 * s, 0.715 - 0.715 * s, 0.072 + 0.928 * s
-    ]);
-}
-
-function brightnessFilter(rgb, factor) {
-    const clamp = function(v) { return Math.max(0, Math.min(255, Math.round(v))); };
-    return { r: clamp(rgb.r * factor), g: clamp(rgb.g * factor), b: clamp(rgb.b * factor) };
-}
-
-// What #cauldron's hue-rotate/saturate/brightness chain (styles.css)
-// actually produces when applied to POT_WATER_RGB.
-function predictPotFilterResult(hueDeg, saturate, brightness) {
-    let rgb = hueRotateFilter(POT_WATER_RGB, hueDeg);
-    rgb = saturateFilter(rgb, saturate);
-    return brightnessFilter(rgb, brightness);
-}
-
-function colorDistanceSq(a, b) {
-    const dr = a.r - b.r, dg = a.g - b.g, db = a.b - b.b;
-    return dr * dr + dg * dg + db * db;
-}
-
-// There's no clean closed-form inverse for "what hue/saturate/brightness
-// makes the filter chain land on this exact target color" (hue-rotate's
-// matrix doesn't decompose that way), so this searches the reasonable
-// range of each and keeps whichever combination the real filter math
-// predicts will land closest to the target. Saturate/brightness are kept
-// within a modest range - pushed much further they "win" on a flat test
-// color but badly over-amplify the pot artwork's own shading texture, so
-// a close approximation that still looks like water beats an exact match
-// that looks posterized. One-time cost per brew change, not per frame.
-function findBestPotFilter(targetRgb) {
-    let best = null;
-    for (let hue = 0; hue < 360; hue += 3) {
-        for (let sat = 0; sat <= 4; sat += 0.15) {
-            for (let bright = 0.2; bright <= 2.4; bright += 0.08) {
-                const predicted = predictPotFilterResult(hue, sat, bright);
-                const dist = colorDistanceSq(predicted, targetRgb);
-                if (!best || dist < best.dist) {
-                    best = { hue: hue, saturate: sat, brightness: bright, predicted: predicted, dist: dist };
-                }
-            }
-        }
-    }
-    return best;
-}
-
-// Tints the Drink card's illustration area, and the pot's own liquid, with
-// whatever the cauldron's ingredients mix to - the exact same resulting
-// color for both, not just the same starting ingredients. The pot can only
-// be *filtered* toward the target (hue-rotate/saturate/brightness on
-// #cauldron::before - see styles.css - chosen so only the already-colored
-// water shifts, never the ingredient <li> chips sitting in front of it),
-// so this works out what filter combination gets closest and paints the
-// Drink picture with that same predicted result, rather than the picture
-// showing the raw mixed color while the pot showed a different, only
-// approximately-related one.
+// Tints the pot's water and the Drink card's picture with whatever the
+// cauldron's ingredients mix to. The pot uses a colour layer masked to the
+// exact water shape (#cauldron::after + Images/pot-water-mask.png, see
+// styles.css). This replaced hue-rotating the pale-blue water artwork,
+// which could only approximate a colour and couldn't reach strong reds at
+// all - a red apple came out brown. Now any colour shows as itself.
 function applyBrewColor() {
     const mixed = mixCauldronColor();
     const picture = document.querySelector('.output-picture');
 
     if (mixed) {
-        const best = findBestPotFilter(mixed);
-
-        cauldron.style.setProperty('--pot-hue', best.hue + 'deg');
-        cauldron.style.setProperty('--pot-saturate', best.saturate);
-        cauldron.style.setProperty('--pot-brightness', best.brightness);
-        picture.style.background = 'rgba(' + best.predicted.r + ', ' + best.predicted.g + ', ' + best.predicted.b + ', 0.45)';
+        cauldron.style.setProperty('--brew-rgb', mixed.r + ' ' + mixed.g + ' ' + mixed.b);
+        cauldron.style.setProperty('--brew-opacity', BREW_TINT_OPACITY);
+        cauldron.classList.add('has-brew');
+        picture.style.background = 'rgba(' + mixed.r + ', ' + mixed.g + ', ' + mixed.b + ', ' + BREW_TINT_OPACITY + ')';
     } else {
-        cauldron.style.removeProperty('--pot-hue');
-        cauldron.style.removeProperty('--pot-saturate');
-        cauldron.style.removeProperty('--pot-brightness');
+        cauldron.classList.remove('has-brew');
         picture.style.background = '';
     }
 }

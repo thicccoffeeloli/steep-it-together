@@ -360,9 +360,33 @@
         return result;
     }
 
+    // If a write to the same file is already waiting in the queue (not yet
+    // started), just give it the newer value instead of queueing another
+    // full round trip - only the latest version needs to reach GitHub.
+    const queuedJsonWrites = {}; // path -> { value }
     function writeJsonFile(path, value) {
-        return enqueueWrite(function() { return writeJsonFileNow(path, value); });
+        const waiting = queuedJsonWrites[path];
+        if (waiting) {
+            waiting.value = value;
+            return waiting.promise;
+        }
+        const entry = { value: value };
+        queuedJsonWrites[path] = entry;
+        entry.promise = enqueueWrite(function() {
+            delete queuedJsonWrites[path]; // started - a later change queues a fresh write
+            return writeJsonFileNow(path, entry.value);
+        });
+        return entry.promise;
     }
+
+    // Closing or leaving the page while saves are still on their way to
+    // GitHub would silently lose them - ask first.
+    window.addEventListener('beforeunload', function(e) {
+        if (pendingWrites > 0) {
+            e.preventDefault();
+            e.returnValue = '';
+        }
+    });
 
     // ===== Save status indicator + conflict banner =====
 

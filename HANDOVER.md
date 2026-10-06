@@ -148,12 +148,3 @@ Set `EDGE_PATH` if the browser isn't at the default Edge location. Tests assume 
 - On the laptop you only need the token to *use the site*, not to push code (pushing uses
   your normal GitHub login / Git Credential Manager).
 
-## 9. Open ideas (from your notes)
-
-- Settings page (e.g. default icon mode vs word mode).
-- Friend logins (the `?owner&repo&token` link exists; nothing smarter yet).
-- Ideas list / "try next" brews (custom Notepad tabs cover a basic version).
-- The Drink-card photo and the Pairing-outcomes graph don't do the live image lookup yet, so a
-  brand-new upload may show a placeholder there.
-- The old local Node version (server.js + OneDrive folder) is no longer maintained; it is archived
-  in `Tea Project/_old local app`.
