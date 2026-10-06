@@ -931,5 +931,16 @@
     "temperature": "cold",
     "rating": 6,
     "starred": false
+  },
+  {
+    "ingredients": [
+      "Ginger"
+    ],
+    "name": "Cold water (with a whisper of ginger)",
+    "description": "Essentially water with a whisper of ginger. Barely registers, with none of the warmth or sharpness of the hot steep.",
+    "notes": "Not worth doing cold. If you want ginger in a bottle drink, steep it hot and cool it, as with barley tea.",
+    "temperature": "cold",
+    "rating": 5,
+    "starred": false
   }
 ]
