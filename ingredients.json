@@ -55,6 +55,7 @@
     "section": "Spices",
     "items": [
       "Cinnamon Stick",
+      "Vanilla Pod",
       "Cloves",
       "Cardamom Pods",
       "Star Anise",
@@ -102,7 +103,6 @@
     "items": [
       "Placeholder",
       "Dried Rose Buds",
-      "Vanilla Pod",
       "Rosehip"
     ]
   }
