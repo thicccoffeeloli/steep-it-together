@@ -48,15 +48,6 @@
     ]
   },
   {
-    "section": "Grains",
-    "items": [
-      "Rice",
-      "Barley tea",
-      "Roasted Corn Tea",
-      "Soba Tea"
-    ]
-  },
-  {
     "section": "Herbal & Botanicals",
     "items": [
       "Dried Rose petals",
@@ -68,6 +59,15 @@
       "Fresh Mint Leaves",
       "Ginger",
       "Lemongrass"
+    ]
+  },
+  {
+    "section": "Grains",
+    "items": [
+      "Rice",
+      "Barley tea",
+      "Roasted Corn Tea",
+      "Soba Tea"
     ]
   },
   {
