@@ -161,17 +161,6 @@
   },
   {
     "ingredients": [
-      "Medium Roast Coffee"
-    ],
-    "name": "Ice Medium Roast Coffee",
-    "description": "Smooth and flavourful",
-    "notes": "",
-    "temperature": "cold",
-    "rating": 7,
-    "starred": false
-  },
-  {
-    "ingredients": [
       "Fresh Mint Leaves"
     ],
     "name": "Cold Mint Water",
