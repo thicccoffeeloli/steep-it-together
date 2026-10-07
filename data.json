@@ -504,7 +504,8 @@
     "notes": "Try next time:\n- More cinnamon to bring out sweetness (since only woody notes came through)",
     "temperature": "hot",
     "rating": 7,
-    "starred": false
+    "starred": false,
+    "tryAgain": true
   },
   {
     "ingredients": [
