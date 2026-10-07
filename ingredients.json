@@ -62,15 +62,6 @@
     ]
   },
   {
-    "section": "Grains",
-    "items": [
-      "Rice",
-      "Barley tea",
-      "Roasted Corn Tea",
-      "Soba Tea"
-    ]
-  },
-  {
     "section": "Citrus & Fruits",
     "items": [
       "Citrus Zest",
@@ -81,6 +72,15 @@
       "Dried Apple",
       "Dried Coconut Flakes",
       "Dried Lychee"
+    ]
+  },
+  {
+    "section": "Grains",
+    "items": [
+      "Rice",
+      "Barley tea",
+      "Roasted Corn Tea",
+      "Soba Tea"
     ]
   },
   {
