@@ -107,10 +107,10 @@
       "Hibiscus Teabag"
     ],
     "name": "Hot Hibiscus Tea",
-    "description": "Tart and deep red, juice-like quality.",
-    "notes": "Quite nice, a bit tart — feels like a juice.\nGood to add honey as well.",
+    "description": "Quite tart and mildly fruity, giving cranberry juice qualities. Deep red in colour, and can be quite intense when steeped for long.",
+    "notes": "Honey would be a phenomenal addition. \nMay be too intense to drink regularly.",
     "temperature": "hot",
-    "rating": 8
+    "rating": 7
   },
   {
     "ingredients": [
@@ -747,10 +747,10 @@
       "Hibiscus Teabag"
     ],
     "name": "Cold Brew Hibiscus Tea",
-    "description": "Light and refreshing, tart and cranberry juice-like but quite mild compared to hot hibiscus. Colour extracts but flavour stays relatively subtle even after overnight steeping.",
-    "notes": "After 1 hour — very light, watered down cranberry juice character.\nAfter overnight steep — slightly stronger but not by much. Doesn't intensify dramatically with more time.\nTeabag likely less efficient for cold brew than loose hibiscus — bag material restricts passive cold water diffusion.\nWorth trying loose hibiscus petals cold brewed for comparison — may extract significantly better.",
+    "description": "Light and more refreshing than its hot counterpart. \nThe tartness and cranberry juice-like qualities still remain but milder. \nDeep red in colour. ",
+    "notes": "The cold brew version is more approachable than the hot brew version for day to day drinking, since it is much lighter, even after a long brew.",
     "temperature": "cold",
-    "rating": 6,
+    "rating": 7,
     "starred": false
   },
   {
