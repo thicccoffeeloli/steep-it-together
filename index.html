@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=20261007i">
+    <link rel="stylesheet" href="styles.css?v=20261008a">
 </head>
 
 <body class="home-page">
@@ -103,6 +103,9 @@
                     <!-- Manual on/off toggle - no longer derived from the
                          rating automatically (see updateStarButton). -->
                     <button id="drink-star-btn" class="drink-star-btn" title="Toggle favorite">☆</button>
+                    <!-- "Try again" - e.g. the ratio was off, so the score might
+                         be unfairly low. Same manual on/off idea as the star. -->
+                    <button id="drink-tryagain-btn" class="drink-tryagain-btn" title="Mark to try again (e.g. the ratio was off)">🔁</button>
                     <!-- Custom picture per exact cauldron contents + method
                          (see drinkImageFilename in script.js) - falls back
                          to the placeholder illustration until one's
@@ -153,11 +156,11 @@
             <button id="delete-entry-btn" style="display:none">Delete entry</button>
         </section>
     </main>
-    <script src="github-storage.js?v=20261007i"></script>
-    <script src="app-settings.js?v=20261007i"></script>
-    <script src="tooltip.js?v=20261007i"></script>
-    <script src="ui.js?v=20261007i"></script>
-    <script src="script.js?v=20261007i"></script>
+    <script src="github-storage.js?v=20261008a"></script>
+    <script src="app-settings.js?v=20261008a"></script>
+    <script src="tooltip.js?v=20261008a"></script>
+    <script src="ui.js?v=20261008a"></script>
+    <script src="script.js?v=20261008a"></script>
     <script>
         // Room tab bar (mobile only - see .room-tab-bar in styles.css).
         // Tapping a tab scrolls straight to that room; the scroll listener

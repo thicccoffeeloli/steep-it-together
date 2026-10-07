@@ -2242,6 +2242,8 @@ function resetDrinkOutput() {
     updateRatingIndicator();
     currentStarred = false;
     updateStarButton();
+    currentTryAgain = false;
+    updateTryAgainButton();
     currentMatches = { hot: null, cold: null, stovetop: null };
     hasBrewed = false;
     document.getElementById('delete-entry-btn').style.display = 'none';
@@ -2537,6 +2539,21 @@ document.getElementById('drink-star-btn').addEventListener('click', function() {
     updateStarButton();
 });
 
+// "Try again" - for a brew whose score probably undersells it (wrong ratio,
+// steeped too long...). Manual on/off, saved with the entry like the star.
+let currentTryAgain = false;
+
+function updateTryAgainButton() {
+    const btn = document.getElementById('drink-tryagain-btn');
+    btn.classList.toggle('active', currentTryAgain);
+    btn.title = currentTryAgain ? 'Marked to try again - click to unmark' : 'Mark to try again (e.g. the ratio was off)';
+}
+
+document.getElementById('drink-tryagain-btn').addEventListener('click', function() {
+    currentTryAgain = !currentTryAgain;
+    updateTryAgainButton();
+});
+
 function showOutputForCurrentTab() {
     const match = currentMatches[outputTemp];
     // Any *other* method that already has a saved entry - used to reuse its
@@ -2552,6 +2569,7 @@ function showOutputForCurrentTab() {
         document.getElementById('drink-notes').value = match.notes || '';
         document.getElementById('drink-rating').value = match.rating || 0;
         currentStarred = !!match.starred;
+        currentTryAgain = !!match.tryAgain;
     } else if (otherMatch) {
         // This temperature hasn't been logged yet, but the other one has -
         // reuse its name (they're meant to share one identity) and leave the
@@ -2561,15 +2579,18 @@ function showOutputForCurrentTab() {
         document.getElementById('drink-notes').value = '';
         document.getElementById('drink-rating').value = 0;
         currentStarred = false;
+        currentTryAgain = false;
     } else {
         document.getElementById('drink-name').value = 'Unknown brew';
         document.getElementById('drink-description').value = 'Unlogged — try it and report back';
         document.getElementById('drink-notes').value = '';
         document.getElementById('drink-rating').value = 0;
         currentStarred = false;
+        currentTryAgain = false;
     }
     updateRatingIndicator();
     updateStarButton();
+    updateTryAgainButton();
     // Only offer to delete when there's actually a saved entry for this tab.
     document.getElementById('delete-entry-btn').style.display = match ? 'inline-block' : 'none';
 }
@@ -2718,7 +2739,8 @@ saveBtn.addEventListener('click', function() {
         notes: notes,
         temperature: outputTemp,
         rating: rating,
-        starred: currentStarred
+        starred: currentStarred,
+        tryAgain: currentTryAgain
     };
 
     // Same ingredients + same temperature as something already saved =

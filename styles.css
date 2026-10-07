@@ -3468,3 +3468,56 @@ select:focus {
 main section > .edit-actions {
     top: -24px;
 }
+
+/* ===== "Try again" flag (a brew whose score probably undersells it) ===== */
+
+.drink-tryagain-btn {
+    position: absolute;
+    top: 6px;
+    right: 38px;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 12px;
+    line-height: 1;
+    background: var(--card-bg);
+    border: 1.5px solid var(--accent);
+    box-shadow: none;
+    opacity: 0.75;
+    filter: grayscale(0.6);
+}
+
+.drink-tryagain-btn:hover,
+.drink-tryagain-btn:active {
+    box-shadow: none;
+    transform: none;
+    opacity: 1;
+}
+
+.drink-tryagain-btn.active {
+    background: var(--candy-soft, #fde4ee);
+    border-color: var(--candy, #e2457a);
+    opacity: 1;
+    filter: none;
+}
+
+.try-again-tag {
+    display: inline-block;
+    padding: 1px 9px;
+    border-radius: 999px;
+    background: var(--candy-soft, #fde4ee);
+    border: 1.5px solid var(--candy, #e2457a);
+    color: #9c2350;
+    font-family: var(--ui-font, inherit);
+    font-size: 12px;
+    font-weight: 600;
+    vertical-align: middle;
+}
+
+.try-again-label {
+    margin-left: 16px;
+}

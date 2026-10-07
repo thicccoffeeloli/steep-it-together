@@ -298,7 +298,8 @@ function render() {
                 description: combo.description,
                 notes: combo.notes,
                 rating: combo.rating,
-                starred: combo.starred
+                starred: combo.starred,
+                tryAgain: combo.tryAgain
             });
             render();
         });
@@ -336,6 +337,14 @@ function render() {
             h3.textContent = combo.name + ' — ' + temp;
             if (combo.starred) {
                 h3.textContent += ' ⭐';
+            }
+            if (combo.tryAgain) {
+                const tag = document.createElement('span');
+                tag.className = 'try-again-tag';
+                tag.textContent = '🔁 Try again';
+                tag.title = 'Marked to try again - the score might undersell it';
+                h3.appendChild(document.createTextNode(' '));
+                h3.appendChild(tag);
             }
             article.appendChild(h3);
 
@@ -434,6 +443,19 @@ function buildEditForm(combo, temp) {
     starLabel.appendChild(starCheckbox);
     starLabel.appendChild(document.createTextNode(' ⭐ Starred'));
     starWrapper.appendChild(starLabel);
+
+    const tryAgainLabel = document.createElement('label');
+    tryAgainLabel.className = 'try-again-label';
+    tryAgainLabel.title = 'e.g. the ratio was off, so the score might undersell it';
+    const tryAgainCheckbox = document.createElement('input');
+    tryAgainCheckbox.type = 'checkbox';
+    tryAgainCheckbox.checked = !!combo.tryAgain;
+    tryAgainCheckbox.addEventListener('change', function() {
+        combo.tryAgain = tryAgainCheckbox.checked;
+    });
+    tryAgainLabel.appendChild(tryAgainCheckbox);
+    tryAgainLabel.appendChild(document.createTextNode(' 🔁 Try again'));
+    starWrapper.appendChild(tryAgainLabel);
     wrapper.appendChild(starWrapper);
 
     wrapper.appendChild(editField('Description', combo, 'description', true));
@@ -461,6 +483,7 @@ function buildEditForm(combo, temp) {
             combo.notes = snapshot.notes;
             combo.rating = snapshot.rating;
             combo.starred = snapshot.starred;
+            combo.tryAgain = snapshot.tryAgain;
         }
         editingCombos.delete(combo);
         render();

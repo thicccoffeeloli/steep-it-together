@@ -43,7 +43,7 @@ Consequence you must remember: **the repo gets commits you didn't make.** Always
 | `styles.css` | - | All styling (one file). |
 
 Data (all JSON in the repo root, edited through the app, not by hand):
-`data.json` (logged combos), `ingredients.json` (sections + ingredients),
+`data.json` (logged combos - each can carry `starred` and `tryAgain` flags), `ingredients.json` (sections + ingredients),
 `pairings.json`, `ingredient-colors.json`, `category-colors.json`, `notes.json`,
 `hard-to-get.json`, `avoid-flask.json`, `custom-lists.json`, `settings.json` (created on first save),
 `blocked.json` (pairs marked "don't mix", as `"A|B"` keys with the two names sorted).
@@ -133,7 +133,7 @@ git push origin main
 ```
 GitHub Pages redeploys in ~1-2 minutes. Browsers cache files for 10 minutes (Pages sets
 `max-age=600`), so **bump the `?v=` on the `<script>`/stylesheet links in the four HTML files**
-(e.g. `?v=20261008a`; the current one is `20261007g`) whenever you change a js/css file - that makes every browser fetch the new
+(e.g. `?v=20261008a`; the current one is `20261008a`) whenever you change a js/css file - that makes every browser fetch the new
 version immediately instead of showing an old copy. (Ctrl+Shift+R also works locally.) If a merge conflicts, it will be in a data file or an image written by the live
 site: keep the **live site's** version of data files.
 
@@ -150,6 +150,7 @@ node colours-test.js      # brew colour incl. reds, colour picker saves once, se
 node blocked-test.js      # blocked pairs: cauldron button/warning, randomizer, matrix right-click
 node guest-test.js        # friend/guest mode: no API calls, saves refused, connect-screen route
 node sticky-tabs-test.js  # pinned Save bars under the header, Notepad tab reordering
+node tryagain-test.js     # 'Try again' flag: Drink card, combo notes, Book, rating table filter, matrix
 node shots.js -mine       # screenshots of every page, desktop + phone -> shot-*.png
 ```
 Set `EDGE_PATH` if the browser isn't at the default Edge location. Tests assume the ingredient

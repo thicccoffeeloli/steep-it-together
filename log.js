@@ -396,7 +396,8 @@ function pairCellKey() {
         { swatch: '#b0b0b0', text: '✓', label: 'Brewed, not rated' },
         { swatch: 'var(--card-bg)', border: '1px solid var(--border)', text: '✗', label: 'Not brewed yet (click to brew)' },
         { swatch: 'repeating-linear-gradient(45deg, #ece6ef, #ece6ef 3px, #ddd3e2 3px, #ddd3e2 6px)', text: '⛔', label: 'Blocked (right-click any cell to block/unblock)' },
-        { swatch: 'transparent', text: '⭐', label: 'Starred' }
+        { swatch: 'transparent', text: '⭐', label: 'Starred' },
+        { swatch: 'transparent', text: '🔁', label: 'Try again' }
     ]);
 }
 
@@ -752,6 +753,7 @@ function decoratePairCell(td, matches, linkIngredients) {
         ? rated.reduce(function(sum, m) { return sum + m.rating; }, 0) / rated.length
         : null;
     const isStarred = matches.some(function(m) { return m.starred; });
+    const isTryAgain = matches.some(function(m) { return m.tryAgain; });
 
     const rgb = avgRating !== null ? ratingRgb(avgRating) : [176, 176, 176];
     const textStyle = readableTextStyle(rgb);
@@ -759,8 +761,8 @@ function decoratePairCell(td, matches, linkIngredients) {
     td.style.background = rgbToCss(rgb);
     td.style.color = textStyle.color;
     td.style.textShadow = textStyle.textShadow;
-    td.textContent = '✓' + (isStarred ? ' ⭐' : '');
-    td.title = 'View notes' + (avgRating !== null ? ' (avg rating ' + (Math.round(avgRating * 10) / 10) + '/10)' : '');
+    td.textContent = '✓' + (isStarred ? ' ⭐' : '') + (isTryAgain ? ' 🔁' : '');
+    td.title = 'View notes' + (avgRating !== null ? ' (avg rating ' + (Math.round(avgRating * 10) / 10) + '/10)' : '') + (isTryAgain ? ' - marked to try again' : '');
     td.addEventListener('click', function() {
         window.location.href = comboDetailUrl(linkIngredients);
     });
@@ -1219,7 +1221,7 @@ function buildComboCard(combo) {
         const textStyle = readableTextStyle(rgb);
         badge.style.color = textStyle.color;
         badge.style.textShadow = textStyle.textShadow;
-        badge.textContent = combo.rating + '/10' + (combo.starred ? ' ⭐' : '');
+        badge.textContent = combo.rating + '/10' + (combo.starred ? ' ⭐' : '') + (combo.tryAgain ? ' 🔁' : '');
     } else {
         badge.className = 'combo-card-rating combo-card-rating-idea';
         badge.textContent = 'N/A';
@@ -1801,17 +1803,19 @@ function matchesRatingTableSearch(combo, query) {
 // 'all'/0 are each dimension's "off" state.
 let ratingTableFilterMethod = 'all'; // 'all' | 'hot' | 'cold' | 'stovetop'
 let ratingTableFilterStarredOnly = false;
+let ratingTableFilterTryAgainOnly = false;
 let ratingTableFilterMinRating = 0; // 0 = no minimum
 let ratingTableFilterCategory = 'all';
 
 function ratingTableFiltersActive() {
-    return ratingTableFilterMethod !== 'all' || ratingTableFilterStarredOnly ||
+    return ratingTableFilterMethod !== 'all' || ratingTableFilterStarredOnly || ratingTableFilterTryAgainOnly ||
         ratingTableFilterMinRating > 0 || ratingTableFilterCategory !== 'all';
 }
 
 function matchesRatingTableFilters(combo) {
     if (ratingTableFilterMethod !== 'all' && (combo.temperature || 'hot') !== ratingTableFilterMethod) return false;
     if (ratingTableFilterStarredOnly && !combo.starred) return false;
+    if (ratingTableFilterTryAgainOnly && !combo.tryAgain) return false;
     if (ratingTableFilterMinRating > 0 && (!combo.rating || combo.rating < ratingTableFilterMinRating)) return false;
     if (ratingTableFilterCategory !== 'all' && primaryCategoryFor(combo) !== ratingTableFilterCategory) return false;
     return true;
@@ -1930,6 +1934,16 @@ function renderCombosByRating() {
     });
     filterRow.appendChild(starredBtn);
 
+    const tryAgainBtn = document.createElement('button');
+    tryAgainBtn.className = 'sort-toggle-btn';
+    tryAgainBtn.textContent = '🔁 Try again only';
+    tryAgainBtn.classList.toggle('active', ratingTableFilterTryAgainOnly);
+    tryAgainBtn.addEventListener('click', function() {
+        ratingTableFilterTryAgainOnly = !ratingTableFilterTryAgainOnly;
+        renderCombosByRating();
+    });
+    filterRow.appendChild(tryAgainBtn);
+
     const minRatingSelect = document.createElement('select');
     minRatingSelect.className = 'rating-table-filter-select';
     minRatingSelect.title = 'Minimum rating';
@@ -2025,7 +2039,7 @@ function renderCombosByRating() {
         });
 
         const ratingCell = document.createElement('td');
-        ratingCell.textContent = (combo.rating ? combo.rating + '/10' : 'N/A') + (combo.starred ? ' ⭐' : '');
+        ratingCell.textContent = (combo.rating ? combo.rating + '/10' : 'N/A') + (combo.starred ? ' ⭐' : '') + (combo.tryAgain ? ' 🔁' : '');
         tr.appendChild(ratingCell);
 
         const nameCell = document.createElement('td');
@@ -2740,6 +2754,14 @@ function renderBookArea() {
             const h3 = document.createElement('h3');
             const methodEmoji = combo.temperature === 'cold' ? '❄️' : combo.temperature === 'stovetop' ? '🍳' : '🔥';
             h3.textContent = methodEmoji + ' ' + combo.name + (combo.starred ? ' ⭐' : '');
+            if (combo.tryAgain) {
+                const tag = document.createElement('span');
+                tag.className = 'try-again-tag';
+                tag.textContent = '🔁 Try again';
+                tag.title = 'Marked to try again - the score might undersell it';
+                h3.appendChild(document.createTextNode(' '));
+                h3.appendChild(tag);
+            }
             entry.appendChild(h3);
 
             const meta = document.createElement('p');
