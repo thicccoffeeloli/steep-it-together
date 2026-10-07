@@ -1,5 +1,10 @@
 [
+  "Apple Cider|CBD Blend",
   "Apple Cider|Ronnefeldt Green Angel",
+  "Apple Cider|Ronnefeldt Rooibos Cream Orange",
+  "CBD Blend|Red Wine",
+  "CBD Blend|Rum",
+  "CBD Blend|Whiskey",
   "Dark Roast Coffee|云南红茶",
   "Dark Roast Coffee|普洱",
   "Dark Roast Coffee|茉莉花",
@@ -13,5 +18,9 @@
   "Medium Roast Coffee|茉莉花",
   "Medium Roast Coffee|菊花",
   "Red Wine|Ronnefeldt Green Angel",
-  "Ronnefeldt Green Angel|Whiskey"
+  "Red Wine|Ronnefeldt Rooibos Cream Orange",
+  "Ronnefeldt Green Angel|Rum",
+  "Ronnefeldt Green Angel|Whiskey",
+  "Ronnefeldt Rooibos Cream Orange|Rum",
+  "Ronnefeldt Rooibos Cream Orange|Whiskey"
 ]
