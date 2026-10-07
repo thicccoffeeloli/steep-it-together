@@ -48,6 +48,15 @@
     ]
   },
   {
+    "section": "Grains",
+    "items": [
+      "Rice",
+      "Barley tea",
+      "Roasted Corn Tea",
+      "Soba Tea"
+    ]
+  },
+  {
     "section": "Herbal & Botanicals",
     "items": [
       "Dried Rose petals",
@@ -72,15 +81,6 @@
       "Dried Apple",
       "Dried Coconut Flakes",
       "Dried Lychee"
-    ]
-  },
-  {
-    "section": "Grains",
-    "items": [
-      "Rice",
-      "Barley tea",
-      "Roasted Corn Tea",
-      "Soba Tea"
     ]
   },
   {
