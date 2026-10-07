@@ -1,8 +1,13 @@
 {
-  "Herbal & Botanicals": "#59a682",
+  "Herbal & Botanicals": "#309144",
   "Uncategorized": "#707070",
-  "Chinese Tea": "#c52b2b",
-  "Teabags": "#9adbe5",
-  "Rooibos Related": "#d35c17",
-  "Coffee": "#4c340b"
+  "Chinese Tea": "#ff0000",
+  "Teabags": "#94afff",
+  "Rooibos Related": "#ee752f",
+  "Coffee": "#4c340b",
+  "Spices": "#966117",
+  "Citrus & Fruits": "#fbff24",
+  "Grains": "#e9c649",
+  "Alcohol": "#712864",
+  "Special": "#ff8ff0"
 }
