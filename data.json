@@ -501,7 +501,7 @@
     ],
     "name": "Floral Cinnamon Blend",
     "description": "Soft and floral, with chamomile's apple-like sweetness and the rose's perfumed lift. The cinnamon sits underneath adding warmth. ",
-    "notes": "Next try: increase cinnamon slightly to about half a stick to bring out the sweetness. Promising combo.\nPretty good but ratios need tweaking. Too little cinnamon — woody notes came through without the sweetness. When there's too little of it, it comes through as a woody note instead of a sweet one.",
+    "notes": "Try next time:\n- More cinnamon to bring out sweetness (since only woody notes came through)",
     "temperature": "hot",
     "rating": 7,
     "starred": false
@@ -665,7 +665,7 @@
       "Lemon Slice"
     ],
     "name": "Chamomile Lemon Tea",
-    "description": "Good. Like normal chamomile but with an extra citrus kick to it. Bright and refreshing without losing the gentle soothing quality of chamomile.",
+    "description": "Chamomile tea with an extra citrus kick to it. Bright and refreshing without losing the gentle soothing quality of chamomile.",
     "notes": "",
     "temperature": "hot",
     "rating": 8,
@@ -837,8 +837,8 @@
       "Chamomile"
     ],
     "name": "Naartjie chamomile tea ",
-    "description": "Gentle and comforting — chamomile's apple-like sweetness with soft citrus warmth from the naartjie. Naartjie comes forward first then softens into the chamomile base.",
-    "notes": "Quite nice, as expected. A natural pairing — both ingredients are round and gentle so they don't compete.",
+    "description": "Slight citrus creaminess comes forward first from the naartjie, which then softens into chamomile's apple-like sweetness. Gentle and comforting. \nBoth ingredients are rounded and gentle, and do not compete with each other.",
+    "notes": "",
     "temperature": "hot",
     "rating": 8,
     "starred": false
