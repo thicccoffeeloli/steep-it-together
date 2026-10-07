@@ -142,8 +142,8 @@
       "Rooibos Teabag"
     ],
     "name": "Plain rooibos tea.",
-    "description": "Classic rooibos tea.",
-    "notes": "Ranking: \nrooibos + honeybush > pure rooibos > green rooibos > flavoured rooibos (pre-flavoured packs).\nFlavoured varieties (likely peach, cherry cranberry) are unremarkable. ",
+    "description": "Classic rooibos tea. \nWarm, comforting and smooth. Flavourwise is slightly sweet with a mild nuttiness. \nNo bitterness however long it steeps. ",
+    "notes": "Ranking: \n1. rooibos + honeybush \n2. pure rooibos \n3. green rooibos \n4. flavoured rooibos (pre-flavoured packs).\nFlavoured varieties (likely peach, cherry cranberry) are unremarkable. ",
     "temperature": "hot",
     "rating": 8,
     "starred": false
@@ -905,7 +905,7 @@
       "Rooibos Teabag"
     ],
     "name": "Plain rooibos tea (cold brew)",
-    "description": "Clean and smooth. A lighter, fainter version of the hot steep. Same nutty sweetness, just turned down.",
+    "description": "A lighter, fainter version of the hot steep. ",
     "notes": "",
     "temperature": "cold",
     "rating": 6,
