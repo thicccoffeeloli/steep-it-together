@@ -545,7 +545,27 @@ function renderCategoryMatrix() {
             const td = document.createElement('td');
             const stats = categoryPairStats(rowCat, colCat);
 
-            if (stats.total === 0) {
+            // Right-click a category cell to block every pairing inside it
+            // (or, if they're all blocked already, unblock them all) - same
+            // gesture as a single pair in the detail / full matrix.
+            const catPairs = categoryPairsList(rowCat, colCat);
+            if (catPairs.length > 0) {
+                td.addEventListener('contextmenu', function(e) {
+                    e.preventDefault();
+                    setPairsBlocked(catPairs, !allPairsBlocked(rowCat, colCat));
+                });
+            }
+
+            if (allPairsBlocked(rowCat, colCat)) {
+                td.className = 'category-cell category-cell-blocked';
+                td.textContent = '⛔';
+                td.title = 'Every pairing in here is blocked. Right-click to unblock them all. Click to look inside.';
+                td.addEventListener('click', function() {
+                    matrixView = 'detail';
+                    detailCategories = { a: rowCat, b: colCat };
+                    renderMatrixArea();
+                });
+            } else if (stats.total === 0) {
                 // An empty category (0 items) against itself - genuinely
                 // nothing there. A *single*-item category against itself is
                 // handled separately (see categoryPairStats) and doesn't
@@ -564,7 +584,7 @@ function renderCategoryMatrix() {
                     : '';
                 td.title = stats.singleIngredient
                     ? 'Only one ingredient in this category - nothing to pair internally'
-                    : stats.triedCount + ' / ' + stats.total + ' tried';
+                    : stats.triedCount + ' / ' + stats.total + ' tried' + (catPairs.length > 0 ? ' (right-click to block them all)' : '');
                 td.addEventListener('click', function() {
                     matrixView = 'detail';
                     detailCategories = { a: rowCat, b: colCat };
@@ -609,15 +629,37 @@ function isBlockedPair(a, b) {
     return blockedPairs.has([a, b].sort().join('|'));
 }
 
-function toggleBlockedPair(a, b) {
-    const key = [a, b].sort().join('|');
-    if (blockedPairs.has(key)) blockedPairs.delete(key); else blockedPairs.add(key);
+function saveBlockedPairs() {
     fetch('/blocked', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(Array.from(blockedPairs).sort())
     });
     renderMatrixArea();
+}
+
+function toggleBlockedPair(a, b) {
+    const key = [a, b].sort().join('|');
+    if (blockedPairs.has(key)) blockedPairs.delete(key); else blockedPairs.add(key);
+    saveBlockedPairs();
+}
+
+// Block (or unblock) a whole list of [a, b] pairs with a single save - used
+// by the category cells and the detail view's Block all button.
+function setPairsBlocked(pairs, blocked) {
+    pairs.forEach(function(pair) {
+        const key = [pair[0], pair[1]].sort().join('|');
+        if (blocked) blockedPairs.add(key); else blockedPairs.delete(key);
+    });
+    saveBlockedPairs();
+}
+
+// True when the category pair has at least one pairing and every one of
+// them is blocked. Same-category cells only have the pairs (solo brews
+// can't be blocked), so a category of one ingredient is never "blocked".
+function allPairsBlocked(catA, catB) {
+    const pairs = categoryPairsList(catA, catB);
+    return pairs.length > 0 && pairs.every(function(pair) { return isBlockedPair(pair[0], pair[1]); });
 }
 
 function decoratePairCell(td, matches, linkIngredients) {
@@ -686,6 +728,14 @@ function renderDetailMatrix(catA, catB) {
     const heading = document.createElement('h2');
     heading.textContent = catA === catB ? catA : catA + ' × ' + catB;
     container.appendChild(heading);
+
+    const allBlocked = allPairsBlocked(catA, catB);
+    const blockAllBtn = document.createElement('button');
+    blockAllBtn.textContent = allBlocked ? '✅ Unblock all in here' : '⛔ Block all in here';
+    blockAllBtn.addEventListener('click', function() {
+        setPairsBlocked(categoryPairsList(catA, catB), !allBlocked);
+    });
+    if (categoryPairsList(catA, catB).length > 0) container.appendChild(blockAllBtn);
 
     const itemsA = getCategoryItems(catA);
     const itemsB = getCategoryItems(catB);

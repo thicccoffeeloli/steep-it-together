@@ -2752,6 +2752,11 @@ h3.note-section-title {
     cursor: default;
 }
 
+.category-cell-blocked {
+    background: repeating-linear-gradient(45deg, #ece6ef, #ece6ef 5px, #ddd3e2 5px, #ddd3e2 10px);
+    color: #8a2b3b;
+}
+
 .blocked-warning {
     margin: 0 0 14px;
     padding: 10px 14px;
