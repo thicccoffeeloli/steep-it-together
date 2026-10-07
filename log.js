@@ -506,6 +506,61 @@ function blankMatrixCell() {
     return td;
 }
 
+// Hovering a cell lights up its row header and column header, tints the rest
+// of its row and column, and spells out "row × column" in a line above the
+// grid (the headers can be scrolled out of view in a big matrix). Returns
+// that readout line; works on all three matrix views.
+function makeMatrixHoverReadout(table) {
+    const readout = document.createElement('p');
+    readout.className = 'matrix-hover-readout';
+    readout.textContent = 'Hover a cell to see which row and column it is.';
+
+    let current = null;
+
+    function clearHover() {
+        table.querySelectorAll('.matrix-hl-head, .matrix-hl-line, .matrix-hl-cell').forEach(function(el) {
+            el.classList.remove('matrix-hl-head', 'matrix-hl-line', 'matrix-hl-cell');
+        });
+        readout.textContent = 'Hover a cell to see which row and column it is.';
+        current = null;
+    }
+
+    table.addEventListener('mouseover', function(e) {
+        const td = e.target.closest('td');
+        if (!td || !table.contains(td) || td.classList.contains('matrix-cell-skip')) {
+            if (current) clearHover();
+            return;
+        }
+        if (td === current) return;
+        if (current) clearHover();
+        current = td;
+
+        const rows = table.rows;
+        const rowIndex = td.parentNode.rowIndex;
+        const colIndex = td.cellIndex;
+        const rowHeader = rows[rowIndex].cells[0];
+        const colHeader = rows[0].cells[colIndex];
+
+        rowHeader.classList.add('matrix-hl-head');
+        colHeader.classList.add('matrix-hl-head');
+        for (let i = 1; i < rows.length; i++) {
+            const cell = rows[i].cells[colIndex];
+            if (cell && cell !== td) cell.classList.add('matrix-hl-line');
+        }
+        Array.prototype.forEach.call(rows[rowIndex].cells, function(cell, i) {
+            if (i > 0 && cell !== td) cell.classList.add('matrix-hl-line');
+        });
+        td.classList.add('matrix-hl-cell');
+
+        const rowName = rowHeader.textContent;
+        const colName = colHeader.textContent;
+        readout.textContent = rowName === colName ? rowName : rowName + ' × ' + colName;
+    });
+    table.addEventListener('mouseleave', clearHover);
+
+    return readout;
+}
+
 function renderCategoryMatrix() {
     const container = document.getElementById('matrix-area');
     container.innerHTML = '';
@@ -599,6 +654,7 @@ function renderCategoryMatrix() {
     });
 
     wrapper.appendChild(table);
+    container.appendChild(makeMatrixHoverReadout(table));
     container.appendChild(wrapper);
     container.appendChild(makeColorKey([
         { gradient: 'linear-gradient(90deg, ' + PERCENT_TRIED_LOW + ', ' + PERCENT_TRIED_MID + ', ' + PERCENT_TRIED_HIGH + ')', from: 'none', to: 'all', label: 'of the pairings tried' },
@@ -788,6 +844,7 @@ function renderDetailMatrix(catA, catB) {
     });
 
     wrapper.appendChild(table);
+    container.appendChild(makeMatrixHoverReadout(table));
     container.appendChild(wrapper);
     container.appendChild(pairCellKey());
 }
@@ -1103,6 +1160,7 @@ function renderFullMatrix() {
     });
 
     wrapper.appendChild(table);
+    container.appendChild(makeMatrixHoverReadout(table));
     container.appendChild(wrapper);
 }
 
