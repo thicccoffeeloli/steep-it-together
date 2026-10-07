@@ -1,17 +1,6 @@
 [
   {
     "ingredients": [
-      "Medium Roast Coffee"
-    ],
-    "name": "Hot Medium Roast Coffee",
-    "description": "Mild and flavourful.",
-    "notes": "",
-    "temperature": "hot",
-    "rating": 6,
-    "starred": false
-  },
-  {
-    "ingredients": [
       "Dark Roast Coffee",
       "Hazelnut Coffee",
       "Cinnamon Stick"
