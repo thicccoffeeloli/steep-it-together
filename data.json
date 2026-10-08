@@ -538,11 +538,12 @@
       "Ginger"
     ],
     "name": "Hibiscus Ginger Tea",
-    "description": "Two strong flavours fighting rather than complementing. Tastes quite herbal. Tart and sharp upfront from the hibiscus, ginger heat building underneath, no sweetness to bridge them. ",
-    "notes": "More functional wellness drink than enjoyable sip. Would need honey or jujube to mediate between the two.",
+    "description": "Strong tartness from the hibiscus conflicting with the herbal and spicy ginger taste. The two strong flavours do not complement each other.",
+    "notes": "Try next: Honey or jujube could potential bridge the two flavours.",
     "temperature": "hot",
     "rating": 4,
-    "starred": false
+    "starred": false,
+    "tryAgain": true
   },
   {
     "ingredients": [
