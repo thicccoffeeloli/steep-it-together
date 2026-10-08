@@ -2060,7 +2060,7 @@ function mixCauldronColor() {
 
 // How strongly the brew colour covers the water (and the Drink card's
 // picture - the same value for both, so they always look the same).
-const BREW_TINT_OPACITY = 0.8;
+const BREW_TINT_OPACITY = 0.6;
 
 // Tints the pot's water and the Drink card's picture with whatever the
 // cauldron's ingredients mix to. The pot uses a colour layer masked to the
