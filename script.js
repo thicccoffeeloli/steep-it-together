@@ -2236,6 +2236,7 @@ function migrateIngredientImage(oldName, newName) {
 // shouldn't undo an already-made Hot/Cold/Stove choice.
 function resetDrinkOutput() {
     document.getElementById('drink-name').value = '';
+    drinkNameIsAuto = true;
     document.getElementById('drink-description').value = '';
     document.getElementById('drink-notes').value = '';
     document.getElementById('drink-rating').value = 0; // 0 = N/A, see updateRatingIndicator
@@ -2335,9 +2336,9 @@ const deleteEntryBtn = document.getElementById('delete-entry-btn');
 // One place to look up each method's emoji/label/image/buttons, instead of
 // a chain of ternaries every time one of these is needed.
 const TEMP_META = {
-    hot: { tabs: [hotTab, cauldronHotBtn], emoji: '🔥', image: 'drink-hot.svg' },
-    cold: { tabs: [coldTab, cauldronColdBtn], emoji: '❄️', image: 'drink-cold.svg' },
-    stovetop: { tabs: [stovetopTab, cauldronStoveBtn], emoji: '🍳', image: 'drink-stovetop.svg' }
+    hot: { tabs: [hotTab, cauldronHotBtn], emoji: '🔥', label: 'Hot Steep', image: 'drink-hot.svg' },
+    cold: { tabs: [coldTab, cauldronColdBtn], emoji: '❄️', label: 'Cold Brew', image: 'drink-cold.svg' },
+    stovetop: { tabs: [stovetopTab, cauldronStoveBtn], emoji: '🍳', label: 'Stovetop', image: 'drink-stovetop.svg' }
 };
 
 function updateTempTabs() {
@@ -2554,6 +2555,31 @@ document.getElementById('drink-tryagain-btn').addEventListener('click', function
     updateTryAgainButton();
 });
 
+// ===== Automatic drink names =====
+// A brew with no saved entry gets a name made from its method and
+// ingredients - "Hot Steep Cinnamon Stick + Ginger", "Cold Brew ...",
+// "Stovetop ..." - so there's always something sensible to save. Type
+// anything else over it and that stays; the generated name follows the
+// method tab only while it's still the generated one.
+let drinkNameIsAuto = true;
+
+function autoDrinkName() {
+    return TEMP_META[outputTemp].label + ' ' + cauldronItems.join(' + ');
+}
+
+// True for a saved entry whose name is just the generated kind - used so
+// switching to another method gives that method's own generated name
+// ("Cold Brew X") instead of dragging "Hot Steep X" across.
+function looksAutoNamed(combo) {
+    const temp = combo.temperature || 'hot';
+    return !!TEMP_META[temp] && combo.name === TEMP_META[temp].label + ' ' + combo.ingredients.join(' + ');
+}
+
+document.getElementById('drink-name').addEventListener('input', function() {
+    const typed = this.value.trim();
+    drinkNameIsAuto = typed === '' || typed === autoDrinkName();
+});
+
 function showOutputForCurrentTab() {
     const match = currentMatches[outputTemp];
     // Any *other* method that already has a saved entry - used to reuse its
@@ -2565,6 +2591,7 @@ function showOutputForCurrentTab() {
 
     if (match) {
         document.getElementById('drink-name').value = match.name;
+        drinkNameIsAuto = false;
         document.getElementById('drink-description').value = match.description || '';
         document.getElementById('drink-notes').value = match.notes || '';
         document.getElementById('drink-rating').value = match.rating || 0;
@@ -2574,14 +2601,26 @@ function showOutputForCurrentTab() {
         // This temperature hasn't been logged yet, but the other one has -
         // reuse its name (they're meant to share one identity) and leave the
         // rest blank, ready to fill in.
-        document.getElementById('drink-name').value = otherMatch.name;
+        if (looksAutoNamed(otherMatch)) {
+            document.getElementById('drink-name').value = autoDrinkName();
+            drinkNameIsAuto = true;
+        } else {
+            document.getElementById('drink-name').value = otherMatch.name;
+            drinkNameIsAuto = false;
+        }
         document.getElementById('drink-description').value = '';
         document.getElementById('drink-notes').value = '';
         document.getElementById('drink-rating').value = 0;
         currentStarred = false;
         currentTryAgain = false;
     } else {
-        document.getElementById('drink-name').value = 'Unknown brew';
+        // Nothing saved for this brew at all: a generated name - unless you've
+        // already typed your own, which carries over when you switch method.
+        const nameField = document.getElementById('drink-name');
+        if (drinkNameIsAuto || !nameField.value.trim()) {
+            nameField.value = autoDrinkName();
+            drinkNameIsAuto = true;
+        }
         document.getElementById('drink-description').value = 'Unlogged — try it and report back';
         document.getElementById('drink-notes').value = '';
         document.getElementById('drink-rating').value = 0;
@@ -2722,7 +2761,8 @@ saveBtn.addEventListener('click', function() {
         return;
     }
 
-    const name = document.getElementById('drink-name').value;
+    // Left blank, it's saved under the generated name rather than as nothing.
+    const name = document.getElementById('drink-name').value.trim() || autoDrinkName();
     const description = document.getElementById('drink-description').value;
     const notes = document.getElementById('drink-notes').value;
 
@@ -2801,7 +2841,7 @@ deleteEntryBtn.addEventListener('click', function() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(combinations)
     }).then(function() {
-        showOutputForCurrentTab(); // falls back to "Unknown brew" / another temp's entry, and hides this button
+        showOutputForCurrentTab(); // falls back to the generated name / another temp's entry, and hides this button
         buildIngredientsPanel(); // tried/untried tint depends on combinations
         showToast('✓ Entry deleted');
     });
