@@ -693,11 +693,12 @@
       "Naartjie Peel"
     ],
     "name": "Peppermint naartjie tea",
-    "description": "Peppermint too assertive early on, overpowering the naartjie. Steeping longer brings out the naartjie but weakens the peppermint. Both ingredients on opposite steep curves — never quite at full strength simultaneously. ",
-    "notes": "Nice but tricky to get right. Pleasant but not the bright peppermint + citrus combo expected. Fresh lemon slice works better with peppermint as it releases more immediately.",
+    "description": "Peppermint too assertive early on, overpowering the naartjie. Steeping longer brings out the naartjie but weakens the peppermint. \nBoth ingredients on opposite steep curves, never quite at full strength simultaneously. ",
+    "notes": "Nice but tricky to get right. \nPleasant but not the bright peppermint + citrus combo expected.",
     "temperature": "hot",
     "rating": 5,
-    "starred": false
+    "starred": false,
+    "tryAgain": true
   },
   {
     "ingredients": [
