@@ -1071,5 +1071,17 @@
     "rating": 6,
     "starred": false,
     "tryAgain": false
+  },
+  {
+    "ingredients": [
+      "Hazelnut Coffee"
+    ],
+    "name": "Iced Hazelnut Flavoured Coffee",
+    "description": "A quick initial tang that gives way to something smooth, creamy and nutty. The hazelnut aftertaste is creamy and lingers for a while. Lower in bitterness than hot, and the finish is milky rather than clean.",
+    "notes": "",
+    "temperature": "cold",
+    "rating": 9,
+    "starred": true,
+    "tryAgain": false
   }
 ]
