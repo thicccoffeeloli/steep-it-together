@@ -788,11 +788,12 @@
       "Citrus Zest"
     ],
     "name": "Cold brewed dried pomelo skin",
-    "description": "Bitter and citrusy — sharp and cleansing rather than comforting or sweet. A mood-based drink rather than an everyday one. Works well as a palate cleanser.",
-    "notes": "Used quite a few pieces — likely too many, contributed to the bitterness.\nBitterness comes from pith still attached to the skin, unlike naartjie zest which is pith-free.\nUse fewer pieces next time to reduce bitterness.\nWorth trying paired with 红枣 or honey to balance, or barley tea as a base which softened it well previously.\nBest when you want something sharp and cleansing rather than something sweet or comforting.",
+    "description": "Bitter and citrusy, sharp and cleansing rather than comforting or sweet. Works well as a palate cleanser.",
+    "notes": "Use fewer pieces next time to reduce bitterness.\nWorth trying paired with 红枣 or honey to balance, or barley tea as a base which softened it well previously.",
     "temperature": "cold",
-    "rating": 7,
-    "starred": false
+    "rating": 6,
+    "starred": false,
+    "tryAgain": true
   },
   {
     "ingredients": [
