@@ -764,10 +764,10 @@
       "Dried Rose petals"
     ],
     "name": "Cold steeped rose petal tea",
-    "description": "Delicately floral and softly sweet — even more subtle and clean than the hot steep version. Almost like a floral water, very gentle and elegant. The cold extraction pulls the colour out into a striking purplish-pink, while preserving the delicate aromatic quality of the petals.",
-    "notes": "Floral and lovely.\nColour correction from hot steep entry: cold steep produces a purplish-pink colour, hot steep produces yellow. Cold water extracts the anthocyanin pigments more gently without heat degrading them.\nUse a generous amount of petals since cold extraction is less efficient than hot.\nSteep overnight for best results.",
+    "description": "Delicately floral and softly sweet. Gently aromatic, and has a softer quality than the hot steeped version. \nColour starts off as pale pink, but a longer steep shifts it toward a more yellowish colour. ",
+    "notes": "",
     "temperature": "cold",
-    "rating": 8,
+    "rating": 7,
     "starred": true
   },
   {
