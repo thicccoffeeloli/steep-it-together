@@ -98,11 +98,13 @@ Promise.all([
     pairings = results[2];
     categoryColors = results[3];
     if (results[4] && results[4].displayMode) graphNodeMode = results[4].displayMode;
+    applySavedLogUi();
     renderMatrixArea();
     renderComboViz();
     renderCombosByRating();
     renderGraphsArea();
     renderBookArea();
+    finishRestoringLogUi();
 });
 
 function renderSortSwitch() {
@@ -2015,6 +2017,11 @@ function renderCombosByRating() {
     table.className = 'rating-table';
 
     const headerRow = document.createElement('tr');
+    const flagHead = document.createElement('th');
+    flagHead.className = 'rating-table-flags-head';
+    flagHead.textContent = '★';
+    flagHead.title = 'Favourite / try again - click a button in a row to flip it';
+    headerRow.appendChild(flagHead);
     RATING_TABLE_COLUMNS.forEach(function(col) {
         const th = document.createElement('th');
         th.className = 'rating-table-sortable';
@@ -2038,8 +2045,13 @@ function renderCombosByRating() {
             window.location.href = comboDetailUrl(combo.ingredients);
         });
 
+        const flagCell = document.createElement('td');
+        flagCell.className = 'rating-table-flags';
+        flagCell.appendChild(flagToggles(combo, 'table'));
+        tr.appendChild(flagCell);
+
         const ratingCell = document.createElement('td');
-        ratingCell.textContent = (combo.rating ? combo.rating + '/10' : 'N/A') + (combo.starred ? ' ⭐' : '') + (combo.tryAgain ? ' 🔁' : '');
+        ratingCell.textContent = combo.rating ? combo.rating + '/10' : 'N/A';
         tr.appendChild(ratingCell);
 
         const nameCell = document.createElement('td');
@@ -2655,6 +2667,46 @@ function primaryCategoryFor(combo) {
 // combo's ingredients contains the query.
 let bookSearchQuery = '';
 
+// ===== Quick ⭐ / 🔁 toggles (makeFlagToggles in ui.js) =====
+
+function saveAllCombinations() {
+    return fetch('/combos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(combinations)
+    });
+}
+
+// After a flag changes, bring the other views that show it up to date -
+// but not the one you're clicking in (that would throw away your place there).
+function flagToggles(combo, source) {
+    return makeFlagToggles(combo, {
+        save: saveAllCombinations,
+        onChange: function() {
+            if (source !== 'table') {
+                renderCombosByRating();
+            } else if (ratingTableFilterStarredOnly || ratingTableFilterTryAgainOnly) {
+                renderCombosByRating(); // an active "starred/try again only" filter may now exclude this row
+            }
+            if (source !== 'book') renderBookArea();
+            renderMatrixArea();
+            renderComboViz();
+        }
+    });
+}
+
+// A "page" is one ingredient combo (what combo-detail.html shows) - it can hold
+// several entries (hot and cold, or a re-brew), so pages <= entries.
+function bookPageCount(combos) {
+    const seen = new Set();
+    combos.forEach(function(combo) { seen.add(combo.ingredients.slice().sort().join('|')); });
+    return seen.size;
+}
+
+function pluralize(n, one, many) {
+    return n + ' ' + (n === 1 ? one : many);
+}
+
 function renderBookArea() {
     const container = document.getElementById('book-area');
     container.innerHTML = '';
@@ -2720,14 +2772,18 @@ function renderBookArea() {
     const toc = document.createElement('nav');
     toc.className = 'notes-page book-toc';
     const tocHeading = document.createElement('h2');
-    tocHeading.textContent = '📑 Table of Contents (' + entries.length + ' total)';
+    const totalPages = bookPageCount(entries);
+    tocHeading.textContent = '📑 Table of Contents (' + pluralize(totalPages, 'page', 'pages') +
+        (entries.length !== totalPages ? ' · ' + pluralize(entries.length, 'entry', 'entries') : '') + ')';
     toc.appendChild(tocHeading);
     const tocList = document.createElement('ul');
     populatedCategories.forEach(function(cat) {
         const li = document.createElement('li');
         const a = document.createElement('a');
         a.href = '#book-' + encodeURIComponent(cat);
-        a.textContent = cat + ' (' + groups[cat].length + ')';
+        const catPages = bookPageCount(groups[cat]);
+        a.textContent = cat + ' (' + pluralize(catPages, 'page', 'pages') +
+            (groups[cat].length !== catPages ? ' · ' + pluralize(groups[cat].length, 'entry', 'entries') : '') + ')';
         li.appendChild(a);
         tocList.appendChild(li);
     });
@@ -2753,15 +2809,8 @@ function renderBookArea() {
 
             const h3 = document.createElement('h3');
             const methodEmoji = combo.temperature === 'cold' ? '❄️' : combo.temperature === 'stovetop' ? '🍳' : '🔥';
-            h3.textContent = methodEmoji + ' ' + combo.name + (combo.starred ? ' ⭐' : '');
-            if (combo.tryAgain) {
-                const tag = document.createElement('span');
-                tag.className = 'try-again-tag';
-                tag.textContent = '🔁 Try again';
-                tag.title = 'Marked to try again - the score might undersell it';
-                h3.appendChild(document.createTextNode(' '));
-                h3.appendChild(tag);
-            }
+            h3.appendChild(flagToggles(combo, 'book'));
+            h3.appendChild(document.createTextNode(methodEmoji + ' ' + combo.name));
             entry.appendChild(h3);
 
             const meta = document.createElement('p');
@@ -2838,10 +2887,123 @@ document.querySelectorAll('.tab-btn[data-subtab]').forEach(function(btn) {
     });
 });
 
-const initialRoute = HASH_MAP[window.location.hash.slice(1)] || HASH_MAP.summary;
+// ===== Remembering where you were =====
+// Opening a combo and coming back used to reset everything - the search, the
+// filters, the tab, how far you'd scrolled. The page's view state is kept in
+// sessionStorage (per browser tab, gone when it closes) and put back when
+// you return by the browser's Back button, or by a link back from the combo
+// page (which sets a one-shot flag). Opening the Log from the header, or in a
+// new tab, still starts fresh.
+
+const LOG_UI_KEY = 'steepItTogetherLogUi';
+const LOG_UI_RESTORE_KEY = 'steepItTogetherLogRestore';
+let savedLogUi = null;
+let logUiReady = false; // nothing is saved until the first full render - an early page-hide must not overwrite good state with defaults
+
+(function readSavedLogUi() {
+    try {
+        const nav = performance.getEntriesByType('navigation')[0];
+        const cameBack = (nav && nav.type === 'back_forward') || sessionStorage.getItem(LOG_UI_RESTORE_KEY) === '1';
+        sessionStorage.removeItem(LOG_UI_RESTORE_KEY);
+        if (cameBack) savedLogUi = JSON.parse(sessionStorage.getItem(LOG_UI_KEY));
+    } catch (e) { savedLogUi = null; }
+    if (savedLogUi) history.scrollRestoration = 'manual'; // the browser's own would run before the page has any content
+})();
+
+function snapshotLogUi() {
+    const activeKey = function(ids) {
+        return ids.filter(function(k) { return document.getElementById(k.id).classList.contains('active'); }).map(function(k) { return k.key; })[0];
+    };
+    const subtabs = {};
+    Object.keys(SUB_TAB_KEYS).forEach(function(prefix) {
+        subtabs[prefix] = activeKey(SUB_TAB_KEYS[prefix].map(function(key) { return { id: prefix + '-subtab-' + key, key: key }; }));
+    });
+    return {
+        tab: activeKey(LOG_TAB_KEYS.map(function(key) { return { id: 'log-tab-' + key, key: key }; })),
+        subtabs: subtabs,
+        scrollY: window.scrollY,
+        matrixView: matrixView, detailCategories: detailCategories, fullMatrixOrder: fullMatrixOrder,
+        focusColumns: Array.from(focusColumns), hiddenRows: Array.from(hiddenRows),
+        rowFilterOpen: rowFilterOpen, onlyUnpairedRows: onlyUnpairedRows,
+        columnFilterOpen: columnFilterOpen, columnFilterOrder: columnFilterOrder,
+        axisFilterSearch: { columns: axisFilterSearch.columns, rows: axisFilterSearch.rows },
+        sortMode: sortMode, graphsView: graphsView, graphsFilterMode: graphsFilterMode,
+        graphsFilterCategories: Array.from(graphsFilterCategories), graphsFilterIngredients: Array.from(graphsFilterIngredients),
+        ratingTable: {
+            sortKey: ratingTableSortKey, sortDir: ratingTableSortDir, search: ratingTableSearchQuery,
+            method: ratingTableFilterMethod, starredOnly: ratingTableFilterStarredOnly, tryAgainOnly: ratingTableFilterTryAgainOnly,
+            minRating: ratingTableFilterMinRating, category: ratingTableFilterCategory
+        },
+        bookSearchQuery: bookSearchQuery
+    };
+}
+
+function saveLogUi() {
+    if (!logUiReady) return;
+    try { sessionStorage.setItem(LOG_UI_KEY, JSON.stringify(snapshotLogUi())); } catch (e) { /* private window etc - just not remembered */ }
+}
+
+// Puts the saved view state back into the page's variables - run once the
+// data is loaded, just before the first render draws from them.
+function applySavedLogUi() {
+    const s = savedLogUi;
+    if (!s) return;
+    function set(setObj, arr) { setObj.clear(); (arr || []).forEach(function(v) { setObj.add(v); }); }
+    if (s.matrixView === 'full' || s.matrixView === 'category' || (s.matrixView === 'detail' && s.detailCategories)) {
+        matrixView = s.matrixView;
+        detailCategories = s.detailCategories || null;
+    }
+    if (s.fullMatrixOrder) fullMatrixOrder = s.fullMatrixOrder;
+    set(focusColumns, s.focusColumns); set(hiddenRows, s.hiddenRows);
+    rowFilterOpen = !!s.rowFilterOpen; onlyUnpairedRows = !!s.onlyUnpairedRows;
+    columnFilterOpen = !!s.columnFilterOpen; if (s.columnFilterOrder) columnFilterOrder = s.columnFilterOrder;
+    if (s.axisFilterSearch) { axisFilterSearch.columns = s.axisFilterSearch.columns || ''; axisFilterSearch.rows = s.axisFilterSearch.rows || ''; }
+    if (s.sortMode) sortMode = s.sortMode;
+    if (s.graphsView) graphsView = s.graphsView;
+    if (s.graphsFilterMode) graphsFilterMode = s.graphsFilterMode;
+    set(graphsFilterCategories, s.graphsFilterCategories); set(graphsFilterIngredients, s.graphsFilterIngredients);
+    const t = s.ratingTable || {};
+    if (t.sortKey) ratingTableSortKey = t.sortKey;
+    if (t.sortDir) ratingTableSortDir = t.sortDir;
+    ratingTableSearchQuery = t.search || '';
+    if (t.method) ratingTableFilterMethod = t.method;
+    ratingTableFilterStarredOnly = !!t.starredOnly; ratingTableFilterTryAgainOnly = !!t.tryAgainOnly;
+    ratingTableFilterMinRating = t.minRating || 0;
+    if (t.category) ratingTableFilterCategory = t.category;
+    bookSearchQuery = s.bookSearchQuery || '';
+    renderSortSwitch();
+}
+
+// Called after the first full render: puts the scroll position back, then
+// starts remembering changes.
+function finishRestoringLogUi() {
+    if (savedLogUi && typeof savedLogUi.scrollY === 'number') {
+        const y = savedLogUi.scrollY;
+        requestAnimationFrame(function() { window.scrollTo(0, y); });
+        setTimeout(function() { window.scrollTo(0, y); }, 300); // again once images/fonts have settled the layout
+    }
+    logUiReady = true;
+    let timer = null;
+    function scheduleSave() { clearTimeout(timer); timer = setTimeout(saveLogUi, 200); }
+    ['click', 'input', 'change', 'keyup'].forEach(function(type) { document.addEventListener(type, scheduleSave, true); });
+    window.addEventListener('pagehide', saveLogUi);
+    document.addEventListener('visibilitychange', function() { if (document.visibilityState === 'hidden') saveLogUi(); });
+}
+
+let initialRoute = HASH_MAP[window.location.hash.slice(1)] || HASH_MAP.summary;
+let initialSubtabs = {
+    summary: initialRoute.tab === 'summary' ? initialRoute.subtab : 'summary',
+    ratings: initialRoute.tab === 'ratings' ? initialRoute.subtab : 'table'
+};
+if (savedLogUi && LOG_TAB_KEYS.indexOf(savedLogUi.tab) !== -1) {
+    initialRoute = { tab: savedLogUi.tab };
+    Object.keys(SUB_TAB_KEYS).forEach(function(prefix) {
+        if (savedLogUi.subtabs && SUB_TAB_KEYS[prefix].indexOf(savedLogUi.subtabs[prefix]) !== -1) initialSubtabs[prefix] = savedLogUi.subtabs[prefix];
+    });
+}
 selectLogTab(initialRoute.tab);
 // Both sub-tab bars get initialized (not just the active tab's) so
 // whichever tab you switch to next already shows a sensible default
 // instead of whatever state it happened to be left in.
-selectSubTab('summary', initialRoute.tab === 'summary' ? initialRoute.subtab : 'summary');
-selectSubTab('ratings', initialRoute.tab === 'ratings' ? initialRoute.subtab : 'table');
+selectSubTab('summary', initialSubtabs.summary);
+selectSubTab('ratings', initialSubtabs.ratings);

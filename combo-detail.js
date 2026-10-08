@@ -254,7 +254,12 @@ function renderComboNav() {
     if (currentIndex !== -1) {
         const position = document.createElement('p');
         position.className = 'combo-nav-position';
-        position.textContent = 'Entry ' + (currentIndex + 1) + ' of ' + entries.length;
+        // Each page is one ingredient combo - and it can hold several entries
+        // (hot and cold, or re-brews) - so count pages, and say how many
+        // entries this one holds.
+        const hereCount = allCombos.filter(isRequestedCombo).length;
+        position.textContent = 'Page ' + (currentIndex + 1) + ' of ' + entries.length +
+            (hereCount > 1 ? ' · ' + hereCount + ' entries on this page' : '');
         navContainer.appendChild(position);
     }
 }
@@ -334,18 +339,16 @@ function render() {
             article.appendChild(buildEditForm(combo, temp));
         } else {
             const h3 = document.createElement('h3');
-            h3.textContent = combo.name + ' — ' + temp;
-            if (combo.starred) {
-                h3.textContent += ' ⭐';
-            }
-            if (combo.tryAgain) {
-                const tag = document.createElement('span');
-                tag.className = 'try-again-tag';
-                tag.textContent = '🔁 Try again';
-                tag.title = 'Marked to try again - the score might undersell it';
-                h3.appendChild(document.createTextNode(' '));
-                h3.appendChild(tag);
-            }
+            h3.textContent = combo.name + ' — ' + temp + ' ';
+            h3.appendChild(makeFlagToggles(combo, {
+                save: function() {
+                    return fetch('/combos', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(allCombos)
+                    });
+                }
+            }));
             article.appendChild(h3);
 
             if (combo.rating) {
@@ -499,3 +502,13 @@ function buildEditForm(combo, temp) {
 
     return wrapper;
 }
+
+
+// Any link back to the log page (the "Back to brew log" link, the Log tab in
+// the header) should drop you where you were - same search, filters, tab and
+// scroll position - not on a fresh page. log.js looks for this flag.
+document.querySelectorAll('a[href^="log.html"]').forEach(function(link) {
+    link.addEventListener('click', function() {
+        try { sessionStorage.setItem('steepItTogetherLogRestore', '1'); } catch (e) { /* private window - just opens fresh */ }
+    });
+});

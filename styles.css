@@ -3521,3 +3521,120 @@ main section > .edit-actions {
 .try-again-label {
     margin-left: 16px;
 }
+
+/* ===== Locked matrix headers: the top row and first column stay put ===== */
+
+/* The wrapper scrolls in both directions inside a window-sized box - that is
+   what lets the header row/column pin (sticky needs a scroll box to pin to).
+   Padding moved onto the table so nothing scrolls past the pinned edges. */
+#matrix-wrapper {
+    overflow: auto;
+    padding: 0;
+    max-height: calc(100vh - var(--sticky-top, 0px) - 90px);
+    min-height: 120px;
+    overscroll-behavior: contain;
+}
+
+/* border-collapse breaks sticky cells (their borders scroll away), so the
+   grid lines are drawn per cell instead. */
+.brew-matrix {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.brew-matrix th,
+.brew-matrix td {
+    border: 0;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+}
+
+.brew-matrix tr:first-child > * { border-top: 1px solid var(--border); }
+.brew-matrix tr > *:first-child { border-left: 1px solid var(--border); }
+
+.brew-matrix tr:first-child > th {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+}
+
+.brew-matrix tr > th:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+}
+
+.brew-matrix tr:first-child > th:first-child {
+    z-index: 4; /* the corner stays above both */
+}
+
+/* ===== Quick ⭐ / 🔁 toggles (makeFlagToggles in ui.js) ===== */
+
+.flag-toggles {
+    display: inline-flex;
+    gap: 5px;
+    vertical-align: middle;
+}
+
+.flag-btn {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 16px;
+    line-height: 1;
+    background: var(--card-bg);
+    border: 1.5px solid var(--border);
+    color: var(--ink-soft);
+    box-shadow: none;
+    opacity: 0.6;
+    filter: grayscale(1);
+    transition: transform 0.12s ease, opacity 0.12s ease, background 0.12s ease;
+}
+
+.flag-btn:hover {
+    opacity: 1;
+    filter: none;
+    transform: scale(1.12);
+    box-shadow: none;
+    background: var(--accent-soft);
+}
+
+.flag-btn:active {
+    transform: scale(0.94);
+    box-shadow: none;
+}
+
+.flag-btn.is-on {
+    opacity: 1;
+    filter: none;
+}
+
+.flag-btn.flag-star.is-on {
+    background: var(--gold-soft);
+    border-color: var(--gold);
+    color: #b07a10;
+}
+
+.flag-btn.flag-again.is-on {
+    background: var(--candy-soft, #fde4ee);
+    border-color: var(--candy, #e2457a);
+}
+
+.book-entry h3 .flag-toggles {
+    float: right;
+    margin: -2px 0 6px 10px;
+}
+
+.rating-table-flags {
+    white-space: nowrap;
+    text-align: center;
+}
+
+.rating-table-flags-head {
+    text-align: center;
+    cursor: default;
+}

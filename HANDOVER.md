@@ -114,6 +114,18 @@ Data (all JSON in the repo root, edited through the app, not by hand):
   gets `is-active`).
 - **Notepad tab order** is saved in `settings.json` as `referenceTabOrder` (array of tab keys; custom tabs
   are `custom-<id>`). Tabs can be dragged or moved with the Left/Right buttons.
+- **Matrix header lock**: `#matrix-wrapper` is a window-height scroll box (both axes) and the top row /
+  first column are `position: sticky` inside it. Sticky needs `border-collapse: separate`, so grid lines are
+  drawn per cell, and the wrapper has no padding (padding would leave a strip above the pinned row).
+- **Log page remembers its view** (log.js, "Remembering where you were"): search boxes, filters, sort,
+  matrix view, graph filters, tab/sub-tab and scroll are saved to `sessionStorage` and restored on a
+  browser Back or via the one-shot `steepItTogetherLogRestore` flag that combo-detail.js sets when you
+  click a link back to the log. Opening Log from the header starts fresh on purpose. When adding new
+  page state to log.js, add it to `snapshotLogUi()` and `applySavedLogUi()`.
+- **Quick toggles**: `makeFlagToggles()` (ui.js) = the ⭐/🔁 buttons in the rating table, Book and combo
+  page. It flips optimistically and reverts if the save fails (that is what makes guest mode revert).
+- **Pages vs entries**: a *page* is one ingredient combo (what combo-detail shows); it can hold several
+  *entries* (hot + cold, re-brews). Counters say "Page 34 of 71", the Book says "71 pages · 87 entries".
 - `container-type: inline-size` elements can't size themselves from their own content.
 - The hidden attribute loses to any `display:` rule - the matrix filter list needs
   `.column-filter [hidden] { display:none !important }`.
@@ -133,7 +145,7 @@ git push origin main
 ```
 GitHub Pages redeploys in ~1-2 minutes. Browsers cache files for 10 minutes (Pages sets
 `max-age=600`), so **bump the `?v=` on the `<script>`/stylesheet links in the four HTML files**
-(e.g. `?v=20261008a`; the current one is `20261008a`) whenever you change a js/css file - that makes every browser fetch the new
+(e.g. `?v=20261008a`; the current one is `20261008b`) whenever you change a js/css file - that makes every browser fetch the new
 version immediately instead of showing an old copy. (Ctrl+Shift+R also works locally.) If a merge conflicts, it will be in a data file or an image written by the live
 site: keep the **live site's** version of data files.
 
@@ -151,6 +163,7 @@ node blocked-test.js      # blocked pairs: cauldron button/warning, randomizer, 
 node guest-test.js        # friend/guest mode: no API calls, saves refused, connect-screen route
 node sticky-tabs-test.js  # pinned Save bars under the header, Notepad tab reordering
 node tryagain-test.js     # 'Try again' flag: Drink card, combo notes, Book, rating table filter, matrix
+node ux2-test.js          # page counts, locked matrix headers, remembered log view, quick star/try-again toggles
 node shots.js -mine       # screenshots of every page, desktop + phone -> shot-*.png
 ```
 Set `EDGE_PATH` if the browser isn't at the default Edge location. Tests assume the ingredient

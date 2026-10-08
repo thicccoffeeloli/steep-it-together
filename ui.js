@@ -122,3 +122,46 @@ window.makeColorKey = function(entries, title) {
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
     else start();
 })();
+
+// Quick ⭐ / 🔁 toggles for a logged combo - like a "favourite" button in any
+// app: one click flips it and saves, no need to open the entry and edit it.
+//   makeFlagToggles(combo, { save: () => Promise<Response>, onChange: (flag) => void })
+// The button repaints immediately; if the save is refused or fails (e.g. guest
+// view), it flips back. onChange runs after a successful save so the caller can
+// refresh whatever else shows the flag.
+window.makeFlagToggles = function(combo, opts) {
+    const wrap = document.createElement('span');
+    wrap.className = 'flag-toggles';
+    wrap.addEventListener('click', function(e) { e.stopPropagation(); });
+
+    const defs = [
+        { flag: 'starred', cls: 'flag-star', on: '★', off: '☆', onTitle: 'Favourite - click to unmark', offTitle: 'Mark as a favourite' },
+        { flag: 'tryAgain', cls: 'flag-again', on: '🔁', off: '🔁', onTitle: 'Marked to try again - click to unmark', offTitle: 'Mark to try again (e.g. the ratio was off)' }
+    ];
+    defs.forEach(function(def) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'flag-btn ' + def.cls;
+        function paint() {
+            const on = !!combo[def.flag];
+            btn.classList.toggle('is-on', on);
+            btn.textContent = on ? def.on : def.off;
+            btn.title = on ? def.onTitle : def.offTitle;
+            btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+        }
+        paint();
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const was = !!combo[def.flag];
+            combo[def.flag] = !was;
+            paint();
+            function revert() { combo[def.flag] = was; paint(); }
+            opts.save().then(function(res) {
+                if (!res || !res.ok) { revert(); return; }
+                if (opts.onChange) opts.onChange(def.flag);
+            }).catch(revert);
+        });
+        wrap.appendChild(btn);
+    });
+    return wrap;
+};
