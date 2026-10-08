@@ -1008,5 +1008,17 @@
     "temperature": "cold",
     "rating": 6,
     "starred": false
+  },
+  {
+    "ingredients": [
+      "Lemon Slice"
+    ],
+    "name": "Hot Lemon Water",
+    "description": "A classic hot water steep. Citrusy, lightly acidic and warming.",
+    "notes": "",
+    "temperature": "hot",
+    "rating": 7,
+    "starred": false,
+    "tryAgain": false
   }
 ]
