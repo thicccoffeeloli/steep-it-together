@@ -86,10 +86,11 @@
       "Peppermint Teabag"
     ],
     "name": "Hot Peppermint Tea",
-    "description": "Soothing and warming hot.",
+    "description": "Menthol freshness comes through well with added grassy notes. Incredibly soothing and warming.",
     "notes": "",
     "temperature": "hot",
-    "rating": 8
+    "rating": 8,
+    "starred": true
   },
   {
     "ingredients": [
