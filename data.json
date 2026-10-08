@@ -313,7 +313,8 @@
     "notes": "Lemongrass too overpowering. However, could try with more moderation.",
     "temperature": "hot",
     "rating": 3,
-    "starred": false
+    "starred": false,
+    "tryAgain": true
   },
   {
     "ingredients": [
