@@ -119,11 +119,12 @@
       "Citrus Zest"
     ],
     "name": "Hot Hibiscus + Citrus Tea",
-    "description": "Tart and deep red, juice-like quality.\nCitrus add more freshness to it.",
-    "notes": "Too much citrus made it a bit overwhelming. Use in moderation.\nGood to add honey as well.",
+    "description": "Hibiscus provides a tart, cranberry like base. The naartjie peel adds a citrusy creaminess and fruitiness to it. The grapefruit zest adds an extra dimension of citrus and floral fragrance on top.",
+    "notes": "Admittedly, too much citrus made it a bit overwhelming, so use in moderation. i.e. Only add naartjie or only grapefruit, not both. \nMight be better if I add honey...",
     "temperature": "hot",
-    "rating": 6,
-    "starred": false
+    "rating": 4,
+    "starred": false,
+    "tryAgain": true
   },
   {
     "ingredients": [
