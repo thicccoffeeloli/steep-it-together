@@ -30,7 +30,6 @@
   {
     "section": "Coffee",
     "items": [
-      "Hazelnut Coffee",
       "Medium Roast Coffee",
       "Dark Roast Coffee"
     ]
@@ -71,7 +70,8 @@
       "Lemon Slice",
       "Dried Apple",
       "Dried Coconut Flakes",
-      "Dried Lychee"
+      "Dried Lychee",
+      "Hazelnut Coffee"
     ]
   },
   {
