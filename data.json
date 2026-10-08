@@ -997,8 +997,8 @@
       "Masala Chai"
     ],
     "name": "Cold Brew Masala Chai ",
-    "description": "Spice notes are significantly muted cold, as cinnamon and cardamom especially need heat. Lightly spiced and mildly sweet black tea. Pleasant but a shadow of the hot version.",
-    "notes": "Hot is clearly the better vehicle for this one.",
+    "description": "Spice notes are significantly muted cold, as spices typically need heat to activate its flavours. \nLightly spiced but a shadow of the hot version.",
+    "notes": "",
     "temperature": "cold",
     "rating": 6,
     "starred": false
