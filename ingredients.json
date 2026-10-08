@@ -47,20 +47,6 @@
     ]
   },
   {
-    "section": "Herbal & Botanicals",
-    "items": [
-      "Dried Rose petals",
-      "Dried Rose Buds",
-      "Dried Rosehip",
-      "红枣",
-      "桂圆",
-      "枸杞",
-      "Fresh Mint Leaves",
-      "Ginger",
-      "Lemongrass"
-    ]
-  },
-  {
     "section": "Citrus & Fruits",
     "items": [
       "Citrus Zest",
@@ -72,6 +58,20 @@
       "Dried Coconut Flakes",
       "Dried Lychee",
       "Hazelnut Coffee"
+    ]
+  },
+  {
+    "section": "Herbal & Botanicals",
+    "items": [
+      "Dried Rose petals",
+      "Dried Rose Buds",
+      "Dried Rosehip",
+      "红枣",
+      "桂圆",
+      "枸杞",
+      "Fresh Mint Leaves",
+      "Ginger",
+      "Lemongrass"
     ]
   },
   {
