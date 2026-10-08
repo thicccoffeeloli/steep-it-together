@@ -1045,5 +1045,31 @@
     "rating": 7,
     "starred": false,
     "tryAgain": false
+  },
+  {
+    "ingredients": [
+      "Lemon Slice",
+      "Ginger"
+    ],
+    "name": "Ginger lemon tea",
+    "description": "Warming ginger heat up front, with the lemon’s tartness softening the ginger. Very fragrant. ",
+    "notes": "Overnight steep is very strong, so it works better as a quick evening drink. \nNext time try 1 slice of lemon and 1 slice of ginger instead of 2 each.",
+    "temperature": "hot",
+    "rating": 8,
+    "starred": true,
+    "tryAgain": true
+  },
+  {
+    "ingredients": [
+      "Lemon Slice",
+      "CBD Blend"
+    ],
+    "name": "Lemon CBD blend",
+    "description": "The warming, spiced base (star anise, cloves, peppercorn) with its floral rose softness, lifted by the lemon’s bright tartness. The citrus cuts through the heavier spice and earthy CBD notes, so it tastes fresher and lighter than the plain blend.",
+    "notes": "",
+    "temperature": "hot",
+    "rating": 6,
+    "starred": false,
+    "tryAgain": false
   }
 ]
