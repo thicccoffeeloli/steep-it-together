@@ -1020,5 +1020,17 @@
     "rating": 7,
     "starred": false,
     "tryAgain": false
+  },
+  {
+    "ingredients": [
+      "Lemon Slice"
+    ],
+    "name": "Cool Lemon Water",
+    "description": "Refreshing, citrusy and slightly acidic. ",
+    "notes": "",
+    "temperature": "cold",
+    "rating": 7,
+    "starred": false,
+    "tryAgain": false
   }
 ]
