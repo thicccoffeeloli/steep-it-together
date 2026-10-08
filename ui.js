@@ -165,3 +165,131 @@ window.makeFlagToggles = function(combo, opts) {
     });
     return wrap;
 };
+
+// Editable note boxes: any .note-callout with a data-callout-id (the lavender
+// boxes on Notepad and Settings) gets a small ✏️. Click it to rewrite the text
+// in place; it saves to settings.json (so it follows you between devices),
+// and "Reset to original" puts the built-in wording back. Write **words** to
+// make them bold.
+(function editableCallouts() {
+    function escapeText(t) { return t; }
+
+    // The built-in text as editable plain text: bold becomes **bold**, the
+    // source file's line wrapping collapses to normal spaces.
+    function defaultToText(html) {
+        const holder = document.createElement('div');
+        holder.innerHTML = html;
+        holder.querySelectorAll('strong, b').forEach(function(s) { s.replaceWith('**' + s.textContent + '**'); });
+        return holder.textContent.replace(/[ \t]*\n[ \t]*/g, ' ').replace(/ {2,}/g, ' ').trim();
+    }
+
+    // Custom text -> DOM: line breaks stay, **bold** becomes <strong>. Built
+    // from text nodes (never innerHTML), so whatever is typed can't inject markup.
+    function renderCustom(body, text) {
+        body.textContent = '';
+        text.split('\n').forEach(function(line, i) {
+            if (i > 0) body.appendChild(document.createElement('br'));
+            line.split(/(\*\*[^*]+\*\*)/).forEach(function(piece) {
+                if (!piece) return;
+                if (/^\*\*[^*]+\*\*$/.test(piece)) {
+                    const strong = document.createElement('strong');
+                    strong.textContent = piece.slice(2, -2);
+                    body.appendChild(strong);
+                } else {
+                    body.appendChild(document.createTextNode(piece));
+                }
+            });
+        });
+    }
+
+    const boxes = [];
+
+    function setup(el) {
+        const id = el.dataset.calloutId;
+        const body = document.createElement('span');
+        body.className = 'callout-body';
+        while (el.firstChild) body.appendChild(el.firstChild);
+        el.appendChild(body);
+        const original = body.innerHTML;
+        const editBtn = document.createElement('button');
+        editBtn.type = 'button';
+        editBtn.className = 'callout-edit-btn';
+        editBtn.textContent = '✏️';
+        editBtn.title = 'Edit this note';
+        editBtn.setAttribute('aria-label', 'Edit this note');
+        el.classList.add('is-editable');
+        el.appendChild(editBtn);
+
+        const box = { id: id, el: el, body: body, original: original, editBtn: editBtn, custom: undefined, editing: false };
+        boxes.push(box);
+
+        function show() {
+            box.editing = false;
+            editBtn.hidden = false;
+            if (box.custom) renderCustom(body, box.custom); else body.innerHTML = original;
+        }
+        box.show = show;
+
+        editBtn.addEventListener('click', function() {
+            box.editing = true;
+            editBtn.hidden = true;
+            const area = document.createElement('textarea');
+            area.className = 'callout-textarea';
+            area.value = box.custom || defaultToText(original);
+            area.rows = Math.max(3, Math.min(10, Math.ceil(area.value.length / 70) + 1));
+            const hint = document.createElement('span');
+            hint.className = 'callout-hint';
+            hint.textContent = 'Tip: put **double stars** around words to make them bold.';
+            const msg = document.createElement('span');
+            msg.className = 'callout-msg';
+            const actions = document.createElement('span');
+            actions.className = 'callout-actions';
+            function mk(label, handler) {
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.textContent = label;
+                b.addEventListener('click', handler);
+                actions.appendChild(b);
+                return b;
+            }
+            function commit(text) {
+                msg.textContent = 'Saving...';
+                return AppSettings.load().then(function(s) {
+                    const merged = Object.assign({}, s.callouts || {});
+                    if (text) merged[id] = text; else delete merged[id];
+                    return AppSettings.save({ callouts: merged }).then(function() { box.custom = text || undefined; show(); });
+                }).catch(function(err) {
+                    msg.textContent = '⚠️ Couldn\'t save: ' + err.message;
+                });
+            }
+            mk('Save', function() { commit(area.value.trim()); }).classList.add('callout-save');
+            mk('Cancel', show);
+            if (box.custom) mk('Reset to original', function() { commit(''); });
+            body.textContent = '';
+            body.appendChild(area);
+            body.appendChild(document.createElement('br'));
+            body.appendChild(hint);
+            body.appendChild(actions);
+            body.appendChild(msg);
+            area.focus();
+        });
+    }
+
+    function applySaved(callouts) {
+        boxes.forEach(function(box) {
+            if (box.editing) return; // never yank text out from under someone typing
+            const text = callouts && callouts[box.id];
+            box.custom = typeof text === 'string' && text.trim() ? text : undefined;
+            box.show();
+        });
+    }
+
+    function start() {
+        document.querySelectorAll('.note-callout[data-callout-id]').forEach(setup);
+        if (!boxes.length || !window.AppSettings) return;
+        applySaved(AppSettings.get().callouts);               // cached copy first - instant
+        AppSettings.load().then(function(s) { applySaved(s.callouts); }).catch(function() {});
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+    else start();
+})();

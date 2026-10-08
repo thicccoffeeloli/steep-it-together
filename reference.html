@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=20261008d">
+    <link rel="stylesheet" href="styles.css?v=20261008e">
 </head>
 
 <body>
@@ -51,7 +51,7 @@
 
     <div id="panel-notes" class="reference-panel">
         <div class="notes-page">
-            <p class="note-callout">🍊 <strong>Citrus note:</strong> when using citrus, zest only — the outermost
+            <p class="note-callout" data-callout-id="notepad-citrus">🍊 <strong>Citrus note:</strong> when using citrus, zest only — the outermost
                 coloured layer with all the fragrant oils. Avoid rind and pith which turn bitter over a long steep.
             </p>
             <div id="notes-container"></div>
@@ -60,7 +60,7 @@
 
     <div id="panel-hard-to-get" class="reference-panel" hidden>
         <div class="notes-page">
-            <p class="note-callout">Ingredients that are harder to track down. Kept off the main ingredients list and
+            <p class="note-callout" data-callout-id="hard-to-get-intro">Ingredients that are harder to track down. Kept off the main ingredients list and
                 brew matrix for now — worth revisiting once they're actually in hand.</p>
             <div id="hard-to-get-list"></div>
         </div>
@@ -68,19 +68,19 @@
 
     <div id="panel-avoid-flask" class="reference-panel" hidden>
         <div class="notes-page">
-            <p class="note-callout">These teas suffer significantly from continuous steeping and are best enjoyed
+            <p class="note-callout" data-callout-id="avoid-flask-intro">These teas suffer significantly from continuous steeping and are best enjoyed
                 with precise steep times using a removable infuser basket instead. Kept off the main ingredients
                 list and brew matrix for now.</p>
             <div id="avoid-flask-list"></div>
         </div>
     </div>
 
-    <script src="github-storage.js?v=20261008d"></script>
-    <script src="app-settings.js?v=20261008d"></script>
-    <script src="tooltip.js?v=20261008d"></script>
-    <script src="ui.js?v=20261008d"></script>
-    <script src="notes.js?v=20261008d"></script>
-    <script src="reference-list.js?v=20261008d"></script>
+    <script src="github-storage.js?v=20261008e"></script>
+    <script src="app-settings.js?v=20261008e"></script>
+    <script src="tooltip.js?v=20261008e"></script>
+    <script src="ui.js?v=20261008e"></script>
+    <script src="notes.js?v=20261008e"></script>
+    <script src="reference-list.js?v=20261008e"></script>
     <script>
         buildReferenceListPage({
             endpoint: '/hard-to-get',

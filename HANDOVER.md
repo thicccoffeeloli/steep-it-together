@@ -128,6 +128,10 @@ Data (all JSON in the repo root, edited through the app, not by hand):
   Cold Brew / Stovetop + ingredients". `drinkNameIsAuto` tracks whether the field still holds the generated
   name (it then follows the method tab); typing anything else keeps it. Saved entries keep their own name,
   and an entry named with the generated pattern gives the *other* method its own pattern (`looksAutoNamed`).
+- **Editable note boxes**: any `.note-callout` with a `data-callout-id` gets a ✏️ (ui.js, `editableCallouts`).
+  Edited text is stored in `settings.json` under `callouts` (id -> text; `**bold**` supported, built from text
+  nodes so typed HTML can't run); "Reset to original" deletes the entry. To make another box editable, just
+  give it a unique `data-callout-id`.
 - **Pages vs entries**: a *page* is one ingredient combo (what combo-detail shows); it can hold several
   *entries* (hot + cold, re-brews). Counters say "Page 34 of 71", the Book says "71 pages · 87 entries".
 - `container-type: inline-size` elements can't size themselves from their own content.
@@ -149,7 +153,7 @@ git push origin main
 ```
 GitHub Pages redeploys in ~1-2 minutes. Browsers cache files for 10 minutes (Pages sets
 `max-age=600`), so **bump the `?v=` on the `<script>`/stylesheet links in the four HTML files**
-(e.g. `?v=20261008a`; the current one is `20261008d`) whenever you change a js/css file - that makes every browser fetch the new
+(e.g. `?v=20261008a`; the current one is `20261008e`) whenever you change a js/css file - that makes every browser fetch the new
 version immediately instead of showing an old copy. (Ctrl+Shift+R also works locally.) If a merge conflicts, it will be in a data file or an image written by the live
 site: keep the **live site's** version of data files.
 
@@ -167,6 +171,7 @@ node blocked-test.js      # blocked pairs: cauldron button/warning, randomizer, 
 node guest-test.js        # friend/guest mode: no API calls, saves refused, connect-screen route
 node sticky-tabs-test.js  # pinned Save bars under the header, Notepad tab reordering
 node tryagain-test.js     # 'Try again' flag: Drink card, combo notes, Book, rating table filter, matrix
+node callouts-test.js     # editable note boxes on Notepad and Settings
 node autoname-test.js     # automatic drink names (note: use ingredient combos with no saved entry)
 node ux2-test.js          # page counts, locked matrix headers, remembered log view, quick star/try-again toggles
 node shots.js -mine       # screenshots of every page, desktop + phone -> shot-*.png

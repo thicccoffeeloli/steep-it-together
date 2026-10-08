@@ -3638,3 +3638,83 @@ main section > .edit-actions {
     text-align: center;
     cursor: default;
 }
+
+/* ===== Editable note boxes (editableCallouts in ui.js) ===== */
+
+.note-callout.is-editable {
+    position: relative;
+    padding-right: 46px;
+}
+
+.callout-edit-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 13px;
+    line-height: 1;
+    background: var(--card-bg);
+    box-shadow: none;
+    opacity: 0.5;
+}
+
+.note-callout:hover .callout-edit-btn,
+.callout-edit-btn:focus-visible {
+    opacity: 1;
+}
+
+.callout-edit-btn:hover,
+.callout-edit-btn:active {
+    box-shadow: none;
+    transform: none;
+}
+
+.callout-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px 10px;
+    border: 2px solid var(--accent);
+    border-radius: 10px;
+    background: var(--card-bg);
+    color: var(--ink);
+    font: inherit;
+    line-height: 1.45;
+    resize: vertical;
+}
+
+.callout-hint {
+    display: block;
+    margin: 4px 0 8px;
+    font-size: 12px;
+    opacity: 0.85;
+}
+
+.callout-actions {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.callout-actions button {
+    padding: 4px 14px;
+    font-size: 13px;
+}
+
+.callout-save {
+    background: linear-gradient(180deg, #ffe596 0%, var(--gold) 100%);
+    border-color: var(--gold-dark);
+    box-shadow: 0 3px 0 var(--gold-dark);
+    color: #4a2a08;
+    font-weight: 600;
+}
+
+.callout-msg {
+    margin-left: 10px;
+    font-size: 13px;
+}
