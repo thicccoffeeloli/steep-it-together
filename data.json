@@ -1032,5 +1032,18 @@
     "rating": 7,
     "starred": false,
     "tryAgain": false
+  },
+  {
+    "ingredients": [
+      "Lemon Slice",
+      "Naartjie Peel"
+    ],
+    "name": "Pseudo orange juice",
+    "description": "Tastes like watered-down orange juice.",
+    "notes": "",
+    "temperature": "cold",
+    "rating": 7,
+    "starred": false,
+    "tryAgain": false
   }
 ]
