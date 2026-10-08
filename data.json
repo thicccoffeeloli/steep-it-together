@@ -564,8 +564,8 @@
       "云南红茶"
     ],
     "name": "云南红茶",
-    "description": "A robust, full-bodied Yunnan black tea.  ",
-    "notes": "",
+    "description": "云南古树红茶。味道浓郁，茶香很棒。",
+    "notes": "有咖啡因，所以只能早上喝。",
     "temperature": "hot",
     "rating": 9,
     "starred": true
