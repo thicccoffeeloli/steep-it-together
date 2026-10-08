@@ -798,11 +798,12 @@
       "Turmeric"
     ],
     "name": "Turmeric hot steep",
-    "description": "Warm, earthy and grounding. Gently bitter with a clean, pure turmeric flavour — slightly medicinal but in a comforting, wholesome way rather than unpleasant. Fairly soothing. Water turns a warm golden yellow.",
-    "notes": "Method: first steeped in hot water previously (flavour partially depleted), then sliced and re-steeped in hot water for a few hours.\nNext proper test: cold soak overnight first to rehydrate without losing flavour, then slice and hot steep for a fuller extraction.\nPairs well with ginger and cinnamon to balance the bitterness.",
+    "description": "Gently bitter and slightly medicinal. Water turns a warm golden yellow.",
+    "notes": "Method: first steeped in hot water previously (flavour partially depleted), then sliced and re-steeped in hot water for a few hours.\nNext proper test: cold soak overnight first to rehydrate without losing flavour, then slice and hot steep for a fuller extraction.",
     "temperature": "hot",
-    "rating": 4,
-    "starred": false
+    "rating": 3,
+    "starred": false,
+    "tryAgain": true
   },
   {
     "ingredients": [
