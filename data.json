@@ -1083,5 +1083,18 @@
     "rating": 9,
     "starred": true,
     "tryAgain": false
+  },
+  {
+    "ingredients": [
+      "Hazelnut Coffee",
+      "Fresh Mint Leaves"
+    ],
+    "name": "Minty hazelnut iced coffee",
+    "description": "A hint of mintiness layered on top of the coffee, with a lingering cooling feeling at the back of the mouth and on the tongue. As it sits, the mint comes more forward and is pleasantly cooling on top of the creamy hazelnut.",
+    "notes": "Coffee brewed in a jar, then poured into a glass over mint leaves. \nFirst sips were after under an hour of steeping, and it gets better as it sits longer. ",
+    "temperature": "cold",
+    "rating": 9,
+    "starred": false,
+    "tryAgain": false
   }
 ]
