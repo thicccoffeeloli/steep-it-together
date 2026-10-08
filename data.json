@@ -431,11 +431,12 @@
       "Cardamom Pods"
     ],
     "name": "Cinnamon cardamom water",
-    "description": "Sweet and spiced",
-    "notes": "Nice but not too interesting — possibly didn't get the ratio right. 1 cinnamon stick to 2–3 cracked cardamom pods recommended. Cinnamon should dominate, cardamom as the accent. Worth retrying.",
+    "description": "Aromatic, with cinnamon's woody sweetness and cardamom's floral spice together.",
+    "notes": "Try next: 1 cinnamon stick to 2–3 cracked cardamom pods recommended.",
     "temperature": "hot",
     "rating": 6,
-    "starred": false
+    "starred": false,
+    "tryAgain": true
   },
   {
     "ingredients": [
