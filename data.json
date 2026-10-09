@@ -1096,5 +1096,18 @@
     "rating": 9,
     "starred": false,
     "tryAgain": false
+  },
+  {
+    "ingredients": [
+      "Naartjie Peel",
+      "Fresh Mint Leaves"
+    ],
+    "name": "Cool naartjie mint water",
+    "description": "The mint is refreshing and cool, with a lovely fresh citrus note in the background.",
+    "notes": "",
+    "temperature": "cold",
+    "rating": 8,
+    "starred": false,
+    "tryAgain": false
   }
 ]
